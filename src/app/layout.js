@@ -1,11 +1,13 @@
-import { Inter } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
+import Head from "next/head";
 
 
-const inter = Inter({
-  options: {
-    weight: ["100","200","300","400","500","600","700","800","900"]
-  }
+const font = Poppins({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-poppins',
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900']
 })
 
 export const metadata = {
@@ -16,8 +18,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <Head>
+        <script src="https://kit.fontawesome.com/fc6a744dc7.js" crossorigin="anonymous"></script>
+      </Head>
       <body
-        className={`${inter.variable} ${inter.variable} antialiased`}
+        className={`${font.variable} ${font.className} antialiased`}
       >
         {children}
       </body>
