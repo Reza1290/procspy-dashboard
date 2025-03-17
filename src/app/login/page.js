@@ -10,7 +10,7 @@ export default function Page() {
                 fill={true}
                 alt="background"
                 src={'/image/image.png'}
-            ></Image>
+            ></Image>   
         </div>
         <div className="flex justify-center w-full items-center bg-gradient-to-b from-black to-slate-950">
             <div className="flex flex-col items-center gap-5 max-w-80 w-full">

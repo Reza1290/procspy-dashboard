@@ -1,13 +1,22 @@
+'use client'
+import { useState } from "react";
+import RoomInput from "../components/RoomInput";
 
-const HomeSidebar = () => {
-    return (
-        <div className="flex flex-col justify-start w-full max-w-72 border-r border-white/10 bg-gradient-to-bl from-black to-slate-950 py-8 px-6 gap-8">
+const HomeSidebar = ({ active }) => {
+    const [roomInput, setRoomInput] = useState(false)
+
+    const handleSetRoomInput = () => {
+        setRoomInput(!roomInput)
+    }
+    return ( 
+        <div className={`${active ? 'w-full opacity-100' : 'w-0 opacity-0 overflow-hidden -ml-[3rem] '} transition-all duration-500 delay-200 ease-in-out flex flex-col justify-start max-w-72 border-r border-white/10 bg-gradient-to-bl from-black to-slate-950 py-8 px-6 gap-8`}>
             <div className="flex justify-between items-center">
                 <h1 className="text-md font-medium">Room Selector</h1>
-                <button className="bg-slate-900/50 text-sm rounded-lg border border-white/10 select-none max-w-6 max-h-6 w-full fill-white/80 p-1.5 pt-[0.325rem] ">
+                <button onClick={handleSetRoomInput} className="bg-slate-900/50 text-sm rounded-lg border border-white/10 select-none max-w-6 max-h-6 w-full fill-white/80 p-1.5 pt-[0.325rem] ">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">{/*<!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->*/}<path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z" /></svg>
                 </button>
             </div>
+            {roomInput ? <RoomInput/> : ''}
             <div className="flex flex-col justify-start gap-2">
                 <div className="flex justify-between items-center w-full border p-2 px-3 bg-white/10  rounded-lg border-white/10">
                     <p className="font-medium">233443</p>
