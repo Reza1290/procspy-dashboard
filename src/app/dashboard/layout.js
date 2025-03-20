@@ -1,11 +1,14 @@
 import SideBarLayout from "./components/SideBar";
+import { SideBarLogProvider } from "./providers/SideBarLogProvider";
 
-export default function DashboardLayout({children}) {
+export default function DashboardLayout({ children }) {
     return (
         <section>
-            <SideBarLayout>
-            {children}
-            </SideBarLayout>
+            <SideBarLogProvider>
+                <SideBarLayout>
+                    {children}
+                </SideBarLayout>
+            </SideBarLogProvider>
         </section>
     );
 }

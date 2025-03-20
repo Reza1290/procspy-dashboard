@@ -2,6 +2,9 @@
 import { useState } from "react";
 // import ChatBox from "./ui/ChatBox";
 import HomeSidebar from "../ui/HomeSidebar";
+import { SideBarLogProvider } from "../providers/SideBarLogProvider";
+import SideBarLog from "../room/ui/SideBarLog";
+
 // import UserDetails from "./ui/UserDetails";
 // import UsersSidebar from "./ui/UsersSidebar";
 
@@ -50,7 +53,7 @@ export default function SideBarLayout({ children }) {
             <div className="w-full p-8">
                 {children}
             </div>
-            
+            <SideBarLog/>
         </section>
     )
 }
