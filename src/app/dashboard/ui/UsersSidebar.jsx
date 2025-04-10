@@ -1,6 +1,6 @@
-const UsersSidebar = () => {
+const UsersSidebar = ({ active }) => {
     return (
-        <div className="flex flex-col justify-start w-full max-w-72 border-r border-white/10 bg-gradient-to-bl from-black to-slate-950 py-8 px-6 gap-8">
+        <div className={`${active ? 'w-full opacity-100' : 'w-0 opacity-0 overflow-hidden -ml-[3rem] '} transition-all duration-500 delay-200 ease-in-out flex flex-col justify-start border-r border-white/10 bg-gradient-to-bl from-black to-slate-950 py-8 px-6 gap-8`}>
             <div className="flex justify-between items-center">
                 <h1 className="text-md font-medium">Users Connected</h1>
             </div>

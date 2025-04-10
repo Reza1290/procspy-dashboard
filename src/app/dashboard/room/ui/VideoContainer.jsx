@@ -142,8 +142,8 @@ const VideoContainer = ({ consumer }) => {
         <div className="flex">
             <div className="relative z-10 flex flex-col justify-between bg-black border border-white/10 rounded-xl p-3">
                 <div className="flex justify-between gap-3 w-full">
-                    <div className="aspect-video bg-black rounded-lg border w-3/4 border-white/10 overflow-hidden relative">
-                        <video autoPlay ref={videoRef} playsInline></video>
+                    <div className="aspect-video flex items-center justify-center bg-slate-950 rounded-lg border w-3/4 border-white/10 overflow-hidden relative">
+                        <video  autoPlay ref={videoRef} playsInline></video>
                         <div className='absolute mt-1 bottom-2 left-3 text-xs'>
                             <div className="">
                                 <h1 className='font-medium bg-slate-600/50 px-2 py-0.5 rounded text-slate-100'>#id-{consumer.socketId}</h1>
@@ -152,7 +152,7 @@ const VideoContainer = ({ consumer }) => {
                     </div>
 
                     <div className="flex flex-col w-1/4 gap-4">
-                        <div className="group aspect-square bg-black rounded-lg border border-white/10 overflow-hidden cursor-ne-resize">
+                        <div className="group aspect-square flex items-center justify-center bg-slate-950 rounded-lg border border-white/10 overflow-hidden cursor-ne-resize">
                             <video autoPlay ref={camRef} playsInline onDoubleClick={() => camRef.current.requestFullscreen()}></video>
                             <span className="group-hover:block hidden absolute text-[0.6rem] -top-8 z-100 bg-black/10 p-1 rounded-lg border border-white/10">Double Click to Fullscreen</span>
                         </div>

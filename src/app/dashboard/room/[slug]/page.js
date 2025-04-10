@@ -32,7 +32,7 @@ const VideoChat = () => {
     const [producerIds, setProducerIds] = useState([])
     const [isReady, setIsReady] = useState(false)
     useEffect(() => {
-        socketRef.current = io('https://192.168.2.5:3000/mediasoup')
+        socketRef.current = io('https://192.168.2.7/mediasoup')
         socketRef.current.on('connection-success', ({ socketId }) => {
             console.log(`Connected: ${socketId}`)
             // getLocalStream()
@@ -215,7 +215,7 @@ const VideoChat = () => {
             serverConsumerTransportId,
         }, async ({ params }) => {
             if (params.error) {
-                console.log('Cannot Consume')
+                console.log('Cannot Consume', params.error)
                 return
             }
             console.log('test')
