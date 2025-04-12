@@ -73,7 +73,7 @@ export default function SideBarLayout({ children }) {
             {/* <UsersSidebar /> */}
             {/* <UserDetails /> */}
 
-            <div className="w-full p-8">
+            <div className="w-full">
                 {/* <UsersSidebar active={usersSidebar} /> */}
                 {children}
             </div>

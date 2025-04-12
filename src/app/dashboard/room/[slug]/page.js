@@ -7,7 +7,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import VideoContainer from '../ui/VideoContainer'
 
-const VideoChat = () => {
+const Page = () => {
     const pathname = usePathname()
     const router = useRouter()
     const roomCode = pathname.split('/').slice(-1)[0]
@@ -335,4 +335,4 @@ const VideoChat = () => {
     )
 }
 
-export default VideoChat
+export default Page
