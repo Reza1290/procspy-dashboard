@@ -138,7 +138,7 @@ const UserTable: React.FC<UserTableProps> = ({ users }) => {
                 <option value="">-- Select Room --</option>
                 {rooms.map((room) => (
                   <option key={room.roomId} value={room.roomId}>
-                    {room.title}
+                    {room.title ?? "No Name"}
                   </option>
                 ))}
               </select>

@@ -14,6 +14,7 @@ export type SessionProps = {
     id: string;
     roomId: string;
     proctoredUserId: string;
+    token: string
     startTime?: string;
     endTime?: string;
     status?: SessionStatus;
@@ -55,6 +56,7 @@ const SessionTable = () => {
                         <tr>
                             <th className="px-4 py-2 text-left">ID</th>
                             <th className="px-4 py-2 text-left">Room ID</th>
+                            <th className="px-4 py-2 text-left">Token</th>
                             <th className="px-4 py-2 text-left">User ID</th>
                             <th className="px-4 py-2 text-left">Start Time</th>
                             <th className="px-4 py-2 text-left">End Time</th>
@@ -66,6 +68,7 @@ const SessionTable = () => {
                             <tr key={session.id} className="border-t border-white/10 hover:bg-slate-950">
                                 <td className="px-4 py-2">{session.id}</td>
                                 <td className="px-4 py-2">{session.roomId}</td>
+                                <td className="px-4 py-2">{session.token}</td>
                                 <td className="px-4 py-2">{session.proctoredUserId}</td>
                                 <td className="px-4 py-2">{session.startTime || "-"}</td>
                                 <td className="px-4 py-2">{session.endTime || "-"}</td>

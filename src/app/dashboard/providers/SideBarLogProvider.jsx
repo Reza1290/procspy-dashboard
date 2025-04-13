@@ -7,6 +7,7 @@ const defaultSideBarLog = {
         isActive: false,
         consumer: {},
         token : null,
+        refreshKey: 0
     },
     setData : () => {}
 }
@@ -17,7 +18,8 @@ export const SideBarLogProvider = ({children}) => {
     const [data,setData] = useState({
         isActive: false,
         consumer: {},
-        token : null
+        token : null,
+        refreshKey: 0,
     })
 
     const value = { data, setData}

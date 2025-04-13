@@ -6,6 +6,7 @@ import * as mediasoupClient from 'mediasoup-client'
 import { usePathname, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import VideoContainer from '../ui/VideoContainer'
+import { useSideBarLog } from '../../providers/SideBarLogProvider'
 
 const Page = () => {
     const pathname = usePathname()
@@ -31,26 +32,42 @@ const Page = () => {
     const consumingTransports = useRef([])
     const [producerIds, setProducerIds] = useState([])
     const [isReady, setIsReady] = useState(false)
+
+    const { data, setData } = useSideBarLog()
+    const dataRef = useRef(data)
+
     useEffect(() => {
         socketRef.current = io('https://192.168.2.7/mediasoup')
         socketRef.current.on('connection-success', ({ socketId }) => {
             console.log(`Connected: ${socketId}`)
             // getLocalStream()
             joinRoomConsumer()
-            
+
         })
         socketRef.current.on('new-producer', ({ producerId }) => signalNewConsumerTransport(producerId))
         socketRef.current.on('producer-closed', handleProducerClosed)
-        socketRef.current.on('server-log-message', ({ message }) => {
+        socketRef.current.on('server-log-message', (message) => {
+            const currentData = dataRef.current
+
             console.log(message)
+            console.log(currentData)
 
+            if (currentData.isActive && currentData.token === message.token) {
+                console.log('true')
+                setData((prev) => ({
+                    ...prev,
+                    refreshKey: (prev.refreshKey || 0) + 1,
+                }))
+            }
         })
-
 
         return () => socketRef.current.disconnect()
     }, [])
 
-   
+    useEffect(() => {
+        dataRef.current = data
+    }, [data])
+
 
     const getLocalStream = async () => {
         try {
@@ -233,16 +250,16 @@ const Page = () => {
             const socketId = params.appData.socketId
             const token = params.appData.token
             setSocketIds((prev) => {
-                const consumerData = { 
-                    consumerTransport, 
-                    serverConsumerTransportId: params.id, 
-                    producerId: remoteProducerId, 
-                    consumer, 
-                    appData: params.appData 
+                const consumerData = {
+                    consumerTransport,
+                    serverConsumerTransportId: params.id,
+                    producerId: remoteProducerId,
+                    consumer,
+                    appData: params.appData
                 }
-            
+
                 const existingEntry = prev.find(entry => entry.socketId === socketId)
-            
+
                 if (existingEntry) {
                     return prev.map(entry =>
                         entry.socketId === socketId
@@ -253,11 +270,11 @@ const Page = () => {
                     return [...prev, { token, socketId, consumers: [consumerData] }]
                 }
             })
-        console.table(socketIds)
-            
+            console.table(socketIds)
 
-            
-            
+
+
+
             // addMediaElement(params, consumer)
             // const mediaElement = document.createElement(params.kind === 'audio' ? 'audio' : 'video')
             // mediaElement.srcObject = new MediaStream([consumer.track])
@@ -315,7 +332,7 @@ const Page = () => {
                     ...entry,
                     consumers: entry.consumers.filter(consumer => consumer.producerId !== remoteProducerId)
                 }))
-                .filter(entry => entry.consumers.length > 0) 
+                .filter(entry => entry.consumers.length > 0)
         })
     }
 
