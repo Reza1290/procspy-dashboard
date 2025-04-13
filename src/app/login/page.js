@@ -4,6 +4,7 @@ import InputForm from "./components/InputForm";
 import SubmitButton from "./components/SubmitButton";
 import { useState } from "react";
 import { redirect, useRouter } from "next/navigation";
+
 export default function Page() {
 
     const [isLoading,setIsLoading] = useState(false)
