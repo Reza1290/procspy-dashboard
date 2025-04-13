@@ -2,7 +2,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { useSideBarLog } from "../../providers/SideBarLogProvider"
 
-const VideoContainer = ({ consumer }) => {
+const VideoContainer = ({ consumer}) => {
     const {data, setData } = useSideBarLog()
     const router = useRouter()
 
@@ -19,7 +19,7 @@ const VideoContainer = ({ consumer }) => {
         if (consumer && consumer.consumers) {
             prepareConsume(consumer)
         }
-        console.log('run')
+        console.log(consumer)
     }, [consumer])
 
     const prepareConsume = (consumer) => {
@@ -130,6 +130,7 @@ const VideoContainer = ({ consumer }) => {
             return {
                 isActive: !prev.isActive,
                 consumer: [...consumer.consumers],
+                token: consumer.token,
             }
         })
     }
@@ -146,7 +147,7 @@ const VideoContainer = ({ consumer }) => {
                         <video  autoPlay ref={videoRef} playsInline></video>
                         <div className='absolute mt-1 bottom-2 left-3 text-xs'>
                             <div className="">
-                                <h1 className='font-medium bg-slate-600/50 px-2 py-0.5 rounded text-slate-100'>#id-{consumer.socketId}</h1>
+                                <h1 className='font-medium bg-slate-600/50 px-2 py-0.5 rounded text-slate-100'>#id-{consumer.token}</h1>
                             </div>
                         </div>
                     </div>
@@ -204,7 +205,7 @@ const VideoContainer = ({ consumer }) => {
                         {/* <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--> */}
                         <path d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32L0 64 0 368 0 480c0 17.7 14.3 32 32 32s32-14.3 32-32l0-128 64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30l0-247.7c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48l0-16z" /></svg>
                 </p>
-                <a className="border border-white/10 bg-white/10 aspect-square rounded flex justify-center items-center p-2 max-w-16" onClick={() => (router.push('/dashboard/room/2/1'))}>
+                <a className="border border-white/10 bg-white/10 aspect-square rounded flex justify-center items-center p-2 max-w-16" onClick={() => (router.push(`/dashboard/room/2/${consumer.socketId}`))}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" className={`fill-white aspect-square`}>
                         {/* <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--> */}
                         <path d="M344 0L488 0c13.3 0 24 10.7 24 24l0 144c0 9.7-5.8 18.5-14.8 22.2s-19.3 1.7-26.2-5.2l-39-39-87 87c-9.4 9.4-24.6 9.4-33.9 0l-32-32c-9.4-9.4-9.4-24.6 0-33.9l87-87L327 41c-6.9-6.9-8.9-17.2-5.2-26.2S334.3 0 344 0zM168 512L24 512c-13.3 0-24-10.7-24-24L0 344c0-9.7 5.8-18.5 14.8-22.2s19.3-1.7 26.2 5.2l39 39 87-87c9.4-9.4 24.6-9.4 33.9 0l32 32c9.4 9.4 9.4 24.6 0 33.9l-87 87 39 39c6.9 6.9 8.9 17.2 5.2 26.2s-12.5 14.8-22.2 14.8z" /></svg>

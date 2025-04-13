@@ -227,11 +227,11 @@ const Page = () => {
                 appData: params.appData
             })
 
-
+            console.log(params.appData)
             setConsumerTransports((prev) => [...prev, { consumerTransport, serverConsumerTransportId: params.id, producerId: remoteProducerId, consumer, appData: params.appData }])
 
             const socketId = params.appData.socketId
-
+            const token = params.appData.token
             setSocketIds((prev) => {
                 const consumerData = { 
                     consumerTransport, 
@@ -250,7 +250,7 @@ const Page = () => {
                             : entry
                     )
                 } else {
-                    return [...prev, { socketId, consumers: [consumerData] }]
+                    return [...prev, { token, socketId, consumers: [consumerData] }]
                 }
             })
         console.table(socketIds)
@@ -320,7 +320,7 @@ const Page = () => {
     }
 
     return (
-        <div>
+        <div className='m-8'>
             <h1 className='font-medium'>Room {roomCode}</h1>
             <div className='my-4 grid sm:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4'>
                 {socketIds.map((consumer, id) => (
