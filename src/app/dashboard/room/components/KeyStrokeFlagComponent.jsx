@@ -1,4 +1,4 @@
-const KeyStrokeFlagComponent = () => {
+const KeyStrokeFlagComponent = (flags) => {
     return (
         <div className="flex items-start gap-3">
             <span className="fill-white max-w-4 w-full flex">
@@ -6,7 +6,7 @@ const KeyStrokeFlagComponent = () => {
             </span>
             <div className="flex flex-col gap-1">
                 <p className="text-sm">User <span className="font-semibold">used shortcut</span> <span className="p-0.5 px-1 border border-white/10 bg-white/10 rounded-md ">Ctrl + C</span></p>
-                <p className="text-xs text-slate-500">29 January 2025 - 19.47 KST</p>
+                <p className="text-xs text-slate-500">{flags.timestamp}</p>
                 <div className="bg-white/10 w-full p-2 rounded-md border border-white/10 max-h-64 flex flex-col gap-2">
                     <p className="text-xs italic border-l-2 pl-2 rounded-sm text-white/80">related shortcut categorized as Copy Mechanism</p>
                     {/* <img className="rounded-md" src="https://i.pcmag.com/imagery/articles/02k3o8Ta7w6FsbWQy9ujIQ8-1..v1696872551.jpg" alt="" /> */}

@@ -1,9 +1,6 @@
-const UserConnectedFlagComponent = (flags) => {
-    const formattedTime = new Intl.DateTimeFormat("en-US", {
-        dateStyle: "medium",
-        timeStyle: "short",
-      }).format(new Date(flags.timestamp));
 
+const UserConnectedFlagComponent = (flags) => {
+    
     return (
         <div className="flex gap-3 items-start">
             <span className="fill-white max-w-4 w-full flex">
@@ -13,7 +10,7 @@ const UserConnectedFlagComponent = (flags) => {
             <div className="flex flex-col gap-1">
                 <p className="text-sm">
                     User <span className="font-semibold">connected</span> to the server</p>
-                <p className="text-xs text-slate-500">{formattedTime}</p>
+                <p className="text-xs text-slate-500">{flags.timestamp}</p>
 
             </div>
         </div>

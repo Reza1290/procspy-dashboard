@@ -1,4 +1,4 @@
-const UserDisconnectedFlagComponent = () => {
+const UserDisconnectedFlagComponent = (flags) => {
     return (
         <div className="flex gap-3 items-start">
             <span className="fill-white max-w-4 w-full flex rotate-180">
@@ -8,7 +8,8 @@ const UserDisconnectedFlagComponent = () => {
             <div className="flex flex-col gap-1">
                 <p className="text-sm">
                     User <span className="font-semibold">disconnected</span> from the server</p>
-                <p className="text-xs text-slate-500">29 January 2025 - 19.47 KST</p>
+                    <p className="text-xs text-slate-500">{flags.timestamp}</p>
+
 
             </div>
         </div>
