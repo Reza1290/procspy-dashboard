@@ -9,12 +9,13 @@ const UsersPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [token, setToken] = useState("");
+  
 
   const getUsers = async (pageNumber = 1) => {
     setIsLoading(true);
     try {
       const token = await session()
-      const response = await fetch(`https://192.168.2.7:5050/api/proctored-users?page=${pageNumber}`, {
+      const response = await fetch(`https://192.168.2.5:5050/api/proctored-users?page=${pageNumber}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json"

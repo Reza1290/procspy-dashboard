@@ -14,7 +14,7 @@ const RoomInput = () => {
     const handleJoinRoom = async() => {
         try {
             const token = await session()
-            const response = await fetch('https://192.168.2.7:5050/api/room',
+            const response = await fetch('https://192.168.2.5:5050/api/room',
                 {
                     method: "POST",
                     body: JSON.stringify({

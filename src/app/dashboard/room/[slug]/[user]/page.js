@@ -19,7 +19,7 @@ export default function Page() {
     const router = useRouter()
 
     const pathParts = pathname.split('/')
-    const roomCode = pathParts[pathParts.length - 2]
+    const roomId = pathParts[pathParts.length - 2]
     const socketId = pathParts[pathParts.length - 1]
     const [socketIds, setSocketIds] = useState([])
     const [consumerTransports, setConsumerTransports] = useState([])
@@ -43,8 +43,14 @@ export default function Page() {
         })
     }
 
+    const dataRef = useRef(data)
+
+
+    const [messages, setMessages] = useState([])
+    
     useEffect(() => {
-        socketRef.current = io('https://192.168.2.7/mediasoup')
+        if (!socketRef.current) {
+        socketRef.current = io('https://192.168.2.5/mediasoup')
 
         socketRef.current.on('connection-success', ({ socketId }) => {
             console.log(`Connected: ${socketId}`)
@@ -52,7 +58,35 @@ export default function Page() {
         })
 
         socketRef.current.on('producer-closed', handleProducerClosed)
+        
+        socketRef.current.on('SERVER_DASHBOARD_PRIVATE_MESSAGE', (message) => {
+            setMessages((prev) => [...prev, {
+                from: "user",
+                text: message.body
+            }]);
+        })
 
+        socketRef.current.on('SERVER_DASHBOARD_LOG_MESSAGE', (message) => {
+            const currentData = dataRef.current
+
+            console.log(message)
+            console.log(currentData)
+
+            if (currentData.isActive && currentData.token === message.token) {
+                console.log('true')
+                setData((prev) => ({
+                    ...prev,
+                    refreshKey: (prev.refreshKey || 0) + 1,
+                }))
+            }
+        })}
+
+        return () => {
+            if (socketRef.current) {
+                socketRef.current.disconnect();
+                socketRef.current = null;
+            }
+        };
     }, [])
 
     useEffect(() => {
@@ -64,7 +98,8 @@ export default function Page() {
     }, [consumerTransports]);
 
     const joinRoomConsumer = () => {
-        socketRef.current.emit('joinRoom', { roomCode, isAdmin: true, socketId: socketRef.current.id }, (data) => {
+        const currentSocket = socketRef.current
+        socketRef.current.emit('joinRoom', { roomId, isAdmin: true, socketId: currentSocket.id }, (data) => {
             setRtpCapabilities(data.rtpCapabilities)
             createDeviceConsumer(data.rtpCapabilities)
         })
@@ -146,7 +181,7 @@ export default function Page() {
     const handleProducerClosed = ({ remoteProducerId }) => {
         setConsumerTransports((prev) => prev.filter((t) => t.producerId !== remoteProducerId))
 
-        router.push('/dashboard/room/' + roomCode)
+        router.push('/dashboard/room/' + roomId)
     }
     const prepareConsume = (consumers) => {
         console.log(consumers)
@@ -241,17 +276,33 @@ export default function Page() {
         })
     }
 
+    const handleSendMessage = (text) => {
+        const newMessage = { from: "you", text };
+        const currentData = dataRef.current
+        setMessages((prev) => [...prev, newMessage]);
+        console.log(currentData)
+        socketRef.current.emit("DASHBOARD_SERVER_MESSAGE", {
+            data :{
+                token: currentData.token,
+                roomId: roomId,
+                body: text
+            }
+        })
+    };
+
     return (
         <div className="grid grid-rows-3 grid-cols-4 w-full gap-6 max-h-screen overflow-hidden ">
-            <div className="grid row-span-2 col-span-3 gap-6 m-8">
+            <div className="grid row-span-2 col-span-3 gap-6 m-8 ">
                 <div className="col-span-3 border aspect-video rounded-lg border-white/10 bg-white/10 w-11/12">
                     <video autoPlay ref={videoRef} playsInline></video>
                 </div>
 
             </div>
             <div className="mt-8 mr-8 row-span-2">
-                <div className="ml-4 border border-white/10 p-4 h-full rounded-lg ">
-                    <ChatBox></ChatBox>
+                <div className="ml-4 borde h-full rounded-lg ">
+                    <ChatBox user={{
+                        name: "test"
+                    }} messages={messages} onSendMessage={handleSendMessage} />
                 </div>
             </div>
             <div className=" row-start-3 col-start-1 col-span-4 flex m-8 mt-0 gap-8">

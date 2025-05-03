@@ -21,7 +21,7 @@
 //     const consumingTransports = useRef([]);
 
 //     useEffect(() => {
-//         socketRef.current = io('https://192.168.2.7:3000/mediasoup');
+//         socketRef.current = io('https://192.168.2.5:3000/mediasoup');
 //         socketRef.current.on('connection-success', ({ socketId }) => {
 //             console.log(`Connected: ${socketId}`);
 //             getLocalStream();

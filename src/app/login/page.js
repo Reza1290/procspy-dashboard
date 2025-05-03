@@ -22,7 +22,7 @@ export default function Page() {
                 formObject[key] = value.toString();
             });
             console.log(formObject)
-            const response = await fetch('https://192.168.2.7:5050/api/login',{
+            const response = await fetch('https://192.168.2.5:5050/api/login',{
                 method: 'POST',
                 body: JSON.stringify(formObject),
                 headers : {

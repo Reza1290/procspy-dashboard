@@ -11,7 +11,7 @@ import { useSideBarLog } from '../../providers/SideBarLogProvider'
 const Page = () => {
     const pathname = usePathname()
     const router = useRouter()
-    const roomCode = pathname.split('/').slice(-1)[0]
+    const roomId = pathname.split('/').slice(-1)[0]
     const socketRef = useRef(null)
     const localVideoRef = useRef(null)
 
@@ -37,31 +37,52 @@ const Page = () => {
     const dataRef = useRef(data)
 
     useEffect(() => {
-        socketRef.current = io('https://192.168.2.7/mediasoup')
-        socketRef.current.on('connection-success', ({ socketId }) => {
-            console.log(`Connected: ${socketId}`)
-            // getLocalStream()
-            joinRoomConsumer()
+        if (!socketRef.current) {
+            socketRef.current = io('https://192.168.2.5/mediasoup')
+            socketRef.current.on('connection-success', ({ socketId }) => {
+                console.log(`Connected: ${socketId}`)
+                // getLocalStream()
+                joinRoomConsumer()
 
-        })
-        socketRef.current.on('new-producer', ({ producerId }) => signalNewConsumerTransport(producerId))
-        socketRef.current.on('producer-closed', handleProducerClosed)
-        socketRef.current.on('server-log-message', (message) => {
-            const currentData = dataRef.current
+            })
+            socketRef.current.on('new-producer', ({ producerId }) => signalNewConsumerTransport(producerId))
+            socketRef.current.on('producer-closed', handleProducerClosed)
+            socketRef.current.on('SERVER_DASHBOARD_PRIVATE_MESSAGE', (message) => {
+                console.log(message)
+            })
 
-            console.log(message)
-            console.log(currentData)
+            socketRef.current.on('SERVER_DASHBOARD_LOG_MESSAGE', (message) => {
+                const currentData = dataRef.current
 
-            if (currentData.isActive && currentData.token === message.token) {
-                console.log('true')
-                setData((prev) => ({
-                    ...prev,
-                    refreshKey: (prev.refreshKey || 0) + 1,
-                }))
+                console.log(message)
+                console.log(currentData)
+
+                if (currentData.isActive && currentData.token === message.token) {
+                    console.log('true')
+                    setData((prev) => ({
+                        ...prev,
+                        refreshKey: (prev.refreshKey || 0) + 1,
+                    }))
+                }
+            })
+        }
+
+        const handleUnload = () => {
+            if (socketRef.current) {
+                socketRef.current.disconnect();
+                console.log('Socket disconnected on page unload');
             }
-        })
+        };
+    
+        window.addEventListener('beforeunload', handleUnload);
 
-        return () => socketRef.current.disconnect()
+        return () => {
+            window.removeEventListener('beforeunload', handleUnload);
+            if (socketRef.current) {
+                socketRef.current.disconnect();
+                socketRef.current = null;
+            }
+        };
     }, [])
 
     useEffect(() => {
@@ -83,14 +104,15 @@ const Page = () => {
     }
 
     const joinRoomConsumer = () => {
-        socketRef.current.emit('joinRoom', { roomCode, isAdmin: true, socketId: socketRef.current.id }, (data) => {
+        const currentSocket = socketRef.current
+        socketRef.current.emit('joinRoom', { roomId, isAdmin: true, socketId: currentSocket.id }, (data) => {
             setRtpCapabilities(data.rtpCapabilities)
             createDeviceConsumer(data.rtpCapabilities)
         })
     }
 
     const joinRoom = (stream) => {
-        socketRef.current.emit('joinRoom', { roomCode }, (data) => {
+        socketRef.current.emit('joinRoom', { roomId }, (data) => {
             setRtpCapabilities(data.rtpCapabilities)
             createDevice(data.rtpCapabilities, stream)
         })
@@ -338,7 +360,7 @@ const Page = () => {
 
     return (
         <div className='m-8'>
-            <h1 className='font-medium'>Room {roomCode}</h1>
+            <h1 className='font-medium'>Room {roomId}</h1>
             <div className='my-4 grid sm:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4'>
                 {socketIds.map((consumer, id) => (
                     <VideoContainer
