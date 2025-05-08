@@ -15,7 +15,7 @@ const UsersPage = () => {
     setIsLoading(true);
     try {
       const token = await session()
-      const response = await fetch(`https://192.168.2.5:5050/api/proctored-users?page=${pageNumber}`, {
+      const response = await fetch(`${ process.env.ENDPOINT || 'https://192.168.2.5:5050'}/api/proctored-users?page=${pageNumber}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json"

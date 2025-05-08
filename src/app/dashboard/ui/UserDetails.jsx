@@ -1,5 +1,6 @@
 const UserDetails = () => {
-    return (
+    re
+    turn (
         <div className="flex flex-col w-full gap-4 bg-black rounded-lg border border-white/10 p-4">
             <h1 className="font-medium">User Info</h1>
             <div className="grid auto-rows-auto text-xs gap-2">

@@ -27,7 +27,7 @@ const SettingTable = () => {
   const fetchSettings = async (page: number) => {
     try {
       const token = await session();
-      const res = await fetch(`https://192.168.2.5:5050/api/global-settings?page=${page}`, {
+      const res = await fetch(`${ process.env.ENDPOINT || 'https://192.168.2.5:5050'}/api/global-settings?page=${page}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -54,7 +54,7 @@ const SettingTable = () => {
 
     try {
       const token = await session();
-      await fetch("https://192.168.2.5:5050/api/global-setting/", {
+      await fetch(`${ process.env.ENDPOINT || 'https://192.168.2.5:5050'}/api/global-setting/`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -80,7 +80,7 @@ const SettingTable = () => {
     if (!newKey || newValue === "") return;
     try {
       const token = await session();
-      await fetch("https://192.168.2.5:5050/api/global-setting/", {
+      await fetch(`${ process.env.ENDPOINT || 'https://192.168.2.5:5050'}/api/global-setting/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
