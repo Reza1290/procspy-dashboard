@@ -37,7 +37,7 @@ const VideoContainer = ({ consumer}) => {
                 return
             }
 
-            console.log(`Assigning track for ${name}:`, track)
+            //console.log(`Assigning track for ${name}:`, track)
 
             const stream = new MediaStream([track])
 
