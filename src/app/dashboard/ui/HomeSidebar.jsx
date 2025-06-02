@@ -19,7 +19,7 @@ const HomeSidebar = ({ active }) => {
             // const res = await fetch('/api/session')
             // const { token } = await res.json()
             const token = await session()
-            const response = await fetch(`${ process.env.ENDPOINT || 'https://192.168.2.5:5050'}/api/rooms`,
+            const response = await fetch(`${ process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/rooms`,
                 {
                     method: "GET",
                     headers: {

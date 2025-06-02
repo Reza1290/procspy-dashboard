@@ -6,7 +6,7 @@ import { useState } from "react";
 import { redirect, useRouter } from "next/navigation";
 
 export default function Page() {
-
+    console.log(process.env)
     const [isLoading,setIsLoading] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
     
@@ -22,7 +22,7 @@ export default function Page() {
                 formObject[key] = value.toString();
             });
             console.log(formObject)
-            const response = await fetch(`${ process.env.ENDPOINT || 'https://192.168.2.5:5050'}/api/login`,{
+            const response = await fetch(`${ process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/login`,{
                 method: 'POST',
                 body: JSON.stringify(formObject),
                 headers : {

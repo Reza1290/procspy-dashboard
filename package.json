@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.8.2",
     "jose": "^6.0.8",
     "mediasoup-client": "^3.8.1",
     "next": "15.1.6",

@@ -38,7 +38,7 @@ const Page = () => {
 
     useEffect(() => {
         if (!socketRef.current) {
-            socketRef.current = io(`${ process.env.SOCKET_URL || 'https://192.168.2.5'}/mediasoup`)
+            socketRef.current = io(`${ process.env.NEXT_PUBLIC_SOCKET_URL || 'https://192.168.2.5'}/mediasoup`)
             socketRef.current.on('connection-success', ({ socketId }) => {
                 console.log(`Connected: ${socketId}`)
                 // getLocalStream()
