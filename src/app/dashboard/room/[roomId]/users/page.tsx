@@ -1,8 +1,18 @@
-export default function Page({params}) {
-    const roomId = Array.isArray(params?.roomId) ? params.roomId[0] : params?.roomId
+'use client'
+import { useParams } from "next/navigation";
+import Header from "../../../../../components/ui/Header";
+import UserSessionTable from "./components/UserSessionTable";
+
+export default function Page() {
+    const {roomId} = useParams()
     return (
-       <div className="m-8">
-        <h1 className="font-medium">Users List Room {roomId}</h1>  
+       <div className="">
+        <Header>
+            Users List Room {roomId}
+        </Header>
+        <div>
+            <UserSessionTable></UserSessionTable>
+        </div>
        </div>
     );
 }
