@@ -76,7 +76,6 @@ export const WebRtcProvider = ({ children }) => {
                     secretAdmin: "SECRETBANGET"
                 }
             })
-            console.log("CONNECT")
 
             socketRef.current.on('connection-success', ({ socketId }) => {
                 joinRoomConsumer()
@@ -91,6 +90,7 @@ export const WebRtcProvider = ({ children }) => {
             // })
 
             socketRef.current.on('SERVER_DASHBOARD_LOG_MESSAGE', (message: any) => {
+                eventRef.current.emit('log')
                 // const currentData = dataRef.current
 
                 // console.log(message)
@@ -209,7 +209,7 @@ export const WebRtcProvider = ({ children }) => {
                     consumer,
                     appData: params.appData
                 }
-
+                
                 const existingEntry = prev.find(entry => entry.socketId === socketId)
 
                 if (existingEntry) {
@@ -247,7 +247,7 @@ export const WebRtcProvider = ({ children }) => {
             producerIds.forEach(signalNewConsumerTransport)
         })
 
-        // eventRef.current.emit('consumer-added', )
+        eventRef.current.emit('consumer-added')
 
     }
 
@@ -263,7 +263,7 @@ export const WebRtcProvider = ({ children }) => {
         //     ...entry,
         //     consumers: entry.consumers.filter((consumer) => consumer.producerId !== remoteProducerId)
         // })).filter(entry => entry.consumers.length > 0)
-        // eventRef.current.emit('consumer-removed', remoteProducerId)
+        eventRef.current.emit('consumer-removed', remoteProducerId)
         setPeers((prev) => {
             return prev
                 .map(entry => ({

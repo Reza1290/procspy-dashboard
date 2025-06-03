@@ -1,10 +1,12 @@
-const timestampFormat = ({ rawTimeStamp }) => {
-    const timestamp = new Intl.DateTimeFormat("en-US", {
-        dateStyle: "medium",
-        timeStyle: "short",
-    });
-
-    return timestamp.format(new Date(rawTimeStamp));
+export const formattedTimestamp = (rawTimeStamp: string | number | Date): string => {
+  try {
+    const date = new Date(rawTimeStamp);
+    return new Intl.DateTimeFormat("en-US", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(date);
+  } catch (err) {
+    console.error("Invalid timestamp:", rawTimeStamp);
+    return "-";
+  }
 };
-
-export const formattedTimestamp = (rawTimeStamp:string) => timestampFormat({ rawTimeStamp });

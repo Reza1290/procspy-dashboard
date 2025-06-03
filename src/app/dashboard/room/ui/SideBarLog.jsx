@@ -125,7 +125,7 @@ const SideBarLog = () => {
                 {logsData.map((flag, idx) => {
                     const updatedFlag = {
                         ...flag,
-                        timestamp: formattedTimestamp(flag.timestamp), // Replace the timestamp
+                        timestamp: formattedTimestamp(flag.timestamp),
                     };
 
                     const Component = getFlagComponent(flag.flagKey);
