@@ -1,10 +1,12 @@
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { useSideBarLog } from "../../providers/SideBarLogProvider"
+import { useWebRtc } from "../../../../context/WebRtcProvider"
 
 const VideoContainer = ({ consumer}) => {
-    const {data, setData } = useSideBarLog()
+    const {setDataSidebar } = useSideBarLog()
     const router = useRouter()
+    const {data} = useWebRtc()
 
     const videoRef = useRef(null)
     const camRef = useRef(null)
@@ -125,7 +127,7 @@ const VideoContainer = ({ consumer}) => {
     }
 
     const handleToggleSidebarLog = () => {
-        setData((prev) => {
+        setDataSidebar((prev) => {
             
             return {
                 isActive: !prev.isActive,
@@ -136,7 +138,7 @@ const VideoContainer = ({ consumer}) => {
     }
 
     const handleFocusMode = () => {
-        setData((prev) => {
+        setDataSidebar((prev) => {
             
             return {
                 isActive: true,
@@ -144,7 +146,7 @@ const VideoContainer = ({ consumer}) => {
                 token: consumer.token,
             }
         })
-        router.push(`/dashboard/room/2/${consumer.socketId}`)
+        router.push(`/dashboard/room/${data.roomId}/${consumer.socketId}`)
     }
 
     

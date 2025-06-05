@@ -8,7 +8,7 @@ import { AppData, Consumer, Transport } from 'mediasoup-client/lib/types'
 import { EventEmitter } from 'events'
 
 
-interface WebRtcData {
+export interface WebRtcData {
     roomId: string | null
     singleConsumerSocketId: string | null
 }
@@ -17,7 +17,7 @@ interface DefaultWebRtc {
     data: WebRtcData
     peers: Array<Peer>
     eventRef: RefObject<EventEmitter>
-    setData: (data: WebRtcData) => void
+    setData: React.Dispatch<React.SetStateAction<WebRtcData>>
 }
 
 interface SocketAuthData {
@@ -36,13 +36,13 @@ const defaultWebRtc: DefaultWebRtc = {
     setData: () => { }
 }
 
-interface Peer {
+export interface Peer {
     socketId: string
     token: string
     consumers: Array<ConsumerData>
 }
 
-interface ConsumerData {
+export interface ConsumerData {
     consumerTransport: Transport
     serverConsumerTransportId: string
     producerId: string
@@ -53,7 +53,7 @@ interface ConsumerData {
 const WebRtcContext = createContext(defaultWebRtc)
 
 export const WebRtcProvider = ({ children }) => {
-    const [data, setData] = useState({
+    const [data, setData] = useState<WebRtcData>({
         roomId: null,
         singleConsumerSocketId: null
     })
@@ -81,7 +81,8 @@ export const WebRtcProvider = ({ children }) => {
                 joinRoomConsumer()
             })
 
-            if (!data.singleConsumerSocketId || data.singleConsumerSocketId == null) {
+            if ( data.singleConsumerSocketId === null) {
+                console.log("rahul")
                 socketRef.current.on('new-producer', ({ producerId }) => signalNewConsumerTransport(producerId))
             }
             socketRef.current.on('producer-closed', handleProducerClosed)
@@ -137,7 +138,7 @@ export const WebRtcProvider = ({ children }) => {
             const newDevice = new mediasoupClient.Device()
             await newDevice.load({ routerRtpCapabilities: rtpCapabilities })
             deviceRef.current = newDevice
-            if (data.singleConsumerSocketId) {
+            if (data.singleConsumerSocketId !== null) {
                 getSingleUserProducer()
             } else {
                 getProducers()
