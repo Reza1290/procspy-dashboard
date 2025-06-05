@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useRef, useState } from "react";
-import { useParams, usePathname } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { EllipsisVertical, Eye, HistoryIcon, Unplug } from "lucide-react";
 import session from "../../../../lib/session";
 
@@ -19,6 +19,9 @@ const ProctoredUserTable = () => {
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
+
+    const pathname = usePathname()
+    const router = useRouter()
     useEffect(() => {
 
         fetchProctoredUsers(1);
@@ -64,9 +67,9 @@ const ProctoredUserTable = () => {
                 <div className="mx-8 my-4">
                     Filter
                 </div>
-                <div className="relative max-h-screen overflow-y-auto" onScroll={handleScroll} ref={scrollRef}>
+                <div className="relative max-h-[76vh] overflow-y-auto" onScroll={handleScroll} ref={scrollRef}>
                     <table className="min-w-full table-fixed">
-                        <thead className="sticky top-0  z-10">
+                        <thead className="sticky top-0  z-10 backdrop-blur-[2px]">
                             <tr className="">
                                 <th className="pl-8 pr-4 py-2 text-left font-normal text-slate-100/75 text-sm">Id</th>
                                 <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Identifier</th>
@@ -84,8 +87,8 @@ const ProctoredUserTable = () => {
                                     <td className="px-4 py-4 text-sm text-sky-500/75 font-medium">{user.name}</td>
                                     <td className="px-4 py-4 text-sm text-sky-500/75 font-medium">{user.email}</td>
                                     <td className="px-4 py-4 text-xs capitalize">
-                                        <div className="bg-blue-500 w-max rounded p-1 px-2 cursor-pointer flex gap-1 items-center">
-                                            <HistoryIcon className="w-4"/> View Session History</div>
+                                        <div onClick={() => router.push(pathname + "/session/" + user.id)} className="bg-blue-500 w-max rounded p-1 px-2 cursor-pointer flex gap-1 items-center">
+                                            <HistoryIcon className="w-4" /> View Session History</div>
                                     </td>
                                     <td className="pr-8 pl-4 py-4 text-xs capitalize flex justify-start items-center gap-4">
                                         <EllipsisVertical className="max-w-4 aspect-square" />
