@@ -82,7 +82,6 @@ export const WebRtcProvider = ({ children }) => {
             })
 
             if ( data.singleConsumerSocketId === null) {
-                console.log("rahul")
                 socketRef.current.on('new-producer', ({ producerId }) => signalNewConsumerTransport(producerId))
             }
             socketRef.current.on('producer-closed', handleProducerClosed)
@@ -92,6 +91,7 @@ export const WebRtcProvider = ({ children }) => {
 
             socketRef.current.on('SERVER_DASHBOARD_LOG_MESSAGE', (message: any) => {
                 eventRef.current.emit('log')
+                console.log(message)
                 // const currentData = dataRef.current
 
                 // console.log(message)
@@ -122,6 +122,7 @@ export const WebRtcProvider = ({ children }) => {
             if (socketRef.current) {
                 socketRef.current.disconnect()
                 socketRef.current = null
+                consumingTransportsRef.current = []
             }
         }
     }, [data.singleConsumerSocketId, data.roomId])
@@ -149,8 +150,9 @@ export const WebRtcProvider = ({ children }) => {
     }
 
     const signalNewConsumerTransport = async (remoteProducerId: string) => {
-        console.log("Someone Joined")
+        console.log("Someone Joined", consumingTransportsRef.current)
         if (consumingTransportsRef.current.includes(remoteProducerId)) return
+
         consumingTransportsRef.current.push(remoteProducerId)
         socketRef.current.emit('createWebRtcTransport', { consumer: true }, ({ params }) => {
             if (params.error) {
