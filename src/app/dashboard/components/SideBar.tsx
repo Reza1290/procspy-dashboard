@@ -4,7 +4,7 @@ import { SideBarLogProvider } from "../providers/SideBarLogProvider";
 import SideBarLog from "../room/ui/SideBarLog";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import UsersSidebar from "../ui/UsersSidebar";
-import { HomeIcon, PanelRightOpen, SettingsIcon, UserRound, UserRoundIcon, UsersRound, UsersRoundIcon } from "lucide-react";
+import { CctvIcon, HomeIcon, PanelRightOpen, SettingsIcon, UserRound, UserRoundIcon, UsersRound, UsersRoundIcon } from "lucide-react";
 import SideBarItem from "./ui/SideBarItem";
 
 
@@ -50,6 +50,7 @@ export default function SideBar() {
                 <div className="flex flex-col items-start w-full p-2 py-4">
                     <div className="flex flex-col items-start gap-3 w-full">
                         <SideBarItem onClick={() => handleActiveToggle('/dashboard/')} active={(pathname === '/dashboard')} icon={HomeIcon} label="Dashboard"></SideBarItem>
+                        <SideBarItem onClick={() => handleActiveToggle('/dashboard/room')} active={(pathname === '/dashboard/room')} icon={CctvIcon} label="Proctoring Rooms"></SideBarItem>
                         {
                             roomId != undefined && <>
 
