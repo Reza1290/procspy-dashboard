@@ -1,216 +1,98 @@
-"use client";
-import { useEffect, useState } from "react";
+"use client"
+import { useEffect, useRef, useState } from "react";
+import { useParams, usePathname } from "next/navigation";
+import { EllipsisVertical, Eye, HistoryIcon, Unplug } from "lucide-react";
 import session from "../../../../lib/session";
 
-export type GlobalSettingProps = {
-  id: string;
-  key: string;
-  value: any;
-};
 
-type PaginatedResponse = {
-  data: GlobalSettingProps[];
-  page: number;
-  total: number;
-  totalPages: number;
+export type Setting = {
+    id: string
+    key: string
+    value: string
 };
 
 const SettingTable = () => {
-  const [settings, setSettings] = useState<GlobalSettingProps[]>([]);
-  const [editing, setEditing] = useState<Record<string, any>>({});
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [creating, setCreating] = useState(false);
-  const [newKey, setNewKey] = useState("");
-  const [newValue, setNewValue] = useState<any | "">("");
 
-  const fetchSettings = async (page: number) => {
-    try {
-      const token = await session();
-      const res = await fetch(`${ process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/global-settings?page=${page}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const json: PaginatedResponse = await res.json();
-      setSettings(json.data);
-      setTotalPages(json.totalPages);
-    } catch (err) {
-      console.error("Failed to fetch global settings", err);
-    }
-  };
+    const [settings, setSettings] = useState<Setting[]>([]);
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const [page, setPage] = useState(1);
+    const [loading, setLoading] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+    useEffect(() => {
 
-  useEffect(() => {
-    fetchSettings(page);
-  }, [page]);
+        fetchSettings(1);
+    },[]);
 
-  const handleInputChange = (key: string, value: any) => {
-    setEditing((prev) => ({ ...prev, [key]: value }));
-  };
+    const fetchSettings = async (nextPage: number) => {
+        try {
+            const token = await session();
+            const res = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/global-settings?page=${nextPage}&paginationLimit=12`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setSettings(prev => {
+                    const newSettings = data.data.filter((d:Setting) => !prev.some(p => p.id === d.id));
+                    return [...prev, ...newSettings];
+                });
+                setHasMore(nextPage < data.totalPages);
+                setLoading(false);
+                setPage(nextPage);
+            }
+        } catch (err) {
+            console.error("Failed to fetch session history", err);
+        }
+    };
 
-  const handleBlur = async (key: string) => {
-    const value = editing[key];
-    if (value === undefined) return;
 
-    try {
-      const token = await session();
-      await fetch(`${ process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/global-setting/`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ [key]: value }),
-      });
+    const handleScroll = () => {
+        const el = scrollRef.current;
+        if (!el || loading || !hasMore) return;
 
-      setSettings((prev) =>
-        prev.map((s) => (s.key === key ? { ...s, value } : s))
-      );
-      setEditing((prev) => {
-        const updated = { ...prev };
-        delete updated[key];
-        return updated;
-      });
-    } catch (err) {
-      console.error("Failed to update setting", err);
-    }
-  };
+        if (el.scrollTop + el.clientHeight >= el.scrollHeight - 50) {
+            fetchSettings(page + 1);
+        }
+    };
 
-  const handleCreate = async () => {
-    if (!newKey || newValue === "") return;
-    try {
-      const token = await session();
-      await fetch(`${ process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/global-setting/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ key: newKey, value: newValue }),
-      });
 
-      setCreating(false);
-      setNewKey("");
-      setNewValue("");
-      fetchSettings(page); // Refresh list
-    } catch (err) {
-      console.error("Failed to create setting", err);
-    }
-  };
+    return (
+        <div className="">
+            <div className="overflow-x-auto border-b border-white/15">
+                <div className="mx-8 my-4">
+                    <div className="flex">
+                      JAWA
+                    </div>
+                </div>
+                <div className="relative max-h-[76vh] overflow-y-auto " onScroll={handleScroll} ref={scrollRef}>
+                    <table className="min-w-full table-fixed">
+                        <thead className="sticky top-0 z-10 backdrop-blur-[2px]">
+                            <tr className="">
+                                <th className="pl-8 pr-4 py-2 text-left font-normal text-slate-100/75 text-sm">Id</th>
+                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Variable Name</th>
+                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Value</th>
+                                <th className="pr-8 pl-4 text-left font-normal text-slate-100/75 text-sm">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody className="">
+                            {settings.map((setting) => (
+                                <tr key={setting.id} className="border-t border-white/10 hover:bg-gray-600/30">
+                                    <td className="pl-8 pr-4 py-4 text-sm text-white/70">{setting.id}</td>
+                                    <td className="px-4 py-4 text-sm font-semibold">{setting.key}</td>
+                                    <td className="px-4 py-4 text-sm text-sky-500/75 font-medium">{setting.value}</td>
+                                    <td className="pr-8 pl-4 py-4 text-xs capitalize flex justify-start items-center gap-4">
+                                        <EllipsisVertical className="max-w-4 aspect-square" />
+                                    </td>
 
-  return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Global Settings</h1>
-        {!creating && (
-          <button
-            className="bg-green-600 px-4 py-2 rounded text-white text-sm"
-            onClick={() => setCreating(true)}
-          >
-            + Create
-          </button>
-        )}
-      </div>
-
-      <div className="overflow-x-auto border border-white/10 rounded-lg">
-        <table className="min-w-full table-auto">
-          <thead className="bg-slate-900/10">
-            <tr>
-              <th className="px-4 py-2 text-left">ID</th>
-              <th className="px-4 py-2 text-left">Key</th>
-              <th className="px-4 py-2 text-left">Value</th>
-              {creating && <th className="px-4 py-2 text-left">Actions</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {creating && (
-              <tr className="border-t border-white/10 bg-slate-950">
-                <td className="px-4 py-2 text-slate-400 italic">New</td>
-                <td className="px-4 py-2">
-                  <input
-                    className="bg-slate-800 border border-white/10 rounded px-2 py-1 w-48"
-                    placeholder="Setting key"
-                    value={newKey}
-                    onChange={(e) => setNewKey(e.target.value)}
-                  />
-                </td>
-                <td className="px-4 py-2">
-                  <input
-                    
-                    className="bg-slate-800 border border-white/10 rounded px-2 py-1 w-24"
-                    placeholder="Value"
-                    value={newValue}
-                    onChange={(e) => setNewValue(e.target.value)}
-                  />
-                </td>
-                <td className="px-4 py-2 flex gap-2">
-                  <button
-                    className="bg-blue-600 text-white text-sm px-3 py-1 rounded"
-                    onClick={handleCreate}
-                  >
-                    Save
-                  </button>
-                  <button
-                    className="bg-red-600 text-white text-sm px-3 py-1 rounded"
-                    onClick={() => {
-                      setCreating(false);
-                      setNewKey("");
-                      setNewValue("");
-                    }}
-                  >
-                    Cancel
-                  </button>
-                </td>
-              </tr>
-            )}
-
-            {settings.map((setting) => (
-              <tr key={setting.id} className="border-t border-white/10 hover:bg-slate-950">
-                <td className="px-4 py-2">{setting.id}</td>
-                <td className="px-4 py-2">{setting.key}</td>
-                <td className="px-4 py-2">
-                  <input
-                    
-                    className="bg-slate-800 border border-white/10 rounded px-2 py-1 w-24"
-                    value={
-                      editing[setting.key] !== undefined
-                        ? editing[setting.key]
-                        : setting.value
-                    }
-                    onChange={(e) =>
-                      handleInputChange(setting.key, e.target.value)
-                    }
-                    onBlur={() => handleBlur(setting.key)}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        {/* Pagination */}
-        <div className="flex justify-between items-center mt-4 px-2">
-          <button
-            onClick={() => setPage((p) => Math.max(p - 1, 1))}
-            className="px-3 py-1 bg-slate-800 border border-white/10 rounded disabled:opacity-50"
-            disabled={page <= 1}
-          >
-            Prev
-          </button>
-          <span className="text-sm text-white/70">
-            Page {page} of {totalPages}
-          </span>
-          <button
-            onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-            className="px-3 py-1 bg-slate-800 border border-white/10 rounded disabled:opacity-50"
-            disabled={page >= totalPages}
-          >
-            Next
-          </button>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default SettingTable;
