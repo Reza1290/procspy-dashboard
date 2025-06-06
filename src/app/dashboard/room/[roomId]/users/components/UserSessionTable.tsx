@@ -91,7 +91,7 @@ const UserSessionTable = () => {
                     <table className="min-w-full table-fixed">
                         <thead className="sticky top-0  z-10">
                             <tr className="">
-                                <th className="pl-8 pr-4 py-2 text-left font-normal text-slate-100/75 text-sm">Presence Status</th>
+                                <th className="pl-8 pr-4 py-2 text-left font-normal text-slate-100/75 text-sm">Connection Status</th>
                                 <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Session Token</th>
                                 <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Name</th>
                                 <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Start Time</th>
@@ -107,9 +107,9 @@ const UserSessionTable = () => {
                                     <td className="pl-8 pr-4 py-4 text-xs capitalize">
                                         {
                                             session.isOnline ? (
-                                                <div className="w-min rounded flex justifyt-center items-center gap-2"> <div className="w-2 h-2 rounded-full bg-green-500 "></div>Online</div>
+                                                <div className="w-min rounded flex justifyt-center items-center gap-2"> <div className="w-2 h-2 rounded-full bg-green-500 "></div>Connected</div>
                                             ) : (
-                                                <div className="w-min rounded flex justifyt-center items-center gap-2"> <div className="w-2 h-2 rounded-full bg-red-500 "></div>Offline</div>
+                                                <div className="w-min rounded flex justifyt-center items-center gap-2"> <div className="w-2 h-2 rounded-full bg-red-500 "></div>Disconnected</div>
 
                                             )
                                         }
