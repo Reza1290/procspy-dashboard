@@ -22,7 +22,7 @@ export default function RootLayout({ children }) {
         <script src="https://kit.fontawesome.com/fc6a744dc7.js" crossorigin="anonymous"></script>
       </Head>
       <body
-        className={`${font.variable} ${font.className} antialiased`}
+        className={`${font.variable} ${font.className} antialiased `}
       >
         {children}
       </body>

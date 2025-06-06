@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react"
 import { useSideBarLog } from "../../providers/SideBarLogProvider"
 import { useWebRtc } from "../../../../context/WebRtcProvider"
 import { FlagIcon, FullscreenIcon, MicIcon, MicOffIcon, TriangleAlertIcon, Volume2Icon, VolumeOffIcon } from "lucide-react"
+import AudioMeter from "../[roomId]/components/AudioMeter"
 
 const VideoContainer = ({ consumer }) => {
     const { setDataSidebar } = useSideBarLog()
@@ -17,6 +18,7 @@ const VideoContainer = ({ consumer }) => {
     const [audioMute, setAudioMute] = useState(true)
     const [micMute, setMicMute] = useState(true)
     const [sideBarLog, setSideBarLog] = useState(false)
+    const [micTrack, setMicTrack] = useState(null);
 
     useEffect(() => {
         if (consumer && consumer.consumers) {
@@ -76,6 +78,7 @@ const VideoContainer = ({ consumer }) => {
 
                 case 'mic':
                     if (micRef.current) {
+                        setMicTrack(track)
                         micRef.current.srcObject = stream
                         micRef.current.autoPlay = true
                         micRef.current.muted = false
@@ -174,14 +177,7 @@ const VideoContainer = ({ consumer }) => {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <div className="flex p-2 border border-white/10 rounded">
-                                <div className="flex space-x-1 items-end">
-                                    <div className="w-1 h-2 bg-green-300 rounded"></div>
-                                    <div className="w-1 h-3 bg-green-400 rounded"></div>
-                                    <div className="w-1 h-4 bg-red-500 rounded"></div>
-                                </div>
-                                <p className='text-xs ml-2'>120 ms</p>
-                            </div>
+                            <AudioMeter track={micTrack} />
                             <div className="flex items-center p-2 border border-white/10 rounded">
                                 <TriangleAlertIcon className="text-red-500" />
                                 <p className="text-xs ml-2 truncate">

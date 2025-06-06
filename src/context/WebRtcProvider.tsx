@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, createRef, Ref, RefObject, useContext, useEffect, useRef, useState } from 'react'
-import io from 'socket.io-client'
+import io, { Socket } from 'socket.io-client'
 import * as mediasoupClient from 'mediasoup-client'
 import { RtpCapabilities } from 'mediasoup-client/lib/RtpParameters'
 import { AppData, Consumer, Transport } from 'mediasoup-client/lib/types'
@@ -19,6 +19,7 @@ interface DefaultWebRtc {
     eventRef: RefObject<EventEmitter>
     setData: React.Dispatch<React.SetStateAction<WebRtcData>>
     notificationCount: Array<NotificationCount>
+    socketRef: RefObject<Socket>
 }
 
 interface SocketAuthData {
@@ -35,7 +36,8 @@ const defaultWebRtc: DefaultWebRtc = {
     peers: [],
     eventRef: createRef<EventEmitter>(),
     setData: () => { },
-    notificationCount: []
+    notificationCount: [],
+    socketRef: createRef<Socket>()
 }
 
 export interface Peer {
@@ -70,7 +72,7 @@ export const WebRtcProvider = ({ children }) => {
         singleConsumerSocketId: null
     })
 
-    const socketRef = useRef(null)
+    const socketRef = useRef<Socket>(null)
     const deviceRef = useRef(null)
     const eventRef = useRef(new EventEmitter())
 
@@ -310,7 +312,7 @@ export const WebRtcProvider = ({ children }) => {
 
 
 
-    const value = { data, setData, eventRef, peers, notificationCount }
+    const value = { data, setData, eventRef, peers, notificationCount, socketRef }
 
     return (
         <WebRtcContext.Provider value={value} >
