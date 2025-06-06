@@ -122,17 +122,9 @@ export const WebRtcProvider = ({ children }) => {
 
         }
 
-        const handleUnload = () => {
-            if (socketRef.current) {
-                socketRef.current.disconnect()
-                console.log('Socket disconnected on page unload')
-            }
-        }
-
-        window.addEventListener('beforeunload', handleUnload)
+        
 
         return () => {
-            window.removeEventListener('beforeunload', handleUnload)
             if (socketRef.current) {
                 socketRef.current.disconnect()
                 socketRef.current = null
