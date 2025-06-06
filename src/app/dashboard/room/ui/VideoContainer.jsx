@@ -2,12 +2,12 @@ import { useRouter } from "next/navigation"
 import React, { useEffect, useRef, useState } from "react"
 import { useSideBarLog } from "../../providers/SideBarLogProvider"
 import { useWebRtc } from "../../../../context/WebRtcProvider"
-import { FlagIcon, FullscreenIcon, MicIcon, MicOffIcon, Volume2Icon, VolumeOffIcon } from "lucide-react"
+import { FlagIcon, FullscreenIcon, MicIcon, MicOffIcon, TriangleAlertIcon, Volume2Icon, VolumeOffIcon } from "lucide-react"
 
 const VideoContainer = ({ consumer }) => {
     const { setDataSidebar } = useSideBarLog()
     const router = useRouter()
-    const { data } = useWebRtc()
+    const { data, notificationCount } = useWebRtc()
 
     const videoRef = useRef(null)
     const camRef = useRef(null)
@@ -182,13 +182,13 @@ const VideoContainer = ({ consumer }) => {
                                 </div>
                                 <p className='text-xs ml-2'>120 ms</p>
                             </div>
-                            <div className="flex p-2 border border-white/10 rounded">
-                                {/* <div className=""> */}
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" className="aspect-square fill-red-400 max-w-4">
-                                    {/* <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--> */}
-                                    <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24l0 112c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-112c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z" /></svg>
-                                {/* </div> */}
-                                <p className='text-xs ml-2 truncate'>2 New Flags</p>
+                            <div className="flex items-center p-2 border border-white/10 rounded">
+                                <TriangleAlertIcon className="text-red-500" />
+                                <p className="text-xs ml-2 truncate">
+                                    {
+                                        notificationCount.find(n => n.token === consumer.token)?.count || 0
+                                    } New Flags
+                                </p>
                             </div>
                         </div>
                         <audio ref={audioRef}></audio>
@@ -197,21 +197,24 @@ const VideoContainer = ({ consumer }) => {
                 </div>
             </div>
             <div className="-ml-3 bg-black/15 p-3 pl-6 w-72 bg-black/1 z-0 border gap-4 border-white/10 border-l-0 rounded-r-xl grid grid-rows-4">
-                <p className="self-center justify-self-center border border-white/10 bg-white/10 aspect-square rounded flex justify-center items-center p-2 max-w-16 cursor-pointer" onClick={toggleMic}>
+                <div className="self-center justify-self-center border border-white/10 bg-white/10 aspect-square rounded flex justify-center items-center p-2 max-w-16 cursor-pointer" onClick={toggleMic}>
 
                     {micMute ? <MicOffIcon /> : <MicIcon />}
 
-                </p>
-                <p className="self-center justify-self-center border border-white/10 bg-white/10 aspect-square rounded flex justify-center items-center p-2 max-w-16 cursor-pointer" onClick={toggleAudio}>
+                </div>
+                <div className="self-center justify-self-center border border-white/10 bg-white/10 aspect-square rounded flex justify-center items-center p-2 max-w-16 cursor-pointer" onClick={toggleAudio}>
                     {audioMute ? <VolumeOffIcon /> : <Volume2Icon />}
 
-                </p>
-                <p className="self-center justify-self-center border border-white/10 bg-white/10 aspect-square rounded flex justify-center items-center p-2 max-w-16 cursor-pointer" onClick={handleToggleSidebarLog}>
+                </div>
+                <div className="relative self-center justify-self-center border border-white/10 bg-white/10 aspect-square rounded flex justify-center items-center p-2 max-w-16 cursor-pointer" onClick={handleToggleSidebarLog}>
+                    {
+                        notificationCount.find(n => n.token === consumer.token)?.count > 0 && <div className="absolute w-3 h-3 bg-red-500 -top-1 -right-1 rounded-full"></div>
+                    }
                     <FlagIcon />
-                </p>
-                <a className="self-center justify-self-center border border-white/10 bg-white/10 aspect-square rounded flex justify-center items-center p-2 max-w-16 cursor-pointer" onClick={() => handleFocusMode()}>
+                </div>
+                <div className="self-center justify-self-center border border-white/10 bg-white/10 aspect-square rounded flex justify-center items-center p-2 max-w-16 cursor-pointer" onClick={() => handleFocusMode()}>
                     <FullscreenIcon />
-                </a>
+                </div>
             </div>
         </div>
     )

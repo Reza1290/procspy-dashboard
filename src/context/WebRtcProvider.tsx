@@ -18,6 +18,7 @@ interface DefaultWebRtc {
     peers: Array<Peer>
     eventRef: RefObject<EventEmitter>
     setData: React.Dispatch<React.SetStateAction<WebRtcData>>
+    notificationCount: Array<NotificationCount>
 }
 
 interface SocketAuthData {
@@ -33,7 +34,8 @@ const defaultWebRtc: DefaultWebRtc = {
     },
     peers: [],
     eventRef: createRef<EventEmitter>(),
-    setData: () => { }
+    setData: () => { },
+    notificationCount: []
 }
 
 export interface Peer {
@@ -48,6 +50,16 @@ export interface ConsumerData {
     producerId: string
     consumer: Consumer
     appData: AppData
+}
+
+interface NotificationCount {
+    count: number
+    token: string
+}
+
+interface NotificationData {
+    roomId: string
+    token: string
 }
 
 const WebRtcContext = createContext(defaultWebRtc)
@@ -68,6 +80,7 @@ export const WebRtcProvider = ({ children }) => {
     const peersRef = useRef<Array<Peer>>([])
 
     const [peers, setPeers] = useState<Array<Peer>>([])
+    const [notificationCount, setNotificationCount] = useState<Array<NotificationCount>>([])
 
     useEffect(() => {
         if (!socketRef.current) {
@@ -89,22 +102,21 @@ export const WebRtcProvider = ({ children }) => {
             //     console.log(message)
             // })
 
-            socketRef.current.on('SERVER_DASHBOARD_LOG_MESSAGE', (message: any) => {
-                eventRef.current.emit('log')
-                console.log(message)
-                // const currentData = dataRef.current
-
-                // console.log(message)
-                // console.log(currentData)
-
-                // if (currentData.isActive && currentData.token === message.token) {
-                //     console.log('true')
-                //     setData((prev) => ({
-                //         ...prev,
-                //         refreshKey: (prev.refreshKey || 0) + 1,
-                //     }))
-                // }
-            })
+            socketRef.current.on('SERVER_DASHBOARD_LOG_MESSAGE', (message: NotificationData) => {
+                setNotificationCount(prev => {
+                    const existingIndex = prev.findIndex(n => n.token === message.token);
+                    if (existingIndex !== -1) {
+                        const updated = [...prev];
+                        updated[existingIndex] = {
+                            token: message.token,
+                            count: updated[existingIndex].count + 1
+                        };
+                        return updated;
+                    } else {
+                        return [...prev, { token: message.token, count: 1 }];
+                    }
+                })
+            });
 
         }
 
@@ -298,7 +310,7 @@ export const WebRtcProvider = ({ children }) => {
 
 
 
-    const value = { data, setData, eventRef, peers }
+    const value = { data, setData, eventRef, peers, notificationCount }
 
     return (
         <WebRtcContext.Provider value={value} >
