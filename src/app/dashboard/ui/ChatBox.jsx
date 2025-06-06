@@ -18,7 +18,7 @@ const ChatBox = ({ user, messages, onSendMessage }) => {
     return (
         <div className="flex flex-col w-full justify-between gap-4 h-full max-h-[90vh] border-l border-white/10 ">
             <div className="flex grow w-full justify-end flex-col ">
-                <div className="flex flex-col gap-3 p-6 pb-3 w-full h-[80vh] overflow-y-scroll 
+                <div className="flex flex-col gap-3 p-6 pb-3 w-full max-h-[80vh] overflow-y-scroll 
                 [&::-webkit-scrollbar]:w-2
                             [&::-webkit-scrollbar-track]:rounded-full
                             [&::-webkit-scrollbar-track]:bg-gray-100
