@@ -81,7 +81,7 @@ export const WebRtcProvider = ({ children }) => {
                 joinRoomConsumer()
             })
 
-            if ( data.singleConsumerSocketId === null) {
+            if (data.singleConsumerSocketId === null) {
                 socketRef.current.on('new-producer', ({ producerId }) => signalNewConsumerTransport(producerId))
             }
             socketRef.current.on('producer-closed', handleProducerClosed)
@@ -123,6 +123,7 @@ export const WebRtcProvider = ({ children }) => {
                 socketRef.current.disconnect()
                 socketRef.current = null
                 consumingTransportsRef.current = []
+                setPeers([])
             }
         }
     }, [data.singleConsumerSocketId, data.roomId])
@@ -212,7 +213,7 @@ export const WebRtcProvider = ({ children }) => {
                     consumer,
                     appData: params.appData
                 }
-                
+
                 const existingEntry = prev.find(entry => entry.socketId === socketId)
 
                 if (existingEntry) {
@@ -268,13 +269,31 @@ export const WebRtcProvider = ({ children }) => {
         // })).filter(entry => entry.consumers.length > 0)
         eventRef.current.emit('consumer-removed', remoteProducerId)
         setPeers((prev) => {
-            return prev
-                .map(entry => ({
-                    ...entry,
-                    consumers: entry.consumers.filter(consumer => consumer.producerId !== remoteProducerId)
-                }))
-                .filter(entry => entry.consumers.length > 0)
-        })
+            let changed = false;
+
+            const next = prev
+                .map(entry => {
+                    const newConsumers = entry.consumers.filter(
+                        consumer => consumer.producerId !== remoteProducerId
+                    );
+
+                    if (newConsumers.length !== entry.consumers.length) {
+                        changed = true;
+                        return { ...entry, consumers: newConsumers };
+                    }
+
+                    return entry;
+                })
+                .filter(entry => {
+
+                    const keep = entry.consumers.length > 0;
+                    if (!keep) changed = true;
+                    return keep;
+                });
+
+            return changed ? next : prev;
+        });
+
     }
 
 

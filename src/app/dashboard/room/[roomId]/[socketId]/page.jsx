@@ -13,15 +13,17 @@ export default function Page() {
     useEffect(() => {
         if (socketId) {
             setData((prev) => ({
-                ...prev,
-                roomId: roomId[0],
-                singleConsumerSocketId: socketId[1],
+                roomId: roomId,
+                singleConsumerSocketId: socketId,
             }));
         }
+    }, [])
+
+    useEffect(() => {
         if (peers && peers[0]) {
             prepareConsume(peers[0].consumers);
         }
-    }, [socketId, setData, peers]);
+    }, [peers])
 
     const videoRef = useRef(null);
     const camRef = useRef(null);
@@ -115,7 +117,6 @@ export default function Page() {
     };
 
     const handleSendMessage = (text) => {
-        // Implement your message sending logic here
     };
 
     return (
