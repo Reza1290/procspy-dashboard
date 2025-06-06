@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, usePathname } from "next/navigation";
 import session from "../../../../../../lib/session";
 import { EllipsisVertical, Eye, Unplug } from "lucide-react";
+import { useWebRtc } from "../../../../../../context/WebRtcProvider";
 
 export enum SessionStatus {
     Scheduled,
@@ -22,10 +23,10 @@ export type SessionProps = {
     startTime?: string;
     endTime?: string;
     status?: SessionStatus;
+    isOnline: boolean;
 };
 
 const UserSessionTable = () => {
-    const pathname = usePathname()
 
     const { roomId } = useParams()
     const [sessions, setSessions] = useState<SessionProps[]>([]);
@@ -33,6 +34,8 @@ const UserSessionTable = () => {
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
+
+    const { peers } = useWebRtc()
     useEffect(() => {
         if (!roomId) return;
 
@@ -50,7 +53,12 @@ const UserSessionTable = () => {
             const data = await res.json();
             if (res.ok) {
                 setSessions(prev => {
-                    const newSessions = data.data.filter((d:SessionProps) => !prev.some(p => p.token === d.token));
+                    let newSessions = data.data
+                        .filter((d: SessionProps) => !prev.some(p => p.token === d.token))
+                        .map((d:SessionProps) => ({
+                            ...d,
+                            isOnline: peers.some(peer => peer.token === d.token)
+                        }));
                     return [...prev, ...newSessions];
                 });
                 setHasMore(nextPage < data.totalPages);
@@ -97,7 +105,14 @@ const UserSessionTable = () => {
                             {sessions.map((session) => (
                                 <tr key={session.token} className="border-t border-white/10 hover:bg-gray-600/30">
                                     <td className="pl-8 pr-4 py-4 text-xs capitalize">
-                                        <div className="w-min rounded flex justifyt-center items-center gap-2"> <div className="w-2 h-2 rounded-full bg-green-500 "></div>Online</div>
+                                        {
+                                            session.isOnline ? (
+                                                <div className="w-min rounded flex justifyt-center items-center gap-2"> <div className="w-2 h-2 rounded-full bg-green-500 "></div>Online</div>
+                                            ) : (
+                                                <div className="w-min rounded flex justifyt-center items-center gap-2"> <div className="w-2 h-2 rounded-full bg-red-500 "></div>Offline</div>
+
+                                            )
+                                        }
                                     </td>
                                     <td className="px-4 py-4 text-sm font-semibold">{session.token}</td>
                                     <td className="px-4 py-4 text-sm text-sky-500/75 font-medium">{session.proctored_user.name}</td>
