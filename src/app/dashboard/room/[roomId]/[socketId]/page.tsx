@@ -197,7 +197,7 @@ export default function Page() {
             <div className="row-span-2 row-start-5 col-span-10 border-t border-white/15">
                 <div className="flex items-center gap-4 p-2">
                     <button onClick={() => setActiveBar(0)} className={`${ activeBar === 0 ? "bg-gray-400/10  border-white/10 ": ""} border border-transparent min-w-16 text-xs px-4 rounded font-light py-1`}>Logs</button>
-                    <button onClick={() => setActiveBar(1)} className={` ${ activeBar === 1 ? "bg-gray-400/10  border-white/10 ": ""} border border-transparent min-w-16 text-xs px-4 rounded font-light py-1`}>User Info</button>
+                    <button onClick={() => setActiveBar(1)} className={` ${ activeBar === 1 ? "bg-gray-400/10  border-white/10 ": ""} border border-transparent min-w-16 text-xs px-4 rounded font-light py-1`}>Device Info</button>
                     {/* <button className=" min-w-16 text-xs px-4 rounded font-light py-1">Moderation Tools</button> */}
                 </div>
                 <div className="flex justify-between border-t border-white/15 max-h-[25vh]">
