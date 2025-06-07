@@ -10,6 +10,8 @@ import AlertModal from "../../../../components/ui/AlertModal";
 import TitleModal from "../../../../components/ui/modal/TitleModal";
 import BodyModal from "../../../../components/ui/modal/BodyModal";
 import ConfirmModal from "../../../../components/ui/ConfirmModal";
+import { useSideSheet } from "../../../../context/SideSheetProvider";
+import SheetHeader from "../../../../components/ui/sheet/SheetHeader";
 
 
 export type Room = {
@@ -118,6 +120,21 @@ const RoomTable = () => {
         }
     }
 
+    const { openSheet } = useSideSheet()
+    const handleEditRoom = async (id: string) => {
+        openSheet(
+            <div className="w-96 flex flex-col gap-4">
+                <SheetHeader>Edit Room</SheetHeader>
+                <p className="text-sm text-slate-500">Make change for Room, click Save when done.</p>
+
+                <div className="flex flex-col gap-2">
+                    <label htmlFor="room"></label>
+
+                </div>
+            </div>
+        )
+    }
+
 
     return (
         <div className="">
@@ -147,7 +164,6 @@ const RoomTable = () => {
                                     <td className="pr-8 pl-4 py-4 text-xs capitalize flex justify-start items-center gap-4">
 
                                         <PopOver icon={<EllipsisVertical className="max-w-4 aspect-square" />}>
-                                            <PopOverItem onClick={() => { }}>Edit</PopOverItem>
                                             <PopOverItem onClick={() => handleDeleteRoom(room.id)}>Delete</PopOverItem>
                                         </PopOver>
 

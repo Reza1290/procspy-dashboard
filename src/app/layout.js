@@ -2,6 +2,7 @@ import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import Head from "next/head";
 import { ModalProvider } from "../context/ModalProvider";
+import { SideSheetProvider } from "../context/SideSheetProvider";
 
 
 const font = Poppins({
@@ -25,9 +26,11 @@ export default function RootLayout({ children }) {
       <body
         className={`${font.variable} ${font.className} antialiased `}
       >
-        <ModalProvider>
-          {children}
-        </ModalProvider>
+        <SideSheetProvider>
+          <ModalProvider>
+            {children}
+          </ModalProvider>
+        </SideSheetProvider>
       </body>
     </html >
   );
