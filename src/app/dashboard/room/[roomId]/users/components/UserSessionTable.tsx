@@ -4,6 +4,7 @@ import { useParams, usePathname } from "next/navigation";
 import session from "../../../../../../lib/session";
 import { EllipsisVertical, Eye, Unplug } from "lucide-react";
 import { useWebRtc } from "../../../../../../context/WebRtcProvider";
+import PopOver from "../../../../../../components/ui/PopOver";
 
 export enum SessionStatus {
     Scheduled,
@@ -80,6 +81,14 @@ const UserSessionTable = () => {
         }
     };
 
+    const handleAbortSession = (sessionId: string) => {
+        try {
+            
+        } catch (error) {
+            
+        }
+    }
+
 
     return (
         <div className="">
@@ -124,14 +133,14 @@ const UserSessionTable = () => {
                                     <td className="px-4 py-4 text-xs capitalize">
                                         <div className="bg-red-500 w-min rounded p-1 px-2">High</div>
                                     </td>
-                                    <td className="pr-8 pl-4 py-4 text-xs capitalize flex justify-start items-center gap-4">
-                                        {/* <div className="bg-red-500 rounded px-1 flex gap-2 justify-center items-center w-full">
-                                            <Unplug className="max-w-4 aspect-square"/> Abort
-                                        </div>
-                                        <div className="bg-blue-500 w-full rounded px-1 flex gap-2 justify-center items-center ">
-                                            <Eye className="max-w-4 aspect-square"/> Focus Mode
-                                        </div> */}
-                                        <EllipsisVertical className="max-w-4 aspect-square" />
+                                    <td className="pr-8 pl-4 py-4 text-xs capitalize flex justify-start items-center gap-4">                                        
+                                        <PopOver icon={<EllipsisVertical className="max-w-4 aspect-square" />}>
+                                            <div className="flex flex-col gap-1">
+                                                <div className="hover:bg-gray-700 cursor-pointer rounded text-sm p-1 px-2">
+                                                    Abort
+                                                </div>
+                                            </div>
+                                        </PopOver>
                                     </td>
 
                                 </tr>
