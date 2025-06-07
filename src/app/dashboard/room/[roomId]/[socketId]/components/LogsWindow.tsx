@@ -205,7 +205,7 @@ const LogsWindow = ({ token, canDrag = false }: { token: string, canDrag?: boole
             >
 
                 {
-                    logs.reverse().map((val) => (
+                    [...logs].reverse().map((val) => (
                         <LogComponent key={val.id} log={val} />
                     ))
                 }

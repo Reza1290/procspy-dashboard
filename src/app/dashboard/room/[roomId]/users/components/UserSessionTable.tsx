@@ -36,12 +36,17 @@ const UserSessionTable = () => {
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
 
-    const { peers } = useWebRtc()
+    const { peers, data } = useWebRtc()
+    
     useEffect(() => {
         if (!roomId) return;
-
-        fetchSessions(1);
+        fetchSessions(1)
     }, [roomId]);
+
+    useEffect(() => {
+        if(!peers) return
+        fetchSessions(1)
+    }, [peers])
 
     const fetchSessions = async (nextPage: number) => {
         try {
@@ -136,7 +141,7 @@ const UserSessionTable = () => {
                                     <td className="pr-8 pl-4 py-4 text-xs capitalize flex justify-start items-center gap-4">                                        
                                         <PopOver icon={<EllipsisVertical className="max-w-4 aspect-square" />}>
                                             <div className="flex flex-col gap-1">
-                                                <div className="hover:bg-gray-700 cursor-pointer rounded text-sm p-1 px-2">
+                                                <div className="hover:bg-gray-700 cursor-pointer rounded text-sm p-1 px-2" onClick={() => handleAbortSession(session.id)}>
                                                     Abort
                                                 </div>
                                             </div>

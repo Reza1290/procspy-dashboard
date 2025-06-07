@@ -21,6 +21,7 @@ interface DefaultWebRtc {
     setNotificationCount: React.Dispatch<React.SetStateAction<Array<NotificationCount>>>
     notificationCount: Array<NotificationCount>
     socketRef: RefObject<Socket>
+    connected: boolean
 }
 
 interface SocketAuthData {
@@ -39,7 +40,8 @@ const defaultWebRtc: DefaultWebRtc = {
     setData: () => { },
     setNotificationCount: () => { },
     notificationCount: [],
-    socketRef: createRef<Socket>()
+    socketRef: createRef<Socket>(),
+    connected: false
 }
 
 export interface Peer {
@@ -74,6 +76,8 @@ export const WebRtcProvider = ({ children }) => {
         singleConsumerSocketId: null
     })
 
+    const [connected, setConnected] = useState(false)
+
     const socketRef = useRef<Socket>(null)
     const deviceRef = useRef(null)
     const eventRef = useRef(new EventEmitter())
@@ -87,6 +91,7 @@ export const WebRtcProvider = ({ children }) => {
     const [notificationCount, setNotificationCount] = useState<Array<NotificationCount>>([])
 
     useEffect(() => {
+        if(!data.roomId) return
         if (!socketRef.current) {
             socketRef.current = io(process.env.NEXT_PUBLIC_SOCKET_URL + '/mediasoup', {
                 auth: {
@@ -132,6 +137,7 @@ export const WebRtcProvider = ({ children }) => {
                 socketRef.current = null
                 consumingTransportsRef.current = []
                 setPeers([])
+                setConnected(false)
             }
         }
     }, [data.singleConsumerSocketId, data.roomId])
@@ -258,9 +264,9 @@ export const WebRtcProvider = ({ children }) => {
             console.log(producerIds)
             producerIds.forEach(signalNewConsumerTransport)
         })
-
+        console.log("CONNECTED")
         eventRef.current.emit('consumer-added')
-
+        setConnected(true)
     }
 
     const getSingleUserProducer = () => {
@@ -306,7 +312,7 @@ export const WebRtcProvider = ({ children }) => {
 
 
 
-    const value = { data, setData, eventRef, peers, notificationCount, setNotificationCount, socketRef }
+    const value = { data, setData, eventRef, peers, notificationCount, setNotificationCount, socketRef, connected}
 
     return (
         <WebRtcContext.Provider value={value} >

@@ -11,10 +11,11 @@ import LogsWindow from './[socketId]/components/LogsWindow'
 
 const Page = () => {
   const { roomId } = useParams()
-  const { peers, setData } = useWebRtc()
+  const { connected, peers, setData } = useWebRtc()
 
   const { data } = useLogBottomSheet()
   useEffect(() => {
+    if (connected) return;
     if (roomId) {
       setData({ roomId: roomId as string, singleConsumerSocketId: null })
     }
