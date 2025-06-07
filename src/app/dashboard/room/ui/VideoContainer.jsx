@@ -4,12 +4,12 @@ import { useSideBarLog } from "../../providers/SideBarLogProvider"
 import { useWebRtc } from "../../../../context/WebRtcProvider"
 import { FlagIcon, FullscreenIcon, MicIcon, MicOffIcon, TriangleAlertIcon, Volume2Icon, VolumeOffIcon } from "lucide-react"
 import AudioMeter from "../[roomId]/components/AudioMeter"
+import { useLogBottomSheet } from "../../../../context/LogBottomSheetProvider"
 
 const VideoContainer = ({ consumer }) => {
-    const { setDataSidebar } = useSideBarLog()
     const router = useRouter()
     const { data, notificationCount } = useWebRtc()
-
+    const { setData } = useLogBottomSheet()
     const videoRef = useRef(null)
     const camRef = useRef(null)
     const audioRef = useRef(null)
@@ -17,7 +17,6 @@ const VideoContainer = ({ consumer }) => {
 
     const [audioMute, setAudioMute] = useState(true)
     const [micMute, setMicMute] = useState(true)
-    const [sideBarLog, setSideBarLog] = useState(false)
     const [micTrack, setMicTrack] = useState(null);
 
     useEffect(() => {
@@ -130,35 +129,24 @@ const VideoContainer = ({ consumer }) => {
         })
     }
 
-    const handleToggleSidebarLog = () => {
-        setDataSidebar((prev) => {
-
-            return {
-                isActive: !prev.isActive,
-                consumer: [...consumer.consumers],
-                token: consumer.token,
-            }
-        })
-    }
-
     const handleFocusMode = () => {
-        setDataSidebar((prev) => {
 
-            return {
-                isActive: true,
-                consumer: [...consumer.consumers],
-                token: consumer.token,
-            }
-        })
         router.push(`/dashboard/room/${data.roomId}/${consumer.socketId}`)
     }
 
+    const handleToggleLogBottomSheet = () => {
+        console.log("test", consumer.token)
+        setData((prev) => ({
+            active: !prev.active,
+            token: consumer.token
+        }))
+    }
 
 
 
 
     return (
-        <div className="flex">
+        <div className="flex max-h-[30vh]">
             <div className="relative z-10 flex flex-col justify-between bg-black border border-white/10 rounded-xl p-3">
                 <div className="flex justify-between gap-3 w-full">
                     <div className="aspect-video flex items-center justify-center bg-slate-950 rounded-lg border w-3/4 border-white/10 overflow-hidden relative">
@@ -202,7 +190,7 @@ const VideoContainer = ({ consumer }) => {
                     {audioMute ? <VolumeOffIcon /> : <Volume2Icon />}
 
                 </div>
-                <div className="relative self-center justify-self-center border border-white/10 bg-white/10 aspect-square rounded flex justify-center items-center p-2 max-w-16 cursor-pointer" onClick={handleToggleSidebarLog}>
+                <div className="relative self-center justify-self-center border border-white/10 bg-white/10 aspect-square rounded flex justify-center items-center p-2 max-w-16 cursor-pointer" onClick={handleToggleLogBottomSheet}>
                     {
                         notificationCount.find(n => n.token === consumer.token)?.count > 0 && <div className="absolute w-3 h-3 bg-red-500 -top-1 -right-1 rounded-full"></div>
                     }

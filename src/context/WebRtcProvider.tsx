@@ -18,6 +18,7 @@ interface DefaultWebRtc {
     peers: Array<Peer>
     eventRef: RefObject<EventEmitter>
     setData: React.Dispatch<React.SetStateAction<WebRtcData>>
+    setNotificationCount: React.Dispatch<React.SetStateAction<Array<NotificationCount>>>
     notificationCount: Array<NotificationCount>
     socketRef: RefObject<Socket>
 }
@@ -36,6 +37,7 @@ const defaultWebRtc: DefaultWebRtc = {
     peers: [],
     eventRef: createRef<EventEmitter>(),
     setData: () => { },
+    setNotificationCount: () => { },
     notificationCount: [],
     socketRef: createRef<Socket>()
 }
@@ -304,7 +306,7 @@ export const WebRtcProvider = ({ children }) => {
 
 
 
-    const value = { data, setData, eventRef, peers, notificationCount, socketRef }
+    const value = { data, setData, eventRef, peers, notificationCount, setNotificationCount, socketRef }
 
     return (
         <WebRtcContext.Provider value={value} >

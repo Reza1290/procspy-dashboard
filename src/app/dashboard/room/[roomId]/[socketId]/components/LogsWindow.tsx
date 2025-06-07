@@ -25,7 +25,7 @@ export type LogProps = {
         severity: number;
     };
 };
-const LogsWindow = ({ token }: { token: string }) => {
+const LogsWindow = ({ token, canDrag = false }: { token: string, canDrag?: boolean }) => {
 
     const [logs, setlogs] = useState<LogProps[]>([]);
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -34,7 +34,7 @@ const LogsWindow = ({ token }: { token: string }) => {
     const [hasMore, setHasMore] = useState(true);
     const initialLoadRef = useRef(false);
 
-    const { peers, notificationCount } = useWebRtc()
+    const { peers, notificationCount, setNotificationCount } = useWebRtc()
 
     useEffect(() => {
         if (!token) return;
@@ -47,8 +47,13 @@ const LogsWindow = ({ token }: { token: string }) => {
 
     useEffect(() => {
         if (!token || notificationCount.length === 0) return;
-        console.log("Notif")
-        insertNewLogsFromSocket(1)
+
+        if(notificationCount.find((e)=> e.token === token)){
+            insertNewLogsFromSocket(1)
+            setNotificationCount((prev) => {
+                return prev.filter(e => e.token !== token)
+            })
+        }
     }, [notificationCount]);
 
     const fetchlogs = async (nextPage: number) => {
@@ -68,7 +73,7 @@ const LogsWindow = ({ token }: { token: string }) => {
 
 
                 const el = scrollRef.current;
-                
+
                 const prevScrollHeight = el ? el.scrollHeight : 0;
 
                 setlogs(prev => {
@@ -78,7 +83,7 @@ const LogsWindow = ({ token }: { token: string }) => {
 
                     if (uniqueNewLogs.length === 0) return prev;
 
-                    return [...uniqueNewLogs, ...prev ];
+                    return [...uniqueNewLogs, ...prev];
                 });
 
                 setHasMore(nextPage < data.totalPages);
@@ -100,6 +105,32 @@ const LogsWindow = ({ token }: { token: string }) => {
         }
     };
 
+
+    const [height, setHeight] = useState(300);
+    const startY = useRef(0);
+    const startHeight = useRef(0);
+
+    const onMouseDown = (e: any) => {
+        startY.current = e.clientY;
+        startHeight.current = height;
+        window.addEventListener("mousemove", onMouseMove);
+        window.addEventListener("mouseup", onMouseUp);
+    };
+
+    const onMouseMove = (e: any) => {
+        const dy = startY.current - e.clientY;
+        const newHeight = Math.min(
+            Math.max(startHeight.current + dy, 100),
+            window.innerHeight - 100
+        );
+        setHeight(newHeight);
+    };
+
+    const onMouseUp = () => {
+        window.removeEventListener("mousemove", onMouseMove);
+        window.removeEventListener("mouseup", onMouseUp);
+    };
+
     const insertNewLogsFromSocket = async (count: number) => {
         setLoading(true);
         try {
@@ -119,7 +150,7 @@ const LogsWindow = ({ token }: { token: string }) => {
                         (d: LogProps) => !prev.some((p) => p.id === d.id)
                     );
                     if (uniqueNewLogs.length === 0) return prev;
-                    return [ ...prev,...uniqueNewLogs];
+                    return [...prev, ...uniqueNewLogs];
                 });
 
                 requestAnimationFrame(() => {
@@ -153,21 +184,32 @@ const LogsWindow = ({ token }: { token: string }) => {
         }
     }, [logs]);
     return (
-        <div className="relative flex flex-col w-full gap-3 p-4 overflow-y-scroll h-[25vh]  [&::-webkit-scrollbar]:w-2
+        <div className="w-full">
+            {
+                canDrag && (
+                    <div className="cursor-row-resize border-t border-white/10" onMouseDown={onMouseDown}>
+
+                    </div>
+                )
+            }
+            <div className="relative flex flex-col w-full gap-3 p-4 overflow-y-scroll h-[25vh]  [&::-webkit-scrollbar]:w-2
                             [&::-webkit-scrollbar-track]:rounded-full
                             [&::-webkit-scrollbar-track]:bg-gray-100
                             [&::-webkit-scrollbar-thumb]:rounded-full
                             [&::-webkit-scrollbar-thumb]:bg-gray-300
                             dark:[&::-webkit-scrollbar-track]:bg-black
                             dark:[&::-webkit-scrollbar-thumb]:bg-gray-600"
-            onScroll={handleScroll}
-            ref={scrollRef}
-        >
-            {
-                logs.reverse().map((val) => (
-                    <LogComponent key={val.id} log={val} />
-                ))
-            }
+                onScroll={handleScroll}
+                style={{ height }}
+                ref={scrollRef}
+            >
+
+                {
+                    logs.reverse().map((val) => (
+                        <LogComponent key={val.id} log={val} />
+                    ))
+                }
+            </div>
         </div>
     );
 }
