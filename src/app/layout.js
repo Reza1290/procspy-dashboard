@@ -1,6 +1,7 @@
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import Head from "next/head";
+import { ModalProvider } from "../context/ModalProvider";
 
 
 const font = Poppins({
@@ -24,8 +25,10 @@ export default function RootLayout({ children }) {
       <body
         className={`${font.variable} ${font.className} antialiased `}
       >
-        {children}
+        <ModalProvider>
+          {children}
+        </ModalProvider>
       </body>
-    </html>
+    </html >
   );
 }

@@ -1,11 +1,13 @@
 'use client'
-import { useEffect, useState } from "react";
-import { SideBarLogProvider } from "../providers/SideBarLogProvider";
-import SideBarLog from "../room/ui/SideBarLog";
-import { useParams, usePathname, useRouter } from "next/navigation";
-import UsersSidebar from "../ui/UsersSidebar";
-import { CctvIcon, FlagIcon, HomeIcon, MonitorIcon, PanelRightOpen, SettingsIcon, UserRound, UserRoundIcon, UserRoundSearchIcon, UsersRound, UsersRoundIcon } from "lucide-react";
-import SideBarItem from "./ui/SideBarItem";
+import { useEffect, useState } from "react"
+import { SideBarLogProvider } from "../providers/SideBarLogProvider"
+import SideBarLog from "../room/ui/SideBarLog"
+import { useParams, usePathname, useRouter } from "next/navigation"
+import UsersSidebar from "../ui/UsersSidebar"
+import { CctvIcon, FlagIcon, HomeIcon, MonitorIcon, PanelRightOpen, SettingsIcon, UserRound, UserRoundIcon, UserRoundSearchIcon, UsersRound, UsersRoundIcon } from "lucide-react"
+import SideBarItem from "./ui/SideBarItem"
+import { useModal } from "../../../context/ModalProvider"
+import ConfirmModal from "../../../components/ui/ConfirmModal"
 
 
 
@@ -16,16 +18,37 @@ export default function SideBar() {
     const [active, setActive] = useState(false)
     const [usersSidebar, setUsersSidebar] = useState(false)
 
+
+    const { openModal } = useModal()
+
+    const handleRedirect = (path: string) => {
+        openModal(
+            <ConfirmModal
+                element={
+                    <div className="flex flex-col gap-4">
+                        <h1 className="font-bold">Exit Proctoring Mode</h1>
+                        <p className="text-sm text-slate-300">Are you sure you want to leave proctoring mode?</p>
+                    </div>
+
+                }
+                onConfirm={() => {
+                    router.push(path)
+                }}
+                onCancel={() => {
+                    
+                }}
+            />
+        )
+    }
+
     const handleActiveToggle = (path: string) => {
         setActive(true)
         if (pathname !== path) {
-            console.log(pathname)
-            // console.log(!pathname.includes("/dashboard/room/"))
-            if(pathname.includes("/dashboard/room") && !path.includes("/dashboard/room")){
-                const res = confirm('Are you sure?')
-                if(!res) return
+            if (pathname.includes("/dashboard/room") && !path.includes("/dashboard/room")) {
+                handleRedirect(path)
+            } else {
+                router.push(path)
             }
-            router.push(path)
         }
     }
 
