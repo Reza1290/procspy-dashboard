@@ -8,6 +8,8 @@ import { CctvIcon, FlagIcon, HomeIcon, MonitorIcon, PanelRightOpen, SettingsIcon
 import SideBarItem from "./ui/SideBarItem"
 import { useModal } from "../../../context/ModalProvider"
 import ConfirmModal from "../../../components/ui/ConfirmModal"
+import TitleModal from "../../../components/ui/modal/TitleModal"
+import BodyModal from "../../../components/ui/modal/BodyModal"
 
 
 
@@ -24,20 +26,17 @@ export default function SideBar() {
     const handleRedirect = (path: string) => {
         openModal(
             <ConfirmModal
-                element={
-                    <div className="flex flex-col gap-4">
-                        <h1 className="font-bold">Exit Proctoring Mode</h1>
-                        <p className="text-sm text-slate-300">Are you sure you want to leave proctoring mode?</p>
-                    </div>
 
-                }
                 onConfirm={() => {
                     router.push(path)
                 }}
                 onCancel={() => {
-                    
+
                 }}
-            />
+            >
+                <TitleModal>Are you sure want to delete this?</TitleModal>
+                <BodyModal><p className="text-sm text-slate-300">Are you sure you want to leave proctoring mode?</p></BodyModal>
+            </ConfirmModal>
         )
     }
 
