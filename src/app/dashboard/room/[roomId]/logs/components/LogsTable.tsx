@@ -1,10 +1,11 @@
 "use client";
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useParams, usePathname } from "next/navigation";
 import session from "../../../../../../lib/session";
-import { EllipsisVertical, Eye, InfoIcon, Unplug } from "lucide-react";
+import { CheckIcon, EllipsisVertical, Eye, InfoIcon, Unplug, XIcon } from "lucide-react";
 import { formattedTimestamp } from "../../../../../utils/timestamp";
 import { Peer, useWebRtc } from "../../../../../../context/WebRtcProvider";
+import ConfirmLogButton from "./ui/ConfirmLogButton";
 
 export enum logType {
     System = "System",
@@ -91,7 +92,7 @@ const LogsTable = () => {
                     if (el && nextPage > 1) {
                         const newScrollHeight = el.scrollHeight;
                         el.scrollTop = newScrollHeight - prevScrollHeight;
-                    }else{
+                    } else {
                         el.scrollTop = el.scrollHeight
                     }
                 });
@@ -179,6 +180,7 @@ export default LogsTable;
 
 
 const BodyTable = memo(function BodyTable({ log }: { log: LogProps }) {
+   
     return <tr
         key={log._id}
         className="border-t border-white/10 hover:bg-gray-600/30"
@@ -212,7 +214,11 @@ const BodyTable = memo(function BodyTable({ log }: { log: LogProps }) {
             </div>
         </td>
         <td className="pr-8 pl-4 py-3 text-xs capitalize">
-            <EllipsisVertical className="max-w-4 aspect-square" />
+            {
+                !["CONNECT", "DISCONNECT"].includes(log.flagKey) && (
+                    <ConfirmLogButton id={log._id} currentLogType={log.logType}></ConfirmLogButton>
+                )
+            }
         </td>
     </tr>
 })

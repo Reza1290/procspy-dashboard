@@ -1,6 +1,7 @@
 import { CheckIcon, LogInIcon, XIcon } from "lucide-react";
 import { LogProps } from "../LogsWindow";
 import { formattedTimestampTerminal } from "../../../../../../utils/timestamp";
+import ConfirmLogButton from "../../../logs/components/ui/ConfirmLogButton";
 
 const LogComponent = ({ log }: { log: LogProps }) => {
     return (
@@ -16,7 +17,12 @@ const LogComponent = ({ log }: { log: LogProps }) => {
                         <span className="bg-white/10 border border-white/10 p-1 px-2 text-xs rounded-md">{log.attachment?.title}</span>
 
                     )}
-                    <span className="bg-red-500 rounded text-xs py-1 px-2">{log.flag?.severity}</span>
+                    {
+                        log.flag.severity > 0 && (
+
+                            <span className="bg-red-500 rounded text-xs py-1 px-2">{log.flag?.severity}</span>
+                        )
+                    }
                 </div>
                 {
                     log.attachment?.file && (
@@ -25,17 +31,11 @@ const LogComponent = ({ log }: { log: LogProps }) => {
                                 <img className="rounded-md" src={`${process.env.STORAGE_ENDPOINT || 'https://192.168.2.5:5050'}` + log.attachment?.file} alt="" />
                             </div>
                             {
-                                log.logType === "System" && (
 
-                                    <div className="flex gap-2">
-                                        <button className="bg-red-500 rounded p-1">
-                                            <CheckIcon></CheckIcon>
-                                        </button>
-                                        <button className="bg-white/10 border border-white/10 rounded p-1">
-                                            <XIcon></XIcon>
-                                        </button>
-                                    </div>
+                                !["CONNECT", "DISCONNECT"].includes(log.flagKey) && (
+                                    <ConfirmLogButton id={log.id} currentLogType={log.logType}></ConfirmLogButton>
                                 )
+
                             }
 
                         </div>
