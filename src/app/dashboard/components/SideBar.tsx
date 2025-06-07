@@ -11,7 +11,7 @@ import SideBarItem from "./ui/SideBarItem";
 
 export default function SideBar() {
     const router = useRouter()
-    const { roomId } = useParams()
+    const { roomId, socketId } = useParams()
     const pathname = usePathname()
     const [active, setActive] = useState(false)
     const [usersSidebar, setUsersSidebar] = useState(false)
@@ -19,6 +19,12 @@ export default function SideBar() {
     const handleActiveToggle = (path: string) => {
         setActive(true)
         if (pathname !== path) {
+            console.log(pathname)
+            // console.log(!pathname.includes("/dashboard/room/"))
+            if(pathname.includes("/dashboard/room") && !path.includes("/dashboard/room")){
+                const res = confirm('Are you sure?')
+                if(!res) return
+            }
             router.push(path)
         }
     }

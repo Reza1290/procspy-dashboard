@@ -46,7 +46,7 @@ const Page = () => {
           dark:[&::-webkit-scrollbar-thumb]:bg-gray-600      
       ">
         <div className="m-4 grid sm:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4 ">
-          {peers.map((consumer: any) => (
+          {peers.length > 0  && peers.map((consumer: any) => (
             <VideoContainer key={consumer.token} consumer={consumer} />
           ))}
           {/* {

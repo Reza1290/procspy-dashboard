@@ -60,7 +60,7 @@ const VideoContainer = ({ consumer }) => {
                     if (audioRef.current) {
                         audioRef.current.srcObject = stream
                         audioRef.current.autoPlay = true
-                        audioRef.current.muted = false
+                        audioRef.current.muted = true
                         // audioRef.current.play().catch(err => console.error("Autoplay blocked:", err))
                     }
                     break
@@ -80,7 +80,7 @@ const VideoContainer = ({ consumer }) => {
                         setMicTrack(track)
                         micRef.current.srcObject = stream
                         micRef.current.autoPlay = true
-                        micRef.current.muted = false
+                        micRef.current.muted = true
                         // micRef.current.play().catch(err => console.error("Autoplay blocked:", err))
                     }
                     break
@@ -91,16 +91,19 @@ const VideoContainer = ({ consumer }) => {
         })
     }
 
-    // Ensure user interaction enables autoplay
-    // useEffect(() => {
-    //     const enableAutoplay = () => {
-    //         videoRef.current?.play()
-    //         audioRef.current?.play()
-    //         camRef.current?.play()
-    //         micRef.current?.play()
-    //     }
-    //     document.addEventListener("click", enableAutoplay, { once: true })
-    // }, [])
+    useEffect(() => {
+        const enableAutoplay = () => {
+            const track = micRef.current.srcObject.getTracks()[0]
+            setMicTrack(track)
+            videoRef.current?.play()
+            audioRef.current?.play()
+            camRef.current?.play()
+            micRef.current?.play()
+            
+        }
+        document.addEventListener("click", enableAutoplay, { once: true })
+    }, [])
+
     const toggleAudio = () => {
         setAudioMute((prev) => {
             const newMuteState = !prev
@@ -165,7 +168,9 @@ const VideoContainer = ({ consumer }) => {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <AudioMeter track={micTrack} />
+                            {
+                                micTrack && (<AudioMeter track={micTrack} />)
+                            }
                             <div className="flex items-center p-2 border border-white/10 rounded">
                                 <TriangleAlertIcon className="text-red-500" />
                                 <p className="text-xs ml-2 truncate">

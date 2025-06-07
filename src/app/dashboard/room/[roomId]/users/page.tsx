@@ -8,7 +8,7 @@ import { useWebRtc } from "../../../../../context/WebRtcProvider";
 export default function Page() {
     const { roomId } = useParams()
 
-    const { connected, setData } = useWebRtc()
+    const { connected, setData, peers } = useWebRtc()
     useEffect(() => {
         console.log(connected)
         if (connected) return;
@@ -25,7 +25,7 @@ export default function Page() {
                 Users List Room {roomId}
             </Header>
             {
-                connected == true && (
+                peers.length > 0 && (
                     <div>
                         <UserSessionTable></UserSessionTable>
                     </div>
