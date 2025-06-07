@@ -83,7 +83,7 @@ const LogsWindow = ({ token, canDrag = false }: { token: string, canDrag?: boole
 
                     if (uniqueNewLogs.length === 0) return prev;
 
-                    return [...uniqueNewLogs, ...prev];
+                    return [...prev, ...uniqueNewLogs];
                 });
 
                 setHasMore(nextPage < data.totalPages);
@@ -150,7 +150,7 @@ const LogsWindow = ({ token, canDrag = false }: { token: string, canDrag?: boole
                         (d: LogProps) => !prev.some((p) => p.id === d.id)
                     );
                     if (uniqueNewLogs.length === 0) return prev;
-                    return [...prev, ...uniqueNewLogs];
+                    return [ ...uniqueNewLogs, ...prev];
                 });
 
                 requestAnimationFrame(() => {
@@ -192,13 +192,13 @@ const LogsWindow = ({ token, canDrag = false }: { token: string, canDrag?: boole
                     </div>
                 )
             }
-            <div className="relative flex flex-col w-full gap-3 p-4 overflow-y-scroll h-[25vh]  [&::-webkit-scrollbar]:w-2
+            <div className={`relative flex flex-col w-full gap-3 p-4 overflow-y-scroll ${ canDrag ? "" : "max-h-[25vh]"}  [&::-webkit-scrollbar]:w-2
                             [&::-webkit-scrollbar-track]:rounded-full
                             [&::-webkit-scrollbar-track]:bg-gray-100
                             [&::-webkit-scrollbar-thumb]:rounded-full
                             [&::-webkit-scrollbar-thumb]:bg-gray-300
                             dark:[&::-webkit-scrollbar-track]:bg-black
-                            dark:[&::-webkit-scrollbar-thumb]:bg-gray-600"
+                            dark:[&::-webkit-scrollbar-thumb]:bg-gray-600`}
                 onScroll={handleScroll}
                 style={{ height }}
                 ref={scrollRef}

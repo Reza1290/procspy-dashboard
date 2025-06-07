@@ -31,7 +31,7 @@ const Page = () => {
       </Header>
       {
         data.active && (
-          <div className="absolute z-40 w-full bottom-0 border-t border-white/15 ">
+          <div className="absolute z-40 w-full bottom-0 border-t border-white/15 bg-black ">
             <LogsWindow canDrag={true} token={data.token}></LogsWindow>
           </div>
         )

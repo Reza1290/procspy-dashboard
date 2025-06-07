@@ -200,7 +200,7 @@ export default function Page() {
                     <button onClick={() => setActiveBar(1)} className={` ${ activeBar === 1 ? "bg-gray-400/10  border-white/10 ": ""} border border-transparent min-w-16 text-xs px-4 rounded font-light py-1`}>Device Info</button>
                     {/* <button className=" min-w-16 text-xs px-4 rounded font-light py-1">Moderation Tools</button> */}
                 </div>
-                <div className="flex justify-between border-t border-white/15 max-h-[25vh]">
+                <div className="flex justify-between border-t border-white/15 max-h-[20vh]">
                     {
                         (activeBar === 0 && peers[0]) ? (
                             <LogsWindow token={peers[0].token}></LogsWindow>
