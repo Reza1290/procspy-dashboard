@@ -44,7 +44,7 @@ export default function SideBar() {
     const handleActiveToggle = (path: string) => {
         setActive(true)
         if (pathname !== path) {
-            if (pathname.includes("/dashboard/room") && !path.includes("/dashboard/room")) {
+            if (pathname.includes("/dashboard/room/") && !path.includes("/dashboard/room/")) {
                 handleRedirect(path)
             } else {
                 router.push(path)
