@@ -93,18 +93,27 @@ const RoomTable = () => {
             )
             if (response.ok) {
 
-                setTimeout(() => {
-                    openModal(
-                        <>Success!</>
-                    )
-                }, 3000)
-            } else {
                 openModal(
-                    <>Failed!</>
+                    <AlertModal>
+                        <TitleModal>Success</TitleModal>
+                        <BodyModal><p className="text-sm text-slate-300">Data saved</p>
+                        </BodyModal>
+                    </AlertModal>
                 )
                 setTimeout(() => {
                     closeModal()
-                }, 3000)
+                }, 2000)
+            } else {
+                openModal(
+                    <AlertModal>
+                        <TitleModal>Sorry</TitleModal>
+                        <BodyModal><p className="text-sm text-slate-300">Something went wrong</p>
+                        </BodyModal>
+                    </AlertModal>
+                )
+                setTimeout(() => {
+                    closeModal()
+                }, 2000)
             }
         } catch (error) {
             openModal(
@@ -118,21 +127,6 @@ const RoomTable = () => {
                 closeModal()
             }, 3000)
         }
-    }
-
-    const { openSheet } = useSideSheet()
-    const handleEditRoom = async (id: string) => {
-        openSheet(
-            <div className="w-96 flex flex-col gap-4">
-                <SheetHeader>Edit Room</SheetHeader>
-                <p className="text-sm text-slate-500">Make change for Room, click Save when done.</p>
-
-                <div className="flex flex-col gap-2">
-                    <label htmlFor="room"></label>
-
-                </div>
-            </div>
-        )
     }
 
 

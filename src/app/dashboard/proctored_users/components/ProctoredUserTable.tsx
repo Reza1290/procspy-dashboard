@@ -3,6 +3,15 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { EllipsisVertical, Eye, HistoryIcon, Unplug } from "lucide-react";
 import session from "../../../../lib/session";
+import PopOver from "../../../../components/ui/PopOver";
+import PopOverItem from "../../../../components/ui/PopOverItem";
+import { useModal } from "../../../../context/ModalProvider";
+import ConfirmModal from "../../../../components/ui/ConfirmModal";
+import TitleModal from "../../../../components/ui/modal/TitleModal";
+import AlertModal from "../../../../components/ui/AlertModal";
+import BodyModal from "../../../../components/ui/modal/BodyModal";
+import { useSideSheet } from "../../../../context/SideSheetProvider";
+import SheetHeader from "../../../../components/ui/sheet/SheetHeader";
 
 
 export type ProctoredUser = {
@@ -25,7 +34,7 @@ const ProctoredUserTable = () => {
     useEffect(() => {
 
         fetchProctoredUsers(1);
-    },[]);
+    }, []);
 
     const fetchProctoredUsers = async (nextPage: number) => {
         try {
@@ -38,7 +47,7 @@ const ProctoredUserTable = () => {
             const data = await res.json();
             if (res.ok) {
                 setProctoredUsers(prev => {
-                    const newProctoredUsers = data.data.filter((d:ProctoredUser) => !prev.some(p => p.id === d.id));
+                    const newProctoredUsers = data.data.filter((d: ProctoredUser) => !prev.some(p => p.id === d.id));
                     return [...prev, ...newProctoredUsers];
                 });
                 setHasMore(nextPage < data.totalPages);
@@ -61,6 +70,159 @@ const ProctoredUserTable = () => {
     };
 
 
+    const { openModal, closeModal } = useModal()
+
+    const handleDeleteProctoredUser = async (id: string) => {
+
+        openModal(
+            <ConfirmModal onConfirm={() => deleteProctoredUser(id)}>
+                <TitleModal>Are you sure want to delete this?</TitleModal>
+            </ConfirmModal>
+        )
+
+
+    }
+
+    const deleteProctoredUser = async (id: string) => {
+        try {
+            const jwt = await session()
+            const response = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/room/${id}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${jwt}`
+                    },
+                }
+            )
+            if (response.ok) {
+
+                openModal(
+                    <AlertModal>
+                        <TitleModal>Success</TitleModal>
+                        <BodyModal><p className="text-sm text-slate-300">Data saved</p>
+                        </BodyModal>
+                    </AlertModal>
+                )
+                setTimeout(() => {
+                    closeModal()
+                }, 2000)
+            } else {
+                openModal(
+                    <AlertModal>
+                        <TitleModal>Failed</TitleModal>
+                        <BodyModal><p className="text-sm text-slate-300">Data not saved</p>
+                        </BodyModal>
+                    </AlertModal>
+                )
+                setTimeout(() => {
+                    closeModal()
+                }, 2000)
+            }
+        } catch (error) {
+            openModal(
+                <AlertModal>
+                    <TitleModal>Sorry</TitleModal>
+                    <BodyModal><p className="text-sm text-slate-300">Something went wrong</p>
+                    </BodyModal>
+                </AlertModal>
+            )
+            setTimeout(() => {
+                closeModal()
+            }, 2000)
+        }
+    }
+
+    const { openSheet, closeSheet } = useSideSheet()
+
+    const identifierRef = useRef<HTMLInputElement>(null)
+    const nameRef = useRef<HTMLInputElement>(null)
+    const emailRef = useRef<HTMLInputElement>(null)
+
+    const handleEditProctoredUser = async (proctoredUser: ProctoredUser) => {
+
+
+        openSheet(
+            <div className="w-96 flex flex-col gap-4 h-full">
+                <SheetHeader>Edit Proctored User</SheetHeader>
+                <p className="text-sm text-slate-500">Make change for Proctored User, click Save when done.</p>
+
+                <div className="flex flex-col gap-2 mt-20">
+                    <label htmlFor="identifier" className="text-sm text-slate-100 font-medium">Identifier</label>
+                    <input ref={identifierRef} type="text" id="identifier" className="p-2 text-sm px-2 bg-white/5 border border-white/15 rounded-md" defaultValue={proctoredUser.identifier} />
+                </div>
+                <div className="flex flex-col gap-2">
+                    <label htmlFor="name" className="text-sm text-slate-100 font-medium">Name</label>
+                    <input ref={nameRef} type="text" id="name" className="p-2 text-sm px-2 bg-white/5 border border-white/15 rounded-md" defaultValue={proctoredUser.name} />
+                </div>
+                <div className="flex flex-col gap-2">
+                    <label htmlFor="email" className="text-sm text-slate-100 font-medium">Email</label>
+                    <input ref={emailRef} type="text" id="email" className="p-2 text-sm px-2 bg-white/5 border border-white/15 rounded-md" defaultValue={proctoredUser.email} />
+                </div>
+                <div className="mt-auto flex flex-col gap-1 p-1">
+                    <div className="bg-slate-100 rounded-md text-black/90 p-1 text-center text-sm font-medium py-2 cursor-pointer" onClick={() => editProctoredUser({ id: proctoredUser.id, identifier: identifierRef.current.value, name: nameRef.current.value, email: emailRef.current.value })}>
+                        Save Change
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    const editProctoredUser = async ({ id, identifier, name, email }: { id: string, identifier: string, name: string, email: string }) => {
+        closeSheet()
+        try {
+            const jwt = await session()
+            const response = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/proctored_user/${id}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${jwt}`
+                    },
+                    body: JSON.stringify({
+                        identifier, name, email
+                    })
+                }
+            )
+            
+            if (response.ok) {
+
+                openModal(
+                    <AlertModal>
+                        <TitleModal>Success</TitleModal>
+                        <BodyModal><p className="text-sm text-slate-300">Data saved</p>
+                        </BodyModal>
+                    </AlertModal>
+                )
+                setTimeout(() => {
+                    closeModal()
+                }, 2000)
+            } else {
+                openModal(
+                    <AlertModal>
+                        <TitleModal>Failed</TitleModal>
+                        <BodyModal><p className="text-sm text-slate-300">Data not saved</p>
+                        </BodyModal>
+                    </AlertModal>
+                )
+                setTimeout(() => {
+                    closeModal()
+                }, 2000)
+            }
+        } catch (error) {
+            openModal(
+                <AlertModal>
+                    <TitleModal>Sorry</TitleModal>
+                    <BodyModal><p className="text-sm text-slate-300">Something went wrong</p>
+                    </BodyModal>
+                </AlertModal>
+            )
+            setTimeout(() => {
+                closeModal()
+            }, 2000)
+        }
+    }
+
     return (
         <div className="">
             <div className="overflow-x-auto border-b border-white/15">
@@ -80,7 +242,7 @@ const ProctoredUserTable = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {proctoredUsers.map((user) => (
+                            {proctoredUsers.map((user: ProctoredUser) => (
                                 <tr key={user.id} className="border-t border-white/10 hover:bg-gray-600/30">
                                     <td className="pl-8 pr-4 py-4 text-sm text-white/70">{user.id}</td>
                                     <td className="px-4 py-4 text-sm font-semibold">{user.identifier}</td>
@@ -91,7 +253,10 @@ const ProctoredUserTable = () => {
                                             <HistoryIcon className="w-4" /> View Session History</div>
                                     </td>
                                     <td className="pr-8 pl-4 py-4 text-xs capitalize flex justify-start items-center gap-4">
-                                        <EllipsisVertical className="max-w-4 aspect-square" />
+                                        <PopOver icon={<EllipsisVertical className="max-w-4 aspect-square" />}>
+                                            <PopOverItem onClick={() => handleEditProctoredUser(user)}>Edit</PopOverItem>
+                                            <PopOverItem onClick={() => handleDeleteProctoredUser(user.id)}>Delete</PopOverItem>
+                                        </PopOver>
                                     </td>
 
                                 </tr>

@@ -30,7 +30,7 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
             {children}
             {active && (
                 <div
-                    className=" fixed inset-0 bg-black/10 flex items-center justify-center z-50"
+                    className=" fixed inset-0 bg-black/10 flex items-center justify-center z-[100]"
                     onClick={closeModal} 
                 >
                     <div
