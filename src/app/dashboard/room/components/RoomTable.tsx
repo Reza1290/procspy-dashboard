@@ -3,6 +3,13 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { EllipsisVertical, Eye, HistoryIcon, ScreenShareIcon, Unplug } from "lucide-react";
 import session from "../../../../lib/session";
+import PopOver from "../../../../components/ui/PopOver";
+import PopOverItem from "../../../../components/ui/PopOverItem";
+import { useModal } from "../../../../context/ModalProvider";
+import AlertModal from "../../../../components/ui/AlertModal";
+import TitleModal from "../../../../components/ui/modal/TitleModal";
+import BodyModal from "../../../../components/ui/modal/BodyModal";
+import ConfirmModal from "../../../../components/ui/ConfirmModal";
 
 
 export type Room = {
@@ -57,6 +64,59 @@ const RoomTable = () => {
             fetchRooms(page + 1);
         }
     };
+    const { openModal, closeModal } = useModal()
+
+    const handleDeleteRoom = async (id: string) => {
+
+        openModal(
+            <ConfirmModal onConfirm={() => deleteRoom(id)}>
+                <TitleModal>Are you sure want to delete this?</TitleModal>
+            </ConfirmModal>
+        )
+
+
+    }
+
+    const deleteRoom = async (id: string) => {
+        try {
+            const jwt = await session()
+            const response = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/room/${id}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${jwt}`
+                    },
+                }
+            )
+            if (response.ok) {
+
+                setTimeout(() => {
+                    openModal(
+                        <>Success!</>
+                    )
+                }, 3000)
+            } else {
+                openModal(
+                    <>Failed!</>
+                )
+                setTimeout(() => {
+                    closeModal()
+                }, 3000)
+            }
+        } catch (error) {
+            openModal(
+                <AlertModal>
+                    <TitleModal>Sorry</TitleModal>
+                    <BodyModal><p className="text-sm text-slate-300">Something went wrong</p>
+                    </BodyModal>
+                </AlertModal>
+            )
+            setTimeout(() => {
+                closeModal()
+            }, 3000)
+        }
+    }
 
 
     return (
@@ -85,7 +145,12 @@ const RoomTable = () => {
                                             <ScreenShareIcon className="w-4" /> Join</div>
                                     </td>
                                     <td className="pr-8 pl-4 py-4 text-xs capitalize flex justify-start items-center gap-4">
-                                        <EllipsisVertical className="max-w-4 aspect-square" />
+
+                                        <PopOver icon={<EllipsisVertical className="max-w-4 aspect-square" />}>
+                                            <PopOverItem onClick={() => { }}>Edit</PopOverItem>
+                                            <PopOverItem onClick={() => handleDeleteRoom(room.id)}>Delete</PopOverItem>
+                                        </PopOver>
+
                                     </td>
 
                                 </tr>

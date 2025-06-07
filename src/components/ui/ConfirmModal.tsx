@@ -2,7 +2,7 @@ import { ReactNode } from "react"
 import { useModal } from "../../context/ModalProvider"
 
 interface ConfirmModalProps {
-    element: ReactNode
+    children: ReactNode
     onConfirm: () => void
     onCancel?: () => void
     confirmText?: string
@@ -10,7 +10,7 @@ interface ConfirmModalProps {
 }
 
 const ConfirmModal = ({
-    element,
+    children,
     onConfirm,
     onCancel,
     confirmText = "Confirm",
@@ -29,8 +29,8 @@ const ConfirmModal = ({
     }
 
     return (
-        <div className="p-6 bg-black rounded-md shadow-lg max-w-md min-w-96 mx-auto border border-white/15 backdrop-blur-sm">
-            {element}
+        <div className="p-6 bg-black rounded-md shadow-lg max-w-md min-w-96 mx-auto border border-white/15 backdrop-blur-sm flex flex-col gap-4">
+            {children}
             <div className="flex justify-end gap-2 mt-4">
                 <button
                     onClick={handleCancel}

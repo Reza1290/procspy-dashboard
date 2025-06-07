@@ -38,8 +38,8 @@ const PopOver = ({ children, icon }: { children: React.ReactNode, icon: React.Re
             </button>
             {
                 isVisible && (
-                    <div className="fixed z-[40] rounded border border-white/15  min-w-32 min-h-10 p-1 bg-gray-800 right-[5%]" ref={popoverRef}>
-                        {children}
+                    <div className="fixed z-[30] rounded-md border border-white/15  min-w-32 min-h-10 p-1 bg-gray-800" ref={popoverRef}>
+                        <div className="flex flex-col gap-1">{children}</div>
                     </div>
                 )
             }
