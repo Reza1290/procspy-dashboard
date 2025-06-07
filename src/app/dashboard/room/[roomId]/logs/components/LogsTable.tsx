@@ -25,7 +25,12 @@ export type LogProps = {
         flagKey: string;
         label: string;
         severity: number;
-    };
+    }
+    session: {
+        proctoredUserId: string
+        token: string
+    }
+
 };
 
 const LogsTable = () => {
@@ -159,9 +164,10 @@ const LogsTable = () => {
 
     return (
         <div className="">
-            <div className="overflow-x-auto border-b border-t border-white/15">
+            <div className=" overflow-x-auto border-b border-t border-white/15 ">
+
                 <div
-                    className="relative overflow-y-scroll max-h-screen"
+                    className="relative overflow-y-scroll max-h-[90vh]"
                     onScroll={handleScroll}
                     ref={scrollRef}
                 >
@@ -169,6 +175,18 @@ const LogsTable = () => {
                         <tbody>
                             {[...logs].reverse().map((log) => <BodyTable key={log._id} log={log} />)}
                         </tbody>
+                        <tfoot className="sticky bottom-[-2px] z-40 bg-black border-t border-white/15">
+                            <tr>
+                                <th className="pl-8 pr-4 py-2 text-left font-normal text-slate-100/75 text-sm">Timestamp</th>
+                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Severity</th>
+                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm"></th>
+                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Proctored User Id</th>
+                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Session Token</th>
+                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Flag Key</th>
+                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Flag Detail</th>
+                                <th className="pr-8 pl-4 text-left font-normal text-slate-100/75 text-sm">Action</th>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
@@ -180,7 +198,7 @@ export default LogsTable;
 
 
 const BodyTable = memo(function BodyTable({ log }: { log: LogProps }) {
-   
+
     return <tr
         key={log._id}
         className="border-t border-white/10 hover:bg-gray-600/30"
@@ -195,6 +213,12 @@ const BodyTable = memo(function BodyTable({ log }: { log: LogProps }) {
         </td>
         <td className="px-4 py-3 min-w-min">
             <InfoIcon />
+        </td>
+        <td className="px-4 py-3 text-xs font-normal text-sky-300">
+            {log.session.proctoredUserId || "-"}
+        </td>
+        <td className="px-4 py-3 text-xs font-normal text-sky-300">
+            {log.session.token || "-"}
         </td>
         <td className="px-4 py-3 text-xs font-semibold">
             {log.flagKey || "-"}
