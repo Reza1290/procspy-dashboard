@@ -55,16 +55,20 @@ const UserSessionTable = () => {
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
 
+
+    const [threshold, setThreshold] = useState(100)
     const { peers, data } = useWebRtc()
-    
+
     useEffect(() => {
         if (!roomId) return;
         fetchSessions(1)
+        fetchGlobalSetting()
     }, [roomId]);
-
+    
     useEffect(() => {
-        if(!peers) return
+        if (!peers) return
         fetchSessions(1)
+        fetchGlobalSetting()
     }, [peers])
 
     const fetchSessions = async (nextPage: number) => {
@@ -80,7 +84,7 @@ const UserSessionTable = () => {
                 setSessions(prev => {
                     let newSessions = data.data
                         .filter((d: SessionProps) => !prev.some(p => p.token === d.token))
-                        .map((d:SessionProps) => ({
+                        .map((d: SessionProps) => ({
                             ...d,
                             isOnline: peers.some(peer => peer.token === d.token)
                         }));
@@ -95,6 +99,24 @@ const UserSessionTable = () => {
         }
     };
 
+    const fetchGlobalSetting = async () => {
+        try {
+            const token = await session();
+            const response = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api//global-settings?page=1&paginationLimit=1`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if(response.ok){
+                const {data} = await response.json()
+                setThreshold(parseInt(data[0].value))
+            }
+        } catch (error) {
+
+        }
+    }
+
 
     const handleScroll = () => {
         const el = scrollRef.current;
@@ -107,12 +129,23 @@ const UserSessionTable = () => {
 
     const handleAbortSession = (sessionId: string) => {
         try {
-            
+
         } catch (error) {
-            
+
         }
     }
 
+
+
+    const calcFraudLevel = (totalSeverity: number) => {
+        console.log(threshold)
+        const percentOfThreshold = (totalSeverity / threshold) * 100;
+
+        return percentOfThreshold >= 90 ? FraudLevel.CRITICAL :
+            percentOfThreshold >= 65 ? FraudLevel.HIGH :
+                percentOfThreshold >= 25 ? FraudLevel.MEDIUM :
+                    FraudLevel.LOW;
+    }
 
     return (
         <div className="">
@@ -155,9 +188,9 @@ const UserSessionTable = () => {
                                         <div className="bg-red-500 w-min rounded p-1 px-2">{session.status}</div>
                                     </td>
                                     <td className="px-4 py-4 text-xs capitalize">
-                                        <div className="bg-red-500 w-min rounded p-1 px-2 capitalize">{ session.session_result != null && session.session_result?.fraudLevel || "-"}</div>
+                                        <div className="bg-red-500 w-min rounded p-1 px-2 capitalize">{session.session_result != null && calcFraudLevel(session.session_result.totalSeverity) || "LOW"}</div>
                                     </td>
-                                    <td className="pr-8 pl-4 py-4 text-xs capitalize flex justify-start items-center gap-4">                                        
+                                    <td className="pr-8 pl-4 py-4 text-xs capitalize flex justify-start items-center gap-4">
                                         <PopOver icon={<EllipsisVertical className="max-w-4 aspect-square" />}>
                                             <div className="flex flex-col gap-1">
                                                 <div className="hover:bg-gray-700 cursor-pointer rounded text-sm p-1 px-2" onClick={() => handleAbortSession(session.id)}>
