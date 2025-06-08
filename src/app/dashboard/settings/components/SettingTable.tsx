@@ -135,12 +135,12 @@ const SettingTable = () => {
       <div className="overflow-x-auto border-b border-white/15">
         <div className="mx-8 my-4 flex justify-between">
           <div />
-          <button
+          {/* <button
             onClick={() => setAddVariableComponentActive(true)}
             className="bg-blue-500 p-2 px-4 text-sm rounded-md min-w-32 hover:bg-blue-600"
           >
             Add Variable
-          </button>
+          </button> */}
         </div>
         <div className="relative max-h-[76vh] overflow-y-auto" onScroll={handleScroll} ref={scrollRef}>
           <table className="min-w-full table-fixed">
