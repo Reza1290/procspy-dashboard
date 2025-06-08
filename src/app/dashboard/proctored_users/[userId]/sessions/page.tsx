@@ -9,7 +9,7 @@ export default function Page() {
 
     return (
         <>
-            <Header><HeaderTitle><span className="text-slate-100/80">Proctored Users</span> &gt; <span className="text-slate-100/80">User Session</span> &gt; {userId}</HeaderTitle></Header>
+            <Header><HeaderTitle><span className="text-slate-100/80">Proctored Users</span>  &gt; <span className="text-slate-100/80">{userId} </span> &gt; Sessions</HeaderTitle></Header>
             <SessionTable></SessionTable>
         </>
     );

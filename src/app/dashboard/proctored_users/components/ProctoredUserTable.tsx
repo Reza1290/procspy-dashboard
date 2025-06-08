@@ -249,7 +249,7 @@ const ProctoredUserTable = () => {
                                     <td className="px-4 py-4 text-sm text-sky-500/75 font-medium">{user.name}</td>
                                     <td className="px-4 py-4 text-sm text-sky-500/75 font-medium">{user.email}</td>
                                     <td className="px-4 py-4 text-xs capitalize">
-                                        <div onClick={() => router.push(pathname + "/session/" + user.id)} className="bg-blue-500 w-max rounded p-1 px-2 cursor-pointer flex gap-1 items-center">
+                                        <div onClick={() => router.push(pathname + "/" + user.id + "/sessions/")} className="bg-blue-500 w-max rounded p-1 px-2 cursor-pointer flex gap-1 items-center">
                                             <HistoryIcon className="w-4" /> View Session History</div>
                                     </td>
                                     <td className="pr-8 pl-4 py-4 text-xs capitalize flex justify-start items-center gap-4">

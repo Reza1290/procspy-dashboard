@@ -2,8 +2,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, usePathname } from "next/navigation";
 import session from "../../../../../../lib/session";
-import { EllipsisVertical, Eye, Unplug } from "lucide-react";
+import { ChartLineIcon, EllipsisVertical, Eye, Unplug } from "lucide-react";
 import { FraudLevel, SessionProps } from "../../../../room/[roomId]/users/components/UserSessionTable";
+import { useRouter } from "next/navigation";
 
 
 
@@ -19,6 +20,7 @@ const SessionTable = () => {
 
     const [threshold, setThreshold] = useState(100)
 
+    const router = useRouter()
     useEffect(() => {
         if (!userId) return;
 
@@ -100,7 +102,8 @@ const SessionTable = () => {
                                         <div className="bg-red-500 w-min rounded p-1 px-2">{session.session_result && calcFraudLevel(session.session_result.totalSeverity) || "LOW"}</div>
                                     </td>
                                     <td className="pr-8 pl-4 py-4 text-xs capitalize flex justify-start items-center gap-4">
-                                        
+                                       <div onClick={() => router.push(pathname + "/analytics/" + session.token)} className="bg-blue-500 w-max rounded p-1 px-2 cursor-pointer flex gap-1 items-center ">
+                                            <ChartLineIcon className="w-4" /> Session Result</div>
                                     </td>
 
                                 </tr>
