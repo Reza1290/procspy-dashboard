@@ -3,24 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, usePathname } from "next/navigation";
 import session from "../../../../../../lib/session";
 import { EllipsisVertical, Eye, Unplug } from "lucide-react";
+import { FraudLevel, SessionProps } from "../../../../room/[roomId]/users/components/UserSessionTable";
 
-export enum SessionStatus {
-    Scheduled,
-    Ongoing,
-    Completed,
-    Paused,
-}
 
-export type SessionProps = {
-    id: string;
-    userId: string;
-    proctoredUserId: string;
-    token: string
-
-    startTime?: string;
-    endTime?: string;
-    status?: SessionStatus;
-};
 
 const SessionTable = () => {
     const pathname = usePathname()
@@ -31,6 +16,9 @@ const SessionTable = () => {
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
+
+    const [threshold, setThreshold] = useState(100)
+
     useEffect(() => {
         if (!userId) return;
 
@@ -71,6 +59,15 @@ const SessionTable = () => {
     };
 
 
+    const calcFraudLevel = (totalSeverity: number) => {
+            const percentOfThreshold = (totalSeverity / threshold) * 100;
+    
+            return percentOfThreshold >= 90 ? FraudLevel.CRITICAL :
+                percentOfThreshold >= 65 ? FraudLevel.HIGH :
+                    percentOfThreshold >= 25 ? FraudLevel.MEDIUM :
+                        FraudLevel.LOW;
+        }
+
     return (
         <div className="">
             <div className="overflow-x-auto border-b border-white/15">
@@ -91,7 +88,7 @@ const SessionTable = () => {
                         </thead>
                         <tbody>
                             {sessions.map((session) => (
-                                <tr key={session.id} className="border-t border-white/10 hover:bg-gray-600/30">
+                                <tr key={session.token} className="border-t border-white/10 hover:bg-gray-600/30">
 
                                     <td className="pl-8 pr-4 py-4 text-sm font-semibold">{session.token}</td>
                                     <td className="px-4 py-4 text-sm">{session.startTime || "-"}</td>
@@ -100,10 +97,10 @@ const SessionTable = () => {
                                         <div className="bg-red-500 w-min rounded p-1 px-2">{session.status}</div>
                                     </td>
                                     <td className="px-4 py-4 text-xs capitalize">
-                                        <div className="bg-red-500 w-min rounded p-1 px-2">High</div>
+                                        <div className="bg-red-500 w-min rounded p-1 px-2">{session.session_result && calcFraudLevel(session.session_result.totalSeverity) || "LOW"}</div>
                                     </td>
                                     <td className="pr-8 pl-4 py-4 text-xs capitalize flex justify-start items-center gap-4">
-                                        <EllipsisVertical className="max-w-4 aspect-square" />
+                                        
                                     </td>
 
                                 </tr>
