@@ -25,7 +25,26 @@ export type SessionProps = {
     endTime?: string;
     status?: SessionStatus;
     isOnline: boolean;
+    session_result: SessionResultProps
 };
+export enum FraudLevel {
+    LOW = 'LOW',
+    MEDIUM = 'MEDIUM',
+    HIGH = 'HIGH',
+    CRITICAL = 'CRITICAL',
+}
+
+export type SessionResultProps = {
+    id: string
+    sessionId: string
+    fraudLevel: FraudLevel
+    totalFlags: number
+    totalSeverity: number
+    falseDetection: number
+    trueSeverity: number
+    updatedAt?: string
+    createdAt?: string
+}
 
 const UserSessionTable = () => {
 
@@ -136,7 +155,7 @@ const UserSessionTable = () => {
                                         <div className="bg-red-500 w-min rounded p-1 px-2">{session.status}</div>
                                     </td>
                                     <td className="px-4 py-4 text-xs capitalize">
-                                        <div className="bg-red-500 w-min rounded p-1 px-2">High</div>
+                                        <div className="bg-red-500 w-min rounded p-1 px-2 capitalize">{ session.session_result != null && session.session_result?.fraudLevel || "-"}</div>
                                     </td>
                                     <td className="pr-8 pl-4 py-4 text-xs capitalize flex justify-start items-center gap-4">                                        
                                         <PopOver icon={<EllipsisVertical className="max-w-4 aspect-square" />}>
