@@ -1,8 +1,8 @@
 "use client"
 import { useEffect, useRef, useState } from "react";
-import { useParams, usePathname } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import session from "../../../../../../lib/session";
-import { EllipsisVertical, Eye, Unplug } from "lucide-react";
+import { ChartLineIcon, EllipsisVertical, Eye, Unplug } from "lucide-react";
 import { useWebRtc } from "../../../../../../context/WebRtcProvider";
 import PopOver from "../../../../../../components/ui/PopOver";
 
@@ -47,6 +47,9 @@ export type SessionResultProps = {
 }
 
 const UserSessionTable = () => {
+
+    const router = useRouter()
+    const pathname = usePathname()
 
     const { roomId } = useParams()
     const [sessions, setSessions] = useState<SessionProps[]>([]);
@@ -136,7 +139,12 @@ const UserSessionTable = () => {
 
     const handleAbortSession = (sessionId: string) => {
         try {
-
+            // const token = await session();
+            // const response = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/global-settings?page=1&paginationLimit=1`, {
+            //     headers: {
+            //         Authorization: `Bearer ${token}`,
+            //     },
+            // });
         } catch (error) {
 
         }
@@ -171,6 +179,7 @@ const UserSessionTable = () => {
                                 <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">End Time</th>
                                 <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Session Status</th>
                                 <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Fraud Status</th>
+                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Analytics</th>
                                 <th className="pr-8 pl-4 text-left font-normal text-slate-100/75 text-sm">Action</th>
                             </tr>
                         </thead>
@@ -196,6 +205,11 @@ const UserSessionTable = () => {
                                     </td>
                                     <td className="px-4 py-4 text-xs capitalize">
                                         <div className="bg-red-500 w-min rounded p-1 px-2 capitalize">{session.session_result != null && calcFraudLevel(session.session_result.totalSeverity) || "LOW"}</div>
+                                    </td>
+                                    <td className="px-4 py-4 text-xs capitalize gap-4">
+                                       <div onClick={() => router.push(pathname + "/analytics/" + session.token)} className="bg-blue-500 w-max rounded p-1 px-2 cursor-pointer flex gap-1 items-center ">
+                                            <ChartLineIcon className="w-4" /> Session Result
+                                        </div>
                                     </td>
                                     <td className="pr-8 pl-4 py-4 text-xs capitalize flex justify-start items-center gap-4">
                                         <PopOver icon={<EllipsisVertical className="max-w-4 aspect-square" />}>
