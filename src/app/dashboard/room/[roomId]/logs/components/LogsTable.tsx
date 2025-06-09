@@ -14,6 +14,7 @@ export enum logType {
 }
 
 export type LogProps = {
+    id: string;
     _id: string;
     sessionId: string;
     attachment?: any;
@@ -197,7 +198,7 @@ const LogsTable = () => {
 export default LogsTable;
 
 
-const BodyTable = memo(function BodyTable({ log }: { log: LogProps }) {
+export const BodyTable = memo(function BodyTable({ log }: { log: LogProps }) {
 
     return <tr
         key={log._id}

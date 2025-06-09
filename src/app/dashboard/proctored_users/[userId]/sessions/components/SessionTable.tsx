@@ -10,6 +10,8 @@ import { useRouter } from "next/navigation";
 
 const SessionTable = () => {
     const pathname = usePathname()
+    const usedPathaname = pathname.split("/")
+    usedPathaname.pop()
 
     const { userId } = useParams()
     const [sessions, setSessions] = useState<SessionProps[]>([]);
@@ -102,7 +104,7 @@ const SessionTable = () => {
                                         <div className="bg-red-500 w-min rounded p-1 px-2">{session.session_result && calcFraudLevel(session.session_result.totalSeverity) || "LOW"}</div>
                                     </td>
                                     <td className="pr-8 pl-4 py-4 text-xs capitalize flex justify-start items-center gap-4">
-                                       <div onClick={() => router.push(pathname + "/analytics/" + session.token)} className="bg-blue-500 w-max rounded p-1 px-2 cursor-pointer flex gap-1 items-center ">
+                                       <div onClick={() => router.push(usedPathaname.join("/") + "/analytics/" + session.token)} className="bg-blue-500 w-max rounded p-1 px-2 cursor-pointer flex gap-1 items-center ">
                                             <ChartLineIcon className="w-4" /> Session Result</div>
                                     </td>
 
