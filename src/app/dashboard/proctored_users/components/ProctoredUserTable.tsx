@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useRef, useState } from "react";
+import { MouseEventHandler, useEffect, useRef, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { EllipsisVertical, Eye, HistoryIcon, PlusIcon, Unplug } from "lucide-react";
 import session from "../../../../lib/session";
@@ -159,9 +159,8 @@ const ProctoredUserTable = () => {
     const nameRef = useRef<HTMLInputElement>(null)
     const emailRef = useRef<HTMLInputElement>(null)
 
-    const handleEditProctoredUser = async (proctoredUser: ProctoredUser) => {
 
-
+    const handleSheet = async ({proctoredUser, onClick}:{ proctoredUser?: ProctoredUser | null, onClick?: MouseEventHandler}) => {
         openSheet(
             <div className="w-96 flex flex-col gap-4 h-full">
                 <SheetHeader>Edit Proctored User</SheetHeader>
@@ -169,30 +168,97 @@ const ProctoredUserTable = () => {
 
                 <div className="flex flex-col gap-2 mt-20">
                     <label htmlFor="identifier" className="text-sm text-slate-100 font-medium">Identifier</label>
-                    <input ref={identifierRef} type="text" id="identifier" className="p-2 text-sm px-2 bg-white/5 border border-white/15 rounded-md" defaultValue={proctoredUser.identifier} />
+                    <input ref={identifierRef} type="text" id="identifier" className="p-2 text-sm px-2 bg-white/5 border border-white/15 rounded-md" defaultValue={proctoredUser ? proctoredUser.identifier : ""} />
                 </div>
                 <div className="flex flex-col gap-2">
                     <label htmlFor="name" className="text-sm text-slate-100 font-medium">Name</label>
-                    <input ref={nameRef} type="text" id="name" className="p-2 text-sm px-2 bg-white/5 border border-white/15 rounded-md" defaultValue={proctoredUser.name} />
+                    <input ref={nameRef} type="text" id="name" className="p-2 text-sm px-2 bg-white/5 border border-white/15 rounded-md" defaultValue={proctoredUser ? proctoredUser.name : ""} />
                 </div>
                 <div className="flex flex-col gap-2">
                     <label htmlFor="email" className="text-sm text-slate-100 font-medium">Email</label>
-                    <input ref={emailRef} type="text" id="email" className="p-2 text-sm px-2 bg-white/5 border border-white/15 rounded-md" defaultValue={proctoredUser.email} />
+                    <input ref={emailRef} type="text" id="email" className="p-2 text-sm px-2 bg-white/5 border border-white/15 rounded-md" defaultValue={proctoredUser ? proctoredUser.email : ""} />
                 </div>
                 <div className="mt-auto flex flex-col gap-1 p-1">
-                    <div className="bg-slate-100 rounded-md text-black/90 p-1 text-center text-sm font-medium py-2 cursor-pointer" onClick={() => editProctoredUser({ id: proctoredUser.id, identifier: identifierRef.current.value, name: nameRef.current.value, email: emailRef.current.value })}>
+                    <div className="bg-slate-100 rounded-md text-black/90 p-1 text-center text-sm font-medium py-2 cursor-pointer" onClick={onClick}>
                         Save Change
                     </div>
                 </div>
             </div>
         )
     }
+    const handleEditProctoredUser = async (proctoredUser: ProctoredUser) => {
+
+        handleSheet({proctoredUser, onClick: () => editProctoredUser({ id: proctoredUser.id, identifier: identifierRef.current.value, name: nameRef.current.value, email: emailRef.current.value })})
+    
+    }
+
+    const handleAddProctoredUser = async () => {
+        handleSheet({proctoredUser: null, onClick: () => addProctoredUser({ identifier: identifierRef.current.value, name: nameRef.current.value, email: emailRef.current.value })})
+
+    }
+
+    const addProctoredUser = async ({identifier, name, email}:{identifier: string, name: string, email: string}) => {
+        closeSheet()
+        try {
+            const jwt = await session()
+            const response = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/proctored-user`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${jwt}`
+                    },
+                    body: JSON.stringify({
+                        identifier, name, email
+                    })
+                    
+                }
+            )
+            const data = await response.json()
+            if (response.ok) {
+                
+                openModal(
+                    <AlertModal>
+                        <TitleModal>Success</TitleModal>
+                        <BodyModal><p className="text-sm text-slate-300">Data saved</p>
+                        </BodyModal>
+                    </AlertModal>
+                )
+                fetchProctoredUsers(1)
+                setTimeout(() => {
+                    closeModal()
+                }, 2000)
+            } else {
+                openModal(
+                    <AlertModal>
+                        <TitleModal>Failed</TitleModal>
+                        <BodyModal><p className="text-sm text-slate-300">Data not saved {data.error}</p>
+                        </BodyModal>
+                    </AlertModal>
+                )
+                setTimeout(() => {
+                    closeModal()
+                }, 2000)
+            }
+        } catch (error) {
+            openModal(
+                <AlertModal>
+                    <TitleModal>Sorry</TitleModal>
+                    <BodyModal><p className="text-sm text-slate-300">Something went wrong</p>
+                    </BodyModal>
+                </AlertModal>
+            )
+            setTimeout(() => {
+                closeModal()
+            }, 2000)
+        }
+    }
 
     const editProctoredUser = async ({ id, identifier, name, email }: { id: string, identifier: string, name: string, email: string }) => {
         closeSheet()
         try {
             const jwt = await session()
-            const response = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/proctored_user/${id}`,
+            const response = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/proctored-user/${id}`,
                 {
                     method: "PUT",
                     headers: {
@@ -337,8 +403,16 @@ const ProctoredUserTable = () => {
     return (
         <div className="">
             <div className="overflow-x-auto border-b border-white/15">
-                <div className="mx-8 my-4">
-                    Filter
+                <div className="flex justify-between mx-8 my-4">
+                    <div>
+
+                    </div>
+                    <button
+            onClick={() => handleAddProctoredUser()}
+            className="bg-blue-500 p-2 px-4 text-sm rounded-md min-w-32 hover:bg-blue-600"
+          >
+            Add Variable
+          </button>
                 </div>
                 <div className="relative max-h-[76vh] overflow-y-auto" onScroll={handleScroll} ref={scrollRef}>
                     <table className="min-w-full table-fixed">
