@@ -11,6 +11,7 @@ import DraggableTimeline from "../components/DraggableTimeline";
 import ConfirmLogButton from "../../../../room/[roomId]/logs/components/ui/ConfirmLogButton";
 import { FlagIcon, InfoIcon } from "lucide-react";
 import { formattedTimestamp } from "../../../../../utils/timestamp";
+import { SessionResultProps } from "../../../../room/[roomId]/users/components/UserSessionTable";
 
 
 
@@ -24,6 +25,9 @@ export default function Page() {
 
     const [currentIndex, setCurrentIndex] = useState(0)
     const [currentId, setCurrentId] = useState("")
+
+    const [sessionResult, setSessionResult] = useState<SessionResultProps>(null)
+    const [updateLog, setUpdateLog] = useState(0)
     const fetchlogs = async (nextPage: number, limit: number) => {
         try {
             const jwt = await session();
@@ -46,6 +50,27 @@ export default function Page() {
         return null
     };
 
+    const fetchSessionResult = async () => {
+        try {
+            const jwt = await session();
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_ENDPOINT || "https://192.168.2.5:5050"}/api/session-result-token/${token}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+
+            );
+            if (res.ok) {
+                const data = await res.json()
+
+                setSessionResult(data)
+            }
+        } catch (error) {
+
+        }
+    }
 
     useEffect(() => {
         const loadAllData = async () => {
@@ -59,9 +84,11 @@ export default function Page() {
                 console.error("Error loading data", e);
             }
         };
-
+        fetchSessionResult()
+        setCurrentId(null)
+        setCurrentIndex(0)
         loadAllData();
-    }, []);
+    }, [updateLog]);
 
     const timeline = useMemo(() => {
         if (dataPoints.length === 0) return [];
@@ -142,8 +169,33 @@ export default function Page() {
             <Header><HeaderTitle><span className="text-slate-100/80">Proctored Users</span>  &gt; <span className="text-slate-100/80">{userId} </span> &gt; Analytics</HeaderTitle></Header>
             <div className="flex flex-col h-full max-h-[90vh] oveflow-hidden">
                 <div className="max-h-[60vh] h-full w-full flex">
-                    <div className="h-full w-full max-w-[20%] border-r border-white/15">
-
+                    <div className="h-full w-full max-w-[20%] border-r border-white/15 p-8">
+                        {sessionResult && (
+                            <table className="w-full text-sm ">
+                                <tbody>
+                                    <tr>
+                                        <td className="py-2 pr-4 text-gray-400">Total Severity</td>
+                                        <td className="py-2 text-blue-500">{sessionResult.totalSeverity}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-2 pr-4 text-gray-400">Total Flags</td>
+                                        <td className="py-2 text-blue-500">{sessionResult.totalFlags}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-2 pr-4 text-gray-400">Fraud Level</td>
+                                        <td className="py-2 text-blue-500">{sessionResult.fraudLevel}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-2 pr-4 text-gray-400">True Severity</td>
+                                        <td className="py-2 text-blue-500">{sessionResult.trueSeverity}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-2 pr-4 text-gray-400">False Detection</td>
+                                        <td className="py-2 text-blue-500">{sessionResult.falseDetection}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        )}
                     </div>
                     <div className="h-full max-w-[80vw] w-full ">
                         <div className="h-full flex flex-col justify-between">
@@ -170,7 +222,7 @@ export default function Page() {
                                 <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm"></th>
                                 <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Flag Key</th>
                                 <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Flag Detail</th>
-                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Detect By</th>
+                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Detect As</th>
                                 <th className="pr-8 pl-4 text-left font-normal text-slate-100/75 text-sm">Action</th>
                                 <th className="pr-8 pl-4 text-left font-normal text-slate-100/75 text-sm">Navigation</th>
                             </tr>
@@ -223,7 +275,7 @@ export default function Page() {
                                         </td>
                                         <td className="pr-8 pl-4 py-3 text-xs capitalize">
                                             {!["CONNECT", "DISCONNECT"].includes(e.flagKey) && (
-                                                <ConfirmLogButton id={e._id} currentLogType={"System"} />
+                                                <ConfirmLogButton callback={() => setUpdateLog((prev) => prev + 1)} id={e.id} currentLogType={"System"} />
                                             )}
                                         </td>
                                         <td>

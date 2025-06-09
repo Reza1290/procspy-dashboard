@@ -3,7 +3,7 @@ import session from "../../../../../../../lib/session";
 import { useState } from "react";
 import { LogProps } from "../LogsTable";
 
-const ConfirmLogButton = ({ id, currentLogType}: { id: string, currentLogType: string}) => {
+const ConfirmLogButton = ({ id, currentLogType, callback}: { id: string, currentLogType: string, callback?: Function}) => {
     const [updated, setUpdated] = useState(null)
     const [loading, setLoading] = useState(false)
     const [savedLogType, setSavedLogType] = useState(currentLogType)
@@ -30,6 +30,9 @@ const ConfirmLogButton = ({ id, currentLogType}: { id: string, currentLogType: s
                 const data = await response.json()
                 setSavedLogType(data.logType)
                 setUpdated(data)
+                if(callback){
+                    callback(data)
+                }
             } else {
                 setUpdated(null)
             }
