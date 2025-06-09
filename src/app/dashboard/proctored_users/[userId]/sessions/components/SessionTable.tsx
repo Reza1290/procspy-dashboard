@@ -85,6 +85,7 @@ const SessionTable = () => {
                                 <th className="pl-8 pr-4 py-2 text-left font-normal text-slate-100/75 text-sm">Session Token</th>
                                 <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Start Time</th>
                                 <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">End Time</th>
+                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Room Id</th>
                                 <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Session Status</th>
                                 <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Fraud Status</th>
                                 <th className="pr-8 pl-4 text-left font-normal text-slate-100/75 text-sm">Action</th>
@@ -97,6 +98,7 @@ const SessionTable = () => {
                                     <td className="pl-8 pr-4 py-4 text-sm font-semibold">{session.token}</td>
                                     <td className="px-4 py-4 text-sm">{session.startTime || "-"}</td>
                                     <td className="px-4 py-4 text-sm">{session.endTime || "-"}</td>
+                                    <td className="px-4 py-4 text-sm font-semibold">{session.roomId || "-"}</td>
                                     <td className="px-4 py-4 text-xs capitalize">
                                         <div className="bg-red-500 w-min rounded p-1 px-2">{session.status}</div>
                                     </td>
