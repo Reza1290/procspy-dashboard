@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useRef, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { EllipsisVertical, Eye, HistoryIcon, Unplug } from "lucide-react";
+import { EllipsisVertical, Eye, HistoryIcon, PlusIcon, Unplug } from "lucide-react";
 import session from "../../../../lib/session";
 import PopOver from "../../../../components/ui/PopOver";
 import PopOverItem from "../../../../components/ui/PopOverItem";
@@ -29,11 +29,13 @@ const ProctoredUserTable = () => {
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
 
+    const [rooms, setRooms] = useState(null)
     const pathname = usePathname()
     const router = useRouter()
     useEffect(() => {
 
         fetchProctoredUsers(1);
+        fetchRooms()
     }, []);
 
     const fetchProctoredUsers = async (nextPage: number) => {
@@ -58,6 +60,24 @@ const ProctoredUserTable = () => {
             console.error("Failed to fetch session history", err);
         }
     };
+
+    const fetchRooms = async () => {
+        try {
+            const token = await session();
+            const res = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/rooms`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (res.ok) {
+                const { data } = await res.json();
+                setRooms(data);
+            }
+        } catch (err) {
+            console.error("Failed to fetch rooms", err);
+        }
+    }
 
 
     const handleScroll = () => {
@@ -184,7 +204,7 @@ const ProctoredUserTable = () => {
                     })
                 }
             )
-            
+
             if (response.ok) {
 
                 openModal(
@@ -223,6 +243,97 @@ const ProctoredUserTable = () => {
         }
     }
 
+
+
+    const roomRef = useRef<HTMLSelectElement>(null)
+
+    const handleGenerateSession = async (id: string) => {
+
+        openSheet(
+            <div className="w-96 flex flex-col gap-4 h-full">
+                <SheetHeader>Generate New Session</SheetHeader>
+                <p className="text-sm text-slate-500">Generate New Session for User id {id}.</p>
+
+                <div className="flex flex-col gap-2 mt-20">
+                    <label htmlFor="room" className="text-sm font-medium">RoomId</label>
+                    <select
+                        id="room"
+                        ref={roomRef}
+                        className="p-2 text-sm bg-white/5 border border-white/15 rounded-md"
+                    >
+                        <option value="">Select a room</option>
+                        {rooms.map((room) => (
+                            <option key={room.id} value={room.roomId} className="text-slate-700">
+                                {room.roomId}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="mt-auto flex flex-col gap-1 p-1">
+                    <div className="bg-slate-100 rounded-md text-black/90 p-1 text-center text-sm font-medium py-2 cursor-pointer" onClick={() => generateSession(id)}>
+                        Save Change
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    const generateSession = async (id: string) => {
+        closeSheet()
+        const roomId = roomRef.current.value
+        try {
+            const token = await session();
+            const res = await fetch("https://192.168.2.5:5050/api/session/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    proctoredUserId: id,
+                    roomId,
+                }),
+            });
+            const data = await res.json()
+            if (res.ok) {
+                openModal(
+                    <AlertModal>
+                        <TitleModal>Success</TitleModal>
+                        <BodyModal><p className="text-sm text-slate-300">Session Generated!</p>
+                        </BodyModal>
+                    </AlertModal>
+                )
+                setTimeout(() => {
+                    closeModal()
+                }, 1000)
+            } else {
+                openModal(
+                    <AlertModal>
+                        <TitleModal>Failed</TitleModal>
+                        <BodyModal><p className="text-sm text-slate-300">Data not created {data.error}</p>
+                        </BodyModal>
+                    </AlertModal>
+                )
+                setTimeout(() => {
+                    closeModal()
+                }, 2000)
+            }
+        } catch (err) {
+            openModal(
+                <AlertModal>
+                    <TitleModal>Sorry</TitleModal>
+                    <BodyModal><p className="text-sm text-slate-300">Something went wrong</p>
+                    </BodyModal>
+                </AlertModal>
+            )
+            setTimeout(() => {
+                closeModal()
+            }, 2000)
+        }
+
+    }
+
     return (
         <div className="">
             <div className="overflow-x-auto border-b border-white/15">
@@ -237,6 +348,7 @@ const ProctoredUserTable = () => {
                                 <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Identifier</th>
                                 <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Name</th>
                                 <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Email</th>
+                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Generate Session</th>
                                 <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Sessions</th>
                                 <th className="pr-8 pl-4 text-left font-normal text-slate-100/75 text-sm">Action</th>
                             </tr>
@@ -248,6 +360,10 @@ const ProctoredUserTable = () => {
                                     <td className="px-4 py-4 text-sm font-semibold">{user.identifier}</td>
                                     <td className="px-4 py-4 text-sm text-sky-500/75 font-medium">{user.name}</td>
                                     <td className="px-4 py-4 text-sm text-sky-500/75 font-medium">{user.email}</td>
+                                    <td className="px-4 py-4 text-xs capitalize">
+                                        <div onClick={() => handleGenerateSession(user.id)} className="bg-blue-500 w-max rounded p-1 px-2 cursor-pointer flex gap-1 items-center">
+                                            <PlusIcon className="w-4" /> Generate</div>
+                                    </td>
                                     <td className="px-4 py-4 text-xs capitalize">
                                         <div onClick={() => router.push(pathname + "/" + user.id + "/sessions/")} className="bg-blue-500 w-max rounded p-1 px-2 cursor-pointer flex gap-1 items-center">
                                             <HistoryIcon className="w-4" /> View Session History</div>
