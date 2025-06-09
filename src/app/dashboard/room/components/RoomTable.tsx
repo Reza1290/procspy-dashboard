@@ -141,7 +141,7 @@ const RoomTable = () => {
                         <thead className="sticky top-0  z-10 backdrop-blur-[2px]">
                             <tr className="">
                                 <th className="pl-8 pr-4 py-2 text-left font-normal text-slate-100/75 text-sm">Room Id</th>
-                                <th className="pl-8 pr-4 py-2 text-left font-normal text-slate-100/75 text-sm">Connected Users</th>
+                                {/* <th className="pl-8 pr-4 py-2 text-left font-normal text-slate-100/75 text-sm">Connected Users</th> */}
                                 <th className="pl-8 pr-4 py-2 text-left font-normal text-slate-100/75 text-sm">Join</th>
                                 <th className="pr-8 pl-4 text-left font-normal text-slate-100/75 text-sm">Action</th>
                             </tr>
@@ -150,7 +150,7 @@ const RoomTable = () => {
                             {rooms.map((room) => (
                                 <tr key={room.id} className="border-t border-white/10 hover:bg-gray-600/30">
                                     <td className="pl-8 pr-4 py-4 text-sm font-medium">{room.roomId}</td>
-                                    <td className="px-4 py-4 text-sm text-sky-500/75 font-medium">-</td>
+                                    {/* <td className="px-4 py-4 text-sm text-sky-500/75 font-medium">-</td> */}
                                     <td className="px-4 py-4 text-xs capitalize">
                                         <div onClick={() => router.push(pathname + '/' + room.roomId)} className="bg-blue-500 w-max rounded p-1 px-2 cursor-pointer flex gap-1 items-center">
                                             <ScreenShareIcon className="w-4" /> Join</div>
