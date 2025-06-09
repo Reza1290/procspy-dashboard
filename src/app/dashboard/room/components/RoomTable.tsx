@@ -41,7 +41,7 @@ const RoomTable = () => {
     const fetchRooms = async (nextPage: number) => {
         try {
             const token = await session();
-            const res = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/rooms?page=${nextPage}&paginationLimit=20`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/rooms?page=${nextPage}&paginationLimit=15`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -235,7 +235,7 @@ const RoomTable = () => {
                         Add Variable
                     </button>
                 </div>
-                <div className="relative max-h-[76vh] overflow-y-auto" onScroll={handleScroll} ref={scrollRef}>
+                <div className="relative max-h-[90vh] overflow-y-auto" onScroll={handleScroll} ref={scrollRef}>
                     <table className="min-w-full table-fixed">
                         <thead className="sticky top-0  z-10 backdrop-blur-[2px]">
                             <tr className="">
