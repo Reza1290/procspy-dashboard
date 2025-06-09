@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useRef, useState } from "react";
+import { MouseEventHandler, useEffect, useRef, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { EllipsisVertical, Eye, HistoryIcon, ScreenShareIcon, Unplug } from "lucide-react";
 import session from "../../../../lib/session";
@@ -17,6 +17,7 @@ import SheetHeader from "../../../../components/ui/sheet/SheetHeader";
 export type Room = {
     id: string
     roomId: string
+    title?: string
 };
 
 const RoomTable = () => {
@@ -29,6 +30,9 @@ const RoomTable = () => {
 
     const pathname = usePathname()
     const router = useRouter()
+
+    const { openSheet, closeSheet } = useSideSheet()
+
     useEffect(() => {
 
         fetchRooms(1);
@@ -129,19 +133,114 @@ const RoomTable = () => {
         }
     }
 
+    const handleAddRoom = async () => {
+        handleSheet({ room: null, onClick: () => addRoom({ roomId: roomIdRef.current.value, title: titleRoomRef.current.value }) })
+    }
+
+    const addRoom = async ({ title, roomId }: { title?: string, roomId: string }) => {
+        closeSheet()
+        try {
+            const jwt = await session()
+            const response = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/room`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${jwt}`
+                    },
+                    body: JSON.stringify({
+                        title, roomId
+                    })
+
+                }
+            )
+            const data = await response.json()
+            if (response.ok) {
+
+                openModal(
+                    <AlertModal>
+                        <TitleModal>Success</TitleModal>
+                        <BodyModal><p className="text-sm text-slate-300">Data saved</p>
+                        </BodyModal>
+                    </AlertModal>
+                )
+                fetchRooms(1)
+                setTimeout(() => {
+                    closeModal()
+                }, 2000)
+            } else {
+                openModal(
+                    <AlertModal>
+                        <TitleModal>Failed</TitleModal>
+                        <BodyModal><p className="text-sm text-slate-300">Data not saved {data.error}</p>
+                        </BodyModal>
+                    </AlertModal>
+                )
+                setTimeout(() => {
+                    closeModal()
+                }, 2000)
+            }
+        } catch (error) {
+            openModal(
+                <AlertModal>
+                    <TitleModal>Sorry</TitleModal>
+                    <BodyModal><p className="text-sm text-slate-300">Something went wrong</p>
+                    </BodyModal>
+                </AlertModal>
+            )
+            setTimeout(() => {
+                closeModal()
+            }, 2000)
+        }
+    }
+
+    const roomIdRef = useRef<HTMLInputElement>(null)
+    const titleRoomRef = useRef<HTMLInputElement>(null)
+
+    const handleSheet = async ({ room, onClick }: { room?: Room | null, onClick?: MouseEventHandler }) => {
+        openSheet(
+            <div className="w-96 flex flex-col gap-4 h-full">
+                <SheetHeader>Edit Proctored User</SheetHeader>
+                <p className="text-sm text-slate-500">Make change for Proctored User, click Save when done.</p>
+
+                <div className="flex flex-col gap-2 mt-20">
+                    <label htmlFor="roomId" className="text-sm text-slate-100 font-medium">Room Id</label>
+                    <input ref={roomIdRef} type="text" id="roomId" className="p-2 text-sm px-2 bg-white/5 border border-white/15 rounded-md" defaultValue={room ? room.roomId : ""} />
+                </div>
+                <div className="flex flex-col gap-2">
+                    <label htmlFor="titleRoom" className="text-sm text-slate-100 font-medium">Title</label>
+                    <input ref={titleRoomRef} type="text" id="titleRoom" className="p-2 text-sm px-2 bg-white/5 border border-white/15 rounded-md" defaultValue={room ? room.title : ""} />
+                </div>
+                <div className="mt-auto flex flex-col gap-1 p-1">
+                    <div className="bg-slate-100 rounded-md text-black/90 p-1 text-center text-sm font-medium py-2 cursor-pointer" onClick={onClick}>
+                        Save Change
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
 
     return (
         <div className="">
             <div className="overflow-x-auto border-b border-white/15">
-                <div className="mx-8 my-4">
-                    Filter
+                <div className="flex justify-between mx-8 my-4">
+                    <div>
+
+                    </div>
+                    <button
+                        onClick={() => handleAddRoom()}
+                        className="bg-blue-500 p-2 px-4 text-sm rounded-md min-w-32 hover:bg-blue-600"
+                    >
+                        Add Variable
+                    </button>
                 </div>
                 <div className="relative max-h-[76vh] overflow-y-auto" onScroll={handleScroll} ref={scrollRef}>
                     <table className="min-w-full table-fixed">
                         <thead className="sticky top-0  z-10 backdrop-blur-[2px]">
                             <tr className="">
                                 <th className="pl-8 pr-4 py-2 text-left font-normal text-slate-100/75 text-sm">Room Id</th>
-                                {/* <th className="pl-8 pr-4 py-2 text-left font-normal text-slate-100/75 text-sm">Connected Users</th> */}
+                                <th className="pl-8 pr-4 py-2 text-left font-normal text-slate-100/75 text-sm">Room Title</th>
                                 <th className="pl-8 pr-4 py-2 text-left font-normal text-slate-100/75 text-sm">Join</th>
                                 <th className="pr-8 pl-4 text-left font-normal text-slate-100/75 text-sm">Action</th>
                             </tr>
@@ -150,7 +249,7 @@ const RoomTable = () => {
                             {rooms.map((room) => (
                                 <tr key={room.id} className="border-t border-white/10 hover:bg-gray-600/30">
                                     <td className="pl-8 pr-4 py-4 text-sm font-medium">{room.roomId}</td>
-                                    {/* <td className="px-4 py-4 text-sm text-sky-500/75 font-medium">-</td> */}
+                                    <td className="px-4 py-4 text-sm text-sky-500/75 font-medium">{room.title || "No Name"}</td>
                                     <td className="px-4 py-4 text-xs capitalize">
                                         <div onClick={() => router.push(pathname + '/' + room.roomId)} className="bg-blue-500 w-max rounded p-1 px-2 cursor-pointer flex gap-1 items-center">
                                             <ScreenShareIcon className="w-4" /> Join</div>
