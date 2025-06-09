@@ -96,7 +96,7 @@ const RoomTable = () => {
                 }
             )
             if (response.ok) {
-
+                fetchRooms(1)
                 openModal(
                     <AlertModal>
                         <TitleModal>Success</TitleModal>
