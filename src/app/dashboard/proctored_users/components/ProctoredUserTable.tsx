@@ -48,10 +48,7 @@ const ProctoredUserTable = () => {
             });
             const data = await res.json();
             if (res.ok) {
-                setProctoredUsers(prev => {
-                    const newProctoredUsers = data.data.filter((d: ProctoredUser) => !prev.some(p => p.id === d.id));
-                    return [...prev, ...newProctoredUsers];
-                });
+                setProctoredUsers(data.data);
                 setHasMore(nextPage < data.totalPages);
                 setLoading(false);
                 setPage(nextPage);
@@ -106,7 +103,7 @@ const ProctoredUserTable = () => {
     const deleteProctoredUser = async (id: string) => {
         try {
             const jwt = await session()
-            const response = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/room/${id}`,
+            const response = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/proctored-user/${id}`,
                 {
                     method: "DELETE",
                     headers: {
@@ -116,7 +113,7 @@ const ProctoredUserTable = () => {
                 }
             )
             if (response.ok) {
-
+                fetchProctoredUsers(1)
                 openModal(
                     <AlertModal>
                         <TitleModal>Success</TitleModal>
@@ -258,7 +255,7 @@ const ProctoredUserTable = () => {
         closeSheet()
         try {
             const jwt = await session()
-            const response = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/proctored-user/${id}`,
+            const response = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/proctored-user`,
                 {
                     method: "PUT",
                     headers: {
@@ -266,7 +263,7 @@ const ProctoredUserTable = () => {
                         Authorization: `Bearer ${jwt}`
                     },
                     body: JSON.stringify({
-                        identifier, name, email
+                        id, identifier, name, email
                     })
                 }
             )
@@ -280,6 +277,7 @@ const ProctoredUserTable = () => {
                         </BodyModal>
                     </AlertModal>
                 )
+                fetchProctoredUsers(1)
                 setTimeout(() => {
                     closeModal()
                 }, 2000)
