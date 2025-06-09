@@ -9,13 +9,15 @@ import AudioMeter from "../components/AudioMeter";
 import UserInfoWindow from "./components/DeviceInfoWindow";
 import DeviceInfoWindow from "./components/DeviceInfoWindow";
 import session from "../../../../../lib/session";
+import { SessionResultProps } from "../users/components/UserSessionTable";
 
 export default function Page() {
     const { roomId, socketId } = useParams();
 
-    const { peers, setData, socketRef } = useWebRtc();
+    const { peers, setData, socketRef, notificationCount } = useWebRtc();
 
     const [userInfo, setUserInfo] = useState(null)
+    const [sessionResult, setSessionResult] = useState<SessionResultProps>(null)
     useEffect(() => {
         if (socketId) {
             setData((prev) => ({
@@ -37,6 +39,14 @@ export default function Page() {
         }
     }, [peers])
 
+    useEffect(() => {
+        if (!socketId || !peers[0] || !peers[0].token || notificationCount.length === 0) return;
+
+        if(notificationCount.find((e)=> e.token === peers[0].token)){
+            fetchSessionResult(peers[0].token)
+        }
+    }, [notificationCount])
+
     const fetchUserInfo = async (token: string) => {
         try {
 
@@ -50,6 +60,7 @@ export default function Page() {
             )
             if (response.ok) {
                 const { data } = await response.json()
+                await fetchSessionResult(token)
                 setUserInfo(data)
             } else {
 
@@ -58,6 +69,29 @@ export default function Page() {
 
         }
     }
+
+    const fetchSessionResult = async (token: string) => {
+        try {
+
+            const jwt = await session()
+            const response = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || "https://192.168.2.5:5050"}/api/session-result-token/${token}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    },
+                }
+            )
+            if (response.ok) {
+                const data = await response.json()
+                setSessionResult(data)
+            } else {
+                
+            }
+        } catch (error) {
+
+        }
+    }
+    
 
     const videoRef = useRef(null);
     const camRef = useRef(null);
@@ -213,9 +247,9 @@ export default function Page() {
                     }
                     <div className="border-l border-white/10 p-4 min-w-[24%] min-h-[25vh] max-h-[25vh]">
                         <div className="flex flex-col gap-3">
-                            <div className="text-xs gap-4 flex items-center">Fraud Level <span className="bg-red-500 rounded p-1">High</span></div>
-                            <div className="text-xs gap-4 flex items-center">Total Flags <span className="bg-red-500 rounded p-1">127</span></div>
-                            <div className="text-xs gap-4 flex items-center">Total Fraud Severity <span className="bg-red-500 rounded p-1">283</span></div>
+                            <div className="text-xs gap-4 flex items-center">Fraud Level <span className="bg-red-500 rounded p-1">{sessionResult?.fraudLevel ?? "LOW"}</span></div>
+                            <div className="text-xs gap-4 flex items-center">Total Flags <span className="bg-red-500 rounded p-1">{sessionResult?.totalFlags}</span></div>
+                            <div className="text-xs gap-4 flex items-center">Total Fraud Severity <span className="bg-red-500 rounded p-1">{sessionResult?.totalSeverity}</span></div>
                             <div className="flex gap-4">
                                 <div
                                     onClick={toggleMic}
