@@ -4,6 +4,7 @@ import Header from "../../../../../components/ui/Header";
 import UserSessionTable from "./components/UserSessionTable";
 import { useEffect } from "react";
 import { useWebRtc } from "../../../../../context/WebRtcProvider";
+import HeaderTitle from "../../../../../components/ui/HeaderTitle";
 
 export default function Page() {
     const { roomId } = useParams()
@@ -22,14 +23,17 @@ export default function Page() {
     return (
         <div className="">
             <Header>
-                Users List Room {roomId}
-            </Header>
-                
-                <div>
-                    <UserSessionTable></UserSessionTable>
-                </div>
+                <HeaderTitle>
+                    Users List Room {roomId}
 
-            
+                </HeaderTitle>
+            </Header>
+
+            <div>
+                <UserSessionTable></UserSessionTable>
+            </div>
+
+
         </div>
     );
 }
