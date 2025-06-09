@@ -6,7 +6,7 @@ import AnalyticsPage from "../../../../../proctored_users/[userId]/analytics/[to
 export default function Page() {
     const {token} = useParams()
     return (
-        <div>
+        <div className="h-full">
             <Header>Session Analytic / {token}</Header>
             <AnalyticsPage></AnalyticsPage>
         </div>

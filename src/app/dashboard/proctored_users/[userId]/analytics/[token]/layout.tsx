@@ -7,7 +7,7 @@ import HeaderTitle from "../../../../../../components/ui/HeaderTitle";
 export default function Layout({ children }: { children: React.ReactNode }) {
     const {userId} = useParams()
     return (
-        <section>
+        <section className="h-full">
             <Header><HeaderTitle><span className="text-slate-100/80">Proctored Users</span>  &gt; <span className="text-slate-100/80">{userId} </span> &gt; Analytics</HeaderTitle></Header>
             {children}
         </section>

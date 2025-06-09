@@ -170,7 +170,7 @@ export default function AnalyticsPage() {
     return (
         <div className="flex flex-col h-full max-h-[90vh] oveflow-hidden">
             <div className="max-h-[60vh] h-full w-full flex">
-                <div className="h-full w-full max-w-[20%] border-r border-white/15 p-8">
+                <div className="h-full min-w-[20%] border-r border-white/15 p-8">
                     {sessionResult && (
                         <table className="w-full text-sm ">
                             <tbody>
@@ -198,7 +198,7 @@ export default function AnalyticsPage() {
                         </table>
                     )}
                 </div>
-                <div className="h-full max-w-[80vw] w-full ">
+                <div className="h-full w-full max-w-[72vw] overflow-hidden ">
                     <div className="h-full flex flex-col justify-between">
                         <div className="w-full h-full flex justify-center items-center">
                             {

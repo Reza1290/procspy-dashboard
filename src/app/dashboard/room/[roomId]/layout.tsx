@@ -3,7 +3,7 @@ import { WebRtcProvider } from "../../../../context/WebRtcProvider";
 
 export default function Layout({ children }) {
     return (
-        <section className="">
+        <section className="h-full">
             <WebRtcProvider >
                 <LogBottomSheetProvider>
 
