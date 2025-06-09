@@ -178,7 +178,7 @@ export default function Page() {
             </div>
 
             <div className="row-span-6 col-start-11 col-span-2 ">
-                <div className="h-full">
+                <div className="max-h-[90vh] h-[90vh]">
                     <ChatBox
                         user={{ name: "user#" + peers[0]?.token || "" }}
                         messages={messages}
@@ -200,7 +200,7 @@ export default function Page() {
                     <button onClick={() => setActiveBar(1)} className={` ${ activeBar === 1 ? "bg-gray-400/10  border-white/10 ": ""} border border-transparent min-w-16 text-xs px-4 rounded font-light py-1`}>Device Info</button>
                     {/* <button className=" min-w-16 text-xs px-4 rounded font-light py-1">Moderation Tools</button> */}
                 </div>
-                <div className="flex justify-between border-t border-white/15 max-h-[20vh]">
+                <div className="flex justify-between border-t border-white/15 max-h-[20vh] h-[20vh]">
                     {
                         (activeBar === 0 && peers[0]) ? (
                             <LogsWindow token={peers[0].token}></LogsWindow>
@@ -211,7 +211,7 @@ export default function Page() {
                             <DeviceInfoWindow session={userInfo?.session_detail}></DeviceInfoWindow>
                         )
                     }
-                    <div className="border-l border-white/10 p-4 min-w-[24%]">
+                    <div className="border-l border-white/10 p-4 min-w-[24%] min-h-[25vh] max-h-[25vh]">
                         <div className="flex flex-col gap-3">
                             <div className="text-xs gap-4 flex items-center">Fraud Level <span className="bg-red-500 rounded p-1">High</span></div>
                             <div className="text-xs gap-4 flex items-center">Total Flags <span className="bg-red-500 rounded p-1">127</span></div>
