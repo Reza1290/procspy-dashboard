@@ -24,13 +24,12 @@ export default function Page() {
             <Header>
                 Users List Room {roomId}
             </Header>
-            {
-                peers.length > 0 && (
-                    <div>
-                        <UserSessionTable></UserSessionTable>
-                    </div>
-                )
-            }
+                
+                <div>
+                    <UserSessionTable></UserSessionTable>
+                </div>
+
+            
         </div>
     );
 }

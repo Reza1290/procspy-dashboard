@@ -64,9 +64,10 @@ const UserSessionTable = () => {
         fetchSessions(1)
         fetchGlobalSetting()
     }, [roomId]);
-    
+
     useEffect(() => {
-        if (!peers) return
+        if (peers.length < 0) return
+        console.log("NEW JOINED")
         fetchSessions(1)
         fetchGlobalSetting()
     }, [peers])
@@ -82,13 +83,19 @@ const UserSessionTable = () => {
             const data = await res.json();
             if (res.ok) {
                 setSessions(prev => {
-                    let newSessions = data.data
+                    const updatedSessions = prev.map(session => ({
+                        ...session,
+                        isOnline: peers.some(peer => peer.token === session.token),
+                    }));
+
+                    const newSessions = data.data
                         .filter((d: SessionProps) => !prev.some(p => p.token === d.token))
                         .map((d: SessionProps) => ({
                             ...d,
-                            isOnline: peers.some(peer => peer.token === d.token)
+                            isOnline: peers.some(peer => peer.token === d.token),
                         }));
-                    return [...prev, ...newSessions];
+
+                    return [...updatedSessions, ...newSessions]
                 });
                 setHasMore(nextPage < data.totalPages);
                 setLoading(false);
@@ -102,14 +109,14 @@ const UserSessionTable = () => {
     const fetchGlobalSetting = async () => {
         try {
             const token = await session();
-            const response = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api//global-settings?page=1&paginationLimit=1`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/global-settings?page=1&paginationLimit=1`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
 
-            if(response.ok){
-                const {data} = await response.json()
+            if (response.ok) {
+                const { data } = await response.json()
                 setThreshold(parseInt(data[0].value))
             }
         } catch (error) {
