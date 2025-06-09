@@ -48,7 +48,10 @@ const ProctoredUserTable = () => {
             });
             const data = await res.json();
             if (res.ok) {
-                setProctoredUsers(data.data);
+                setProctoredUsers(prev => {
+                    const newProctoredUsers = data.data.filter((d: ProctoredUser) => !prev.some(p => p.id === d.id));
+                    return [...prev, ...newProctoredUsers];
+                });
                 setHasMore(nextPage < data.totalPages);
                 setLoading(false);
                 setPage(nextPage);
@@ -113,6 +116,7 @@ const ProctoredUserTable = () => {
                 }
             )
             if (response.ok) {
+                setProctoredUsers([])
                 fetchProctoredUsers(1)
                 openModal(
                     <AlertModal>
@@ -412,7 +416,7 @@ const ProctoredUserTable = () => {
             Add Variable
           </button>
                 </div>
-                <div className="relative max-h-[76vh] overflow-y-auto" onScroll={handleScroll} ref={scrollRef}>
+                <div className="relative max-h-[90vh] overflow-y-auto" onScroll={handleScroll} ref={scrollRef}>
                     <table className="min-w-full table-fixed">
                         <thead className="sticky top-0  z-10 backdrop-blur-[2px]">
                             <tr className="">

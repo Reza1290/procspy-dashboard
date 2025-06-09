@@ -96,6 +96,7 @@ const RoomTable = () => {
                 }
             )
             if (response.ok) {
+                setRooms([])
                 fetchRooms(1)
                 openModal(
                     <AlertModal>
