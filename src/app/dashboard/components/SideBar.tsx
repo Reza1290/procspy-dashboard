@@ -4,7 +4,7 @@ import { SideBarLogProvider } from "../providers/SideBarLogProvider"
 import SideBarLog from "../room/ui/SideBarLog"
 import { useParams, usePathname, useRouter } from "next/navigation"
 import UsersSidebar from "../ui/UsersSidebar"
-import { CctvIcon, FlagIcon, HomeIcon, MonitorIcon, PanelRightOpen, SettingsIcon, UserRound, UserRoundIcon, UserRoundSearchIcon, UsersRound, UsersRoundIcon } from "lucide-react"
+import { CctvIcon, FlagIcon, HomeIcon, MonitorIcon, PanelRightOpen, SettingsIcon, UserRound, UserRoundIcon, UserRoundPlusIcon, UserRoundSearchIcon, UsersRound, UsersRoundIcon } from "lucide-react"
 import SideBarItem from "./ui/SideBarItem"
 import { useModal } from "../../../context/ModalProvider"
 import ConfirmModal from "../../../components/ui/ConfirmModal"
@@ -93,6 +93,7 @@ export default function SideBar() {
                 <div className="flex flex-col w-full p-2 items-start gap-2 ">
                     <SideBarItem onClick={() => handleActiveToggle('/dashboard/proctored_users')} active={pathname === '/dashboard/proctored_users'} icon={UsersRoundIcon} label="Proctored Users"></SideBarItem>
                     <SideBarItem onClick={() => handleActiveToggle('/dashboard/settings')} active={pathname === '/dashboard/settings'} icon={SettingsIcon} label="Global Settings"></SideBarItem>
+                    <SideBarItem onClick={() => handleActiveToggle('/dashboard/proctors')} active={pathname === '/dashboard/proctors'} icon={UserRoundPlusIcon} label="Proctor Accounts"></SideBarItem>
                     <SideBarItem onClick={() => handleActiveToggle('/dashboard/profile')} active={pathname === '/dashboard/profile'} icon={UserRoundIcon} label="Profile"></SideBarItem>
                 </div>
             </div>
