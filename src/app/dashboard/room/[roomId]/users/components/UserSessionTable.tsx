@@ -5,6 +5,10 @@ import session from "../../../../../../lib/session";
 import { ChartLineIcon, EllipsisVertical, Eye, Unplug } from "lucide-react";
 import { useWebRtc } from "../../../../../../context/WebRtcProvider";
 import PopOver from "../../../../../../components/ui/PopOver";
+import { useModal } from "../../../../../../context/ModalProvider";
+import AlertModal from "../../../../../../components/ui/AlertModal";
+import TitleModal from "../../../../../../components/ui/modal/TitleModal";
+import BodyModal from "../../../../../../components/ui/modal/BodyModal";
 
 export enum SessionStatus {
     Scheduled,
@@ -58,6 +62,7 @@ const UserSessionTable = () => {
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
 
+    const { openModal, closeModal } = useModal()
 
     const [threshold, setThreshold] = useState(100)
     const { peers, data, socketRef } = useWebRtc()
@@ -137,7 +142,7 @@ const UserSessionTable = () => {
         }
     };
 
-    
+
 
 
 
@@ -162,7 +167,34 @@ const UserSessionTable = () => {
                 token,
                 roomId,
                 state,
-                error: ":Proctor " + state + " Session"
+                error: ":Proctor " + state + " the session"
+            }
+        }, (data: any) => {
+
+            if (data.success) {
+                setSessions([])
+                fetchSessions(1)
+                openModal(
+                    <AlertModal>
+                        <TitleModal>Success</TitleModal>
+                        <BodyModal><p className="text-sm text-slate-300">State Updated</p>
+                        </BodyModal>
+                    </AlertModal>
+                )
+                setTimeout(() => {
+                    closeModal()
+                }, 2000)
+            } else {
+                openModal(
+                    <AlertModal>
+                        <TitleModal>Failed</TitleModal>
+                        <BodyModal><p className="text-sm text-slate-300">Cant abort or complete session that not started yet and cancel session that already started</p>
+                        </BodyModal>
+                    </AlertModal>
+                )
+                setTimeout(() => {
+                    closeModal()
+                }, 2000)
             }
         })
     };
@@ -212,7 +244,7 @@ const UserSessionTable = () => {
                                         <div className="bg-red-500 w-min rounded p-1 px-2 capitalize">{session.session_result != null && calcFraudLevel(session.session_result.totalSeverity) || "LOW"}</div>
                                     </td>
                                     <td className="px-4 py-4 text-xs capitalize gap-4">
-                                       <div onClick={() => router.push(pathname + "/analytics/" + session.token)} className="bg-blue-500 w-max rounded p-1 px-2 cursor-pointer flex gap-1 items-center ">
+                                        <div onClick={() => router.push(pathname + "/analytics/" + session.token)} className="bg-blue-500 w-max rounded p-1 px-2 cursor-pointer flex gap-1 items-center ">
                                             <ChartLineIcon className="w-4" /> Session Result
                                         </div>
                                     </td>
