@@ -32,7 +32,7 @@ const SessionTable = () => {
         const fetchSessions = async () => {
             try {
                 const token = await session();
-                const res = await fetch(`${ process.env.ENDPOINT || 'https://192.168.2.5:5050'}/api/sessions/${userId}`, {
+                const res = await fetch(`${ process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/sessions/${userId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },

@@ -19,7 +19,7 @@ const HomeSidebar = ({ active }) => {
             // const res = await fetch('/api/session')
             // const { token } = await res.json()
             const token = await session()
-            const response = await fetch(`${ process.env.ENDPOINT || 'https://192.168.2.5:5050'}/api/rooms`,
+            const response = await fetch(`${ process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/rooms`,
                 {
                     method: "GET",
                     headers: {
@@ -48,7 +48,7 @@ const HomeSidebar = ({ active }) => {
 
     }, [active])
     return (
-        <div className={`${active ? 'w-full opacity-100' : 'w-0 opacity-0 overflow-hidden -ml-[3rem] '} transition-all duration-500 delay-200 ease-in-out flex flex-col justify-start max-w-72 border-r border-white/10 bg-gradient-to-bl from-black to-slate-950 py-8 px-6 gap-8`}>
+        <div className={`${active ? 'w-full opacity-100' : 'w-0 opacity-0 overflow-hidden -ml-[49px] '} transition-all duration-500 delay-200 ease-in-out flex flex-col justify-start max-w-72 border-r border-white/10 bg-gradient-to-bl from-black to-slate-950 py-8 px-6 gap-8`}>
             <div className="flex justify-between items-center">
                 <h1 className="text-md font-medium">Room Selector</h1>
                 <button onClick={handleSetRoomInput} className="bg-slate-900/50 text-sm rounded-lg border border-white/10 select-none max-w-6 max-h-6 w-full fill-white/80 p-1.5 pt-[0.325rem] ">

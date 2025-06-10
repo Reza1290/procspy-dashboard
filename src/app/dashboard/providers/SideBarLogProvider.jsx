@@ -9,20 +9,20 @@ const defaultSideBarLog = {
         token : null,
         refreshKey: 0
     },
-    setData : () => {}
+    setDataSidebar : () => {}
 }
 
 const SideBarLogContext = createContext(defaultSideBarLog)
 
 export const SideBarLogProvider = ({children}) => {
-    const [data,setData] = useState({
+    const [data,setDataSidebar] = useState({
         isActive: false,
         consumer: {},
         token : null,
         refreshKey: 0,
     })
 
-    const value = { data, setData}
+    const value = { data, setDataSidebar}
     
     return (
         <SideBarLogContext.Provider value={value}>

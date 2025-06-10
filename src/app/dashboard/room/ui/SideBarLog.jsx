@@ -58,7 +58,7 @@ const SideBarLog = () => {
     const fetchLogFromToken = async (userToken) => {
         try {
             const token = await session()
-            const response = await fetch(`${ process.env.ENDPOINT || 'https://192.168.2.5:5050'}/api/proctored-user/${userToken}`, {
+            const response = await fetch(`${ process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/proctored-user/${userToken}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -125,7 +125,7 @@ const SideBarLog = () => {
                 {logsData.map((flag, idx) => {
                     const updatedFlag = {
                         ...flag,
-                        timestamp: formattedTimestamp(flag.timestamp), // Replace the timestamp
+                        timestamp: formattedTimestamp(flag.timestamp),
                     };
 
                     const Component = getFlagComponent(flag.flagKey);
