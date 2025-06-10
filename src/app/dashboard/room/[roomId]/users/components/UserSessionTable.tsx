@@ -60,7 +60,7 @@ const UserSessionTable = () => {
 
 
     const [threshold, setThreshold] = useState(100)
-    const { peers, data } = useWebRtc()
+    const { peers, data, socketRef } = useWebRtc()
 
     useEffect(() => {
         if (!roomId) return;
@@ -137,17 +137,8 @@ const UserSessionTable = () => {
         }
     };
 
-    const handleAbortSession = (sessionId: string) => {
-        try {
-            // const token = await session();
-            // const response = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/global-settings?page=1&paginationLimit=1`, {
-            //     headers: {
-            //         Authorization: `Bearer ${token}`,
-            //     },
-            // });
-        } catch (error) {
-
-        }
+    const handleAbortSession = async (token: string) => {
+        await sendAbortMessageToSocket(token)
     }
 
 
@@ -161,6 +152,17 @@ const UserSessionTable = () => {
                 percentOfThreshold >= 25 ? FraudLevel.MEDIUM :
                     FraudLevel.LOW;
     }
+
+    const sendAbortMessageToSocket = async (token: string) => {
+        socketRef.current.emit("DASHBOARD_SERVER_MESSAGE", {
+            data: {
+                action: "ABORT_PROCTORING",
+                token,
+                roomId,
+                error: "Aborted By Proctor"
+            }
+        })
+    };
 
     return (
         <div className="">
@@ -214,7 +216,7 @@ const UserSessionTable = () => {
                                     <td className="pr-8 pl-4 py-4 text-xs capitalize flex justify-start items-center gap-4">
                                         <PopOver icon={<EllipsisVertical className="max-w-4 aspect-square" />}>
                                             <div className="flex flex-col gap-1">
-                                                <div className="hover:bg-gray-700 cursor-pointer rounded text-sm p-1 px-2" onClick={() => handleAbortSession(session.id)}>
+                                                <div onClick={() => handleAbortSession(session.token)} className="hover:bg-gray-700 cursor-pointer rounded text-sm p-1 px-2">
                                                     Abort
                                                 </div>
                                             </div>

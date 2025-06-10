@@ -196,6 +196,7 @@ export default function Page() {
         setMessages((prev) => [...prev, newMessage]);
         socketRef.current.emit("DASHBOARD_SERVER_MESSAGE", {
             data: {
+                action: "SEND_CHAT",
                 token: peers[0].token,
                 roomId,
                 body: text
