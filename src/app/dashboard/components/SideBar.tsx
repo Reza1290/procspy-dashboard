@@ -4,7 +4,7 @@ import { SideBarLogProvider } from "../providers/SideBarLogProvider"
 import SideBarLog from "../room/ui/SideBarLog"
 import { useParams, usePathname, useRouter } from "next/navigation"
 import UsersSidebar from "../ui/UsersSidebar"
-import { CctvIcon, FlagIcon, HomeIcon, MonitorIcon, PanelRightOpen, SettingsIcon, UserRound, UserRoundIcon, UserRoundPlusIcon, UserRoundSearchIcon, UsersRound, UsersRoundIcon } from "lucide-react"
+import { CctvIcon, FlagIcon, HomeIcon, LogOutIcon, MonitorIcon, PanelRightOpen, SettingsIcon, UserRound, UserRoundIcon, UserRoundPlusIcon, UserRoundSearchIcon, UsersRound, UsersRoundIcon } from "lucide-react"
 import SideBarItem from "./ui/SideBarItem"
 import { useModal } from "../../../context/ModalProvider"
 import ConfirmModal from "../../../components/ui/ConfirmModal"
@@ -55,6 +55,21 @@ export default function SideBar() {
         setActive(false)
     }
 
+    const handleLogout = async () => {
+        try {
+            await fetch('/api/logout', {
+            method: 'GET',
+            })
+
+            localStorage.clear()
+            sessionStorage.clear()
+
+            router.refresh()
+        } catch (error) {
+            console.error('Logout failed:', error)
+        }
+    }
+
     return (
         <div className={`${active ? 'w-full' : 'w-[3.7rem] '} max-w-56 transition-all duration-500 overflow-hidden delay-100 ease-in-out flex flex-col p-auto h-screen border-r border-white/15  bg-gradient-to-b from-black to-slate-950 `}>
             <div className="flex justify-between items-center min-h-[10vh] w-full border-b border-white/15 px-2">
@@ -94,7 +109,8 @@ export default function SideBar() {
                     <SideBarItem onClick={() => handleActiveToggle('/dashboard/proctored_users')} active={pathname === '/dashboard/proctored_users'} icon={UsersRoundIcon} label="Proctored Users"></SideBarItem>
                     <SideBarItem onClick={() => handleActiveToggle('/dashboard/settings')} active={pathname === '/dashboard/settings'} icon={SettingsIcon} label="Global Settings"></SideBarItem>
                     <SideBarItem onClick={() => handleActiveToggle('/dashboard/proctors')} active={pathname === '/dashboard/proctors'} icon={UserRoundPlusIcon} label="Proctor Accounts"></SideBarItem>
-                    <SideBarItem onClick={() => handleActiveToggle('/dashboard/profile')} active={pathname === '/dashboard/profile'} icon={UserRoundIcon} label="Profile"></SideBarItem>
+                    {/* <SideBarItem onClick={() => handleActiveToggle('/dashboard/profile')} active={pathname === '/dashboard/profile'} icon={UserRoundIcon} label="Profile"></SideBarItem> */}
+                    <SideBarItem onClick={() => handleLogout()} active={false} icon={LogOutIcon} label="Logout"></SideBarItem>
                 </div>
             </div>
 
