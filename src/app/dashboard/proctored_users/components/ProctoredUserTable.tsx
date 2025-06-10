@@ -413,7 +413,7 @@ const ProctoredUserTable = () => {
             onClick={() => handleAddProctoredUser()}
             className="bg-blue-500 p-2 px-4 text-sm rounded-md min-w-32 hover:bg-blue-600"
           >
-            Add Variable
+            Add Proctored User
           </button>
                 </div>
                 <div className="relative max-h-[90vh] overflow-y-auto" onScroll={handleScroll} ref={scrollRef}>

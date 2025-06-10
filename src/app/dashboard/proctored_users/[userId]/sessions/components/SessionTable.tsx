@@ -6,6 +6,12 @@ import { ChartLineIcon, EllipsisVertical, Eye, Unplug } from "lucide-react";
 import { FraudLevel, SessionProps } from "../../../../room/[roomId]/users/components/UserSessionTable";
 import { useRouter } from "next/navigation";
 import PopOver from "../../../../../../components/ui/PopOver";
+import SheetHeader from "../../../../../../components/ui/sheet/SheetHeader";
+import { useSideSheet } from "../../../../../../context/SideSheetProvider";
+import { useModal } from "../../../../../../context/ModalProvider";
+import AlertModal from "../../../../../../components/ui/AlertModal";
+import TitleModal from "../../../../../../components/ui/modal/TitleModal";
+import BodyModal from "../../../../../../components/ui/modal/BodyModal";
 
 
 
@@ -22,12 +28,18 @@ const SessionTable = () => {
     const [hasMore, setHasMore] = useState(true);
 
     const [threshold, setThreshold] = useState(100)
+    const {openModal, closeModal} = useModal()
+
+    const { openSheet, closeSheet } = useSideSheet()
+
+    const [rooms, setRooms] = useState(null)
 
     const router = useRouter()
     useEffect(() => {
         if (!userId) return;
 
         fetchSessions(1);
+        fetchRooms()
     }, [userId]);
 
     const fetchSessions = async (nextPage: number) => {
@@ -75,7 +87,7 @@ const SessionTable = () => {
 
     const handleSessionState = async (token: string, state: string) => {
         try {
-            
+
             const jwt = await session()
 
             const res = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/session/update-status-proctor/${token}/${state}`, {
@@ -84,21 +96,138 @@ const SessionTable = () => {
                 },
             });
 
-            if(res.ok){
+            if (res.ok) {
                 setSessions([])
                 fetchSessions(1)
             }
         } catch (error) {
-            
+
         }
+    }
+
+    const roomRef = useRef<HTMLSelectElement>(null)
+
+    const fetchRooms = async () => {
+            try {
+                const token = await session();
+                const res = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/rooms`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+    
+                if (res.ok) {
+                    const { data } = await res.json();
+                    setRooms(data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch rooms", err);
+            }
+        }
+
+    const handleAddSession = async () => {
+
+        openSheet(
+            <div className="w-96 flex flex-col gap-4 h-full">
+                <SheetHeader>Add New Session</SheetHeader>
+                <p className="text-sm text-slate-500">Add New Session for user id {userId}</p>
+
+                <div className="flex flex-col gap-2 mt-20">
+                    <label htmlFor="room" className="text-sm font-medium">RoomId</label>
+                    <select
+                        id="room"
+                        ref={roomRef}
+                        className="p-2 text-sm bg-white/5 border border-white/15 rounded-md"
+                    >
+                        <option value="">Select a room</option>
+                        {rooms.map((room) => (
+                            <option key={room.id} value={room.roomId} className="text-slate-700">
+                                {room.roomId}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="mt-auto flex flex-col gap-1 p-1">
+                    <div className="bg-slate-100 rounded-md text-black/90 p-1 text-center text-sm font-medium py-2 cursor-pointer" onClick={() => addSession(userId as string)}>
+                        Save Change
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    const addSession = async (id: string) => {
+        closeSheet()
+        const roomId = roomRef.current.value
+        try {
+            const token = await session();
+            const res = await fetch("https://192.168.2.5:5050/api/session/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    proctoredUserId: id,
+                    roomId,
+                }),
+            });
+            const data = await res.json()
+            if (res.ok) {
+                setSessions([])
+                fetchSessions(1)
+                openModal(
+                    <AlertModal>
+                        <TitleModal>Success</TitleModal>
+                        <BodyModal><p className="text-sm text-slate-300">Session Addd!</p>
+                        </BodyModal>
+                    </AlertModal>
+                )
+                setTimeout(() => {
+                    closeModal()
+                }, 1000)
+            } else {
+                openModal(
+                    <AlertModal>
+                        <TitleModal>Failed</TitleModal>
+                        <BodyModal><p className="text-sm text-slate-300">Data not created {data.error}</p>
+                        </BodyModal>
+                    </AlertModal>
+                )
+                setTimeout(() => {
+                    closeModal()
+                }, 2000)
+            }
+        } catch (err) {
+            openModal(
+                <AlertModal>
+                    <TitleModal>Sorry</TitleModal>
+                    <BodyModal><p className="text-sm text-slate-300">Something went wrong</p>
+                    </BodyModal>
+                </AlertModal>
+            )
+            setTimeout(() => {
+                closeModal()
+            }, 2000)
+        }
+
     }
 
 
     return (
         <div className="">
             <div className="overflow-x-auto border-b border-white/15">
-                <div className="mx-8 my-4">
-                    Filter
+                <div className="flex justify-between mx-8 my-4">
+                    <div>
+
+                    </div>
+                    <button
+                        onClick={() => handleAddSession()}
+                        className="bg-blue-500 p-2 px-4 text-sm rounded-md min-w-32 hover:bg-blue-600"
+                    >
+                        Add Session
+                    </button>
                 </div>
                 <div className="relative max-h-[76vh] overflow-y-auto" onScroll={handleScroll} ref={scrollRef}>
                     <table className="min-w-full table-fixed">
