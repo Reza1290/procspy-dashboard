@@ -88,15 +88,17 @@ const LogsWindow = ({ token, canDrag = false }: { token: string, canDrag?: boole
 
                 setHasMore(nextPage < data.totalPages);
                 setPage(nextPage);
+                if(!scrollRef.current){
 
-                requestAnimationFrame(() => {
-                    if (scrollRef.current && el && nextPage > 1) {
-                        const newScrollHeight = el.scrollHeight;
-                        el.scrollTop = newScrollHeight - prevScrollHeight;
-                    } else {
-                        el.scrollTop = el.scrollHeight
-                    }
-                });
+                    requestAnimationFrame(() => {
+                        if (scrollRef.current && el && nextPage > 1) {
+                            const newScrollHeight = el.scrollHeight;
+                            el.scrollTop = newScrollHeight - prevScrollHeight;
+                        } else {
+                            el.scrollTop = el.scrollHeight
+                        }
+                    });
+                }
             }
         } catch (err) {
             console.error("Failed to fetch logs history", err);
