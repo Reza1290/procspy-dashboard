@@ -14,7 +14,7 @@ import { SessionResultProps } from "../users/components/UserSessionTable";
 export default function Page() {
     const { roomId, socketId } = useParams();
 
-    const { peers, setData, socketRef, notificationCount } = useWebRtc();
+    const { peers, setData, socketRef, notificationCount, privateMessages, setPrivateMessages } = useWebRtc();
 
     const [userInfo, setUserInfo] = useState(null)
     const [sessionResult, setSessionResult] = useState<SessionResultProps>(null)
@@ -42,7 +42,7 @@ export default function Page() {
     useEffect(() => {
         if (!socketId || !peers[0] || !peers[0].token || notificationCount.length === 0) return;
 
-        if(notificationCount.find((e)=> e.token === peers[0].token)){
+        if (notificationCount.find((e) => e.token === peers[0].token)) {
             fetchSessionResult(peers[0].token)
         }
     }, [notificationCount])
@@ -85,13 +85,13 @@ export default function Page() {
                 const data = await response.json()
                 setSessionResult(data)
             } else {
-                
+
             }
         } catch (error) {
 
         }
     }
-    
+
 
     const videoRef = useRef(null);
     const camRef = useRef(null);
@@ -102,7 +102,6 @@ export default function Page() {
     const [micMute, setMicMute] = useState(true);
     const [micTrack, setMicTrack] = useState(null)
 
-    const [messages, setMessages] = useState([])
 
     const [activeBar, setActiveBar] = useState(0)
 
@@ -192,8 +191,19 @@ export default function Page() {
 
     const handleSendMessage = (text) => {
         if (!peers[0]) return
-        const newMessage = { from: "you", text };
-        setMessages((prev) => [...prev, newMessage]);
+        setPrivateMessages(prev => {
+            const existingIndex = prev.findIndex(n => n.token === peers[0].token)
+            if (existingIndex !== -1) {
+                const updated = [...prev];
+                updated[existingIndex] = {
+                    token: peers[0].token,
+                    messages: [...updated[existingIndex].messages, { from : "you", text }]
+                };
+                return updated;
+            } else {
+                return [...prev, { token: peers[0].token, messages: [{ from : "you", text }] }];
+            }
+        })
         socketRef.current.emit("DASHBOARD_SERVER_MESSAGE", {
             data: {
                 action: "SEND_CHAT",
@@ -216,7 +226,7 @@ export default function Page() {
                 <div className="max-h-[90vh] h-[90vh]">
                     <ChatBox
                         user={{ name: "user#" + peers[0]?.token || "" }}
-                        messages={messages}
+                        privateMessages={privateMessages.filter((e) => e.token === peers[0].token)}
                         onSendMessage={handleSendMessage}
                     />
                 </div>
@@ -231,8 +241,8 @@ export default function Page() {
             </div>
             <div className="row-span-2 row-start-5 col-span-10 border-t border-white/15">
                 <div className="flex items-center gap-4 p-2">
-                    <button onClick={() => setActiveBar(0)} className={`${ activeBar === 0 ? "bg-gray-400/10  border-white/10 ": ""} border border-transparent min-w-16 text-xs px-4 rounded font-light py-1`}>Logs</button>
-                    <button onClick={() => setActiveBar(1)} className={` ${ activeBar === 1 ? "bg-gray-400/10  border-white/10 ": ""} border border-transparent min-w-16 text-xs px-4 rounded font-light py-1`}>Device Info</button>
+                    <button onClick={() => setActiveBar(0)} className={`${activeBar === 0 ? "bg-gray-400/10  border-white/10 " : ""} border border-transparent min-w-16 text-xs px-4 rounded font-light py-1`}>Logs</button>
+                    <button onClick={() => setActiveBar(1)} className={` ${activeBar === 1 ? "bg-gray-400/10  border-white/10 " : ""} border border-transparent min-w-16 text-xs px-4 rounded font-light py-1`}>Device Info</button>
                     {/* <button className=" min-w-16 text-xs px-4 rounded font-light py-1">Moderation Tools</button> */}
                 </div>
                 <div className="flex justify-between border-t border-white/15 max-h-[20vh] h-[20vh]">

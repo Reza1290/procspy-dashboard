@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 
-const ChatBox = ({ user, messages, onSendMessage }) => {
+const ChatBox = ({ user, privateMessages, onSendMessage }) => {
+
+    console.log(privateMessages)
     const [inputValue, setInputValue] = useState("");
-    const messagesEndRef = useRef(null);
+    const privateMessagesEndRef = useRef(null);
 
     const handleKeyDown = (e) => {
         if (e.key === "Enter" && inputValue.trim()) {
@@ -12,8 +14,8 @@ const ChatBox = ({ user, messages, onSendMessage }) => {
     };
 
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-    }, [messages])
+        privateMessagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    }, [privateMessages])
 
     return (
         <div className="flex flex-col w-full justify-between gap-4 h-full max-h-[90vh] border-l border-white/10 ">
@@ -27,7 +29,7 @@ const ChatBox = ({ user, messages, onSendMessage }) => {
                             dark:[&::-webkit-scrollbar-track]:bg-gray-800
                             dark:[&::-webkit-scrollbar-thumb]:bg-gray-600
             ">
-                    {messages && messages.map((msg, idx) => {
+                    {privateMessages.length > 0 && privateMessages[0].messages.map((msg, idx) => {
                         const isSentByMe = msg.from === "you";
                         return (
                             <div
@@ -49,7 +51,7 @@ const ChatBox = ({ user, messages, onSendMessage }) => {
                         );
                     })}
 
-                    <div ref={messagesEndRef} />
+                    <div ref={privateMessagesEndRef} />
                 </div>
             </div>
 

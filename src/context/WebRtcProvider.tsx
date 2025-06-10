@@ -22,6 +22,8 @@ interface DefaultWebRtc {
     notificationCount: Array<NotificationCount>
     socketRef: RefObject<Socket>
     connected: boolean
+    privateMessages: Array<MessageData>,
+    setPrivateMessages: React.Dispatch<React.SetStateAction<Array<MessageData>>>
 }
 
 interface SocketAuthData {
@@ -41,7 +43,9 @@ const defaultWebRtc: DefaultWebRtc = {
     setNotificationCount: () => { },
     notificationCount: [],
     socketRef: createRef<Socket>(),
-    connected: false
+    connected: false,
+    privateMessages: [],
+    setPrivateMessages: () => {}
 }
 
 export interface Peer {
@@ -68,6 +72,16 @@ interface NotificationData {
     token: string
 }
 
+interface MessageData {
+    token: string
+    messages : Array<PrivateMessage>
+}
+
+interface PrivateMessage {
+    from: string
+    text: string
+}
+
 const WebRtcContext = createContext(defaultWebRtc)
 
 export const WebRtcProvider = ({ children }) => {
@@ -89,6 +103,8 @@ export const WebRtcProvider = ({ children }) => {
 
     const [peers, setPeers] = useState<Array<Peer>>([])
     const [notificationCount, setNotificationCount] = useState<Array<NotificationCount>>([])
+    
+    const [privateMessages, setPrivateMessages] = useState<Array<MessageData>>([])
 
     useEffect(() => {
         if(!data.roomId) return
@@ -107,9 +123,26 @@ export const WebRtcProvider = ({ children }) => {
                 socketRef.current.on('new-producer', ({ producerId }) => signalNewConsumerTransport(producerId))
             }
             socketRef.current.on('producer-closed', handleProducerClosed)
-            // socketRef.current.on('SERVER_DASHBOARD_PRIVATE_MESSAGE', (message :any) => {
-            //     console.log(message)
-            // })
+            socketRef.current.on('SERVER_DASHBOARD_PRIVATE_MESSAGE', (message :any) => {
+
+                if(message.action === "PRIVATE_MESSAGE"){
+                    const {body} = message
+                    setPrivateMessages(prev => {
+                        const existingIndex = prev.findIndex(n => n.token === message.token)
+                        if (existingIndex !== -1) {
+                            const updated = [...prev];
+                            updated[existingIndex] = {
+                                token: message.token,
+                                messages: [...updated[existingIndex].messages, {from: message.token, text: body}]
+                            };
+                            return updated;
+                        } else {
+                            return [...prev, { token: message.token, messages: [{from: message.token, text: body}] }];
+                        }
+                    })
+                }
+                
+            })
 
             socketRef.current.on('SERVER_DASHBOARD_LOG_MESSAGE', (message: NotificationData) => {
                 setNotificationCount(prev => {
@@ -312,7 +345,7 @@ export const WebRtcProvider = ({ children }) => {
 
 
 
-    const value = { data, setData, eventRef, peers, notificationCount, setNotificationCount, socketRef, connected}
+    const value = { data, setData, eventRef, peers, notificationCount, setNotificationCount, socketRef, connected, privateMessages, setPrivateMessages}
 
     return (
         <WebRtcContext.Provider value={value} >

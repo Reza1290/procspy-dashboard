@@ -201,9 +201,9 @@ const UserSessionTable = () => {
 
     return (
         <div className="">
-            <div className="overflow-x-auto border-b border-t border-white/15">
+            <div className="overflow-x-auto ">
                 <div className="mx-8 my-4">
-                    Filter
+                    {/* Filter */} &nbsp;
                 </div>
                 <div className="relative max-h-screen overflow-y-auto" onScroll={handleScroll} ref={scrollRef}>
                     <table className="min-w-full table-fixed">
