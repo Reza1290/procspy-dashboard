@@ -90,7 +90,7 @@ const LogsWindow = ({ token, canDrag = false }: { token: string, canDrag?: boole
                 setPage(nextPage);
 
                 requestAnimationFrame(() => {
-                    if (el && nextPage > 1) {
+                    if (scrollRef.current && el && nextPage > 1) {
                         const newScrollHeight = el.scrollHeight;
                         el.scrollTop = newScrollHeight - prevScrollHeight;
                     } else {
