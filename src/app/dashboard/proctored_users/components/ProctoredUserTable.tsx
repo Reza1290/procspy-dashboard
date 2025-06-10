@@ -352,7 +352,7 @@ const ProctoredUserTable = () => {
         const roomId = roomRef.current.value
         try {
             const token = await session();
-            const res = await fetch("https://192.168.2.5:5050/api/session/", {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || "https://192.168.2.5:5050"}/api/session/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
