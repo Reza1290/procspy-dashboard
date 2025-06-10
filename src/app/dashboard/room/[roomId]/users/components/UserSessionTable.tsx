@@ -137,9 +137,7 @@ const UserSessionTable = () => {
         }
     };
 
-    const handleAbortSession = async (token: string) => {
-        await sendAbortMessageToSocket(token)
-    }
+    
 
 
 
@@ -153,13 +151,18 @@ const UserSessionTable = () => {
                     FraudLevel.LOW;
     }
 
-    const sendAbortMessageToSocket = async (token: string) => {
+    const handleAbortSession = async (token: string, state: string) => {
+        await sendAbortMessageToSocket(token, state)
+    }
+
+    const sendAbortMessageToSocket = async (token: string, state: string) => {
         socketRef.current.emit("DASHBOARD_SERVER_MESSAGE", {
             data: {
                 action: "ABORT_PROCTORING",
                 token,
                 roomId,
-                error: "Aborted By Proctor"
+                state,
+                error: ":Proctor " + state + " Session"
             }
         })
     };
@@ -216,8 +219,11 @@ const UserSessionTable = () => {
                                     <td className="pr-8 pl-4 py-4 text-xs capitalize flex justify-start items-center gap-4">
                                         <PopOver icon={<EllipsisVertical className="max-w-4 aspect-square" />}>
                                             <div className="flex flex-col gap-1">
-                                                <div onClick={() => handleAbortSession(session.token)} className="hover:bg-gray-700 cursor-pointer rounded text-sm p-1 px-2">
+                                                <div onClick={() => handleAbortSession(session.token, "aborted")} className="hover:bg-gray-700 cursor-pointer rounded text-sm p-1 px-2">
                                                     Abort
+                                                </div>
+                                                <div onClick={() => handleAbortSession(session.token, "completed")} className="hover:bg-gray-700 cursor-pointer rounded text-sm p-1 px-2">
+                                                    End (Complete)
                                                 </div>
                                             </div>
                                         </PopOver>

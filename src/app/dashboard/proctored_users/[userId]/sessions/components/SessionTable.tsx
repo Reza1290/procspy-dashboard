@@ -5,6 +5,7 @@ import session from "../../../../../../lib/session";
 import { ChartLineIcon, EllipsisVertical, Eye, Unplug } from "lucide-react";
 import { FraudLevel, SessionProps } from "../../../../room/[roomId]/users/components/UserSessionTable";
 import { useRouter } from "next/navigation";
+import PopOver from "../../../../../../components/ui/PopOver";
 
 
 
@@ -64,13 +65,34 @@ const SessionTable = () => {
 
 
     const calcFraudLevel = (totalSeverity: number) => {
-            const percentOfThreshold = (totalSeverity / threshold) * 100;
-    
-            return percentOfThreshold >= 90 ? FraudLevel.CRITICAL :
-                percentOfThreshold >= 65 ? FraudLevel.HIGH :
-                    percentOfThreshold >= 25 ? FraudLevel.MEDIUM :
-                        FraudLevel.LOW;
+        const percentOfThreshold = (totalSeverity / threshold) * 100;
+
+        return percentOfThreshold >= 90 ? FraudLevel.CRITICAL :
+            percentOfThreshold >= 65 ? FraudLevel.HIGH :
+                percentOfThreshold >= 25 ? FraudLevel.MEDIUM :
+                    FraudLevel.LOW;
+    }
+
+    const handleSessionState = async (token: string, state: string) => {
+        try {
+            
+            const jwt = await session()
+
+            const res = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/session/update-status-proctor/${token}/${state}`, {
+                headers: {
+                    Authorization: `Bearer ${jwt}`,
+                },
+            });
+
+            if(res.ok){
+                setSessions([])
+                fetchSessions(1)
+            }
+        } catch (error) {
+            
         }
+    }
+
 
     return (
         <div className="">
@@ -88,6 +110,7 @@ const SessionTable = () => {
                                 <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Room Id</th>
                                 <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Session Status</th>
                                 <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Fraud Status</th>
+                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Analytics</th>
                                 <th className="pr-8 pl-4 text-left font-normal text-slate-100/75 text-sm">Action</th>
                             </tr>
                         </thead>
@@ -105,9 +128,21 @@ const SessionTable = () => {
                                     <td className="px-4 py-4 text-xs capitalize">
                                         <div className="bg-red-500 w-min rounded p-1 px-2">{session.session_result && calcFraudLevel(session.session_result.totalSeverity) || "LOW"}</div>
                                     </td>
-                                    <td className="pr-8 pl-4 py-4 text-xs capitalize flex justify-start items-center gap-4">
-                                       <div onClick={() => router.push(usedPathaname.join("/") + "/analytics/" + session.token)} className="bg-blue-500 w-max rounded p-1 px-2 cursor-pointer flex gap-1 items-center ">
+                                    <td className="pr-8 pl-4 py-4 text-xs capitalize gap-4">
+                                        <div onClick={() => router.push(usedPathaname.join("/") + "/analytics/" + session.token)} className="bg-blue-500 w-max rounded p-1 px-2 cursor-pointer flex gap-1 items-center ">
                                             <ChartLineIcon className="w-4" /> Session Result</div>
+                                    </td>
+                                    <td className="pr-8 pl-4 py-4 text-xs capitalize flex justify-start items-center gap-4">
+                                        <PopOver icon={<EllipsisVertical className="max-w-4 aspect-square" />}>
+                                            <div className="flex flex-col gap-1">
+                                                <div onClick={() => handleSessionState(session.token, "canceled")} className="hover:bg-gray-700 cursor-pointer rounded text-sm p-1 px-2">
+                                                    Cancel
+                                                </div>
+                                                <div onClick={() => handleSessionState(session.token, "completed")} className="hover:bg-gray-700 cursor-pointer rounded text-sm p-1 px-2">
+                                                    End (Complete)
+                                                </div>
+                                            </div>
+                                        </PopOver>
                                     </td>
 
                                 </tr>
