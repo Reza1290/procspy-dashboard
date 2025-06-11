@@ -203,7 +203,7 @@ export default function AnalyticsPage() {
                         <div className="w-full h-full flex justify-center items-center">
                             {
                                 renderedFile ? <div className="max-h-[45vh] min-h-[45vh] border aspect-video rounded">
-                                    <img className="rounded-md" src={`${process.env.STORAGE_ENDPOINT || 'https://192.168.2.5:5050'}` + renderedFile} alt=""
+                                    <img className="rounded-md" src={`${process.env.NEXT_PUBLIC_STORAGE_ENDPOINT || 'https://192.168.2.5:5050'}` + renderedFile} alt=""
 
                                     />
                                 </div> : <div className="text-xs">No Image</div>
