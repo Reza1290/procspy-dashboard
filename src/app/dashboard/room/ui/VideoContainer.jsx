@@ -91,18 +91,18 @@ const VideoContainer = ({ consumer }) => {
         })
     }
 
-    useEffect(() => {
-        const enableAutoplay = () => {
-            const track = micRef.current.srcObject.getTracks()[0]
-            setMicTrack(track)
-            videoRef.current?.play()
-            audioRef.current?.play()
-            camRef.current?.play()
-            micRef.current?.play()
+    // useEffect(() => {
+    //     const enableAutoplay = () => {
+    //         const track = micRef.current.srcObject.getTracks()[0]
+    //         setMicTrack(track)
+    //         videoRef.current?.play()
+    //         audioRef.current?.play()
+    //         camRef.current?.play()
+    //         micRef.current?.play()
             
-        }
-        document.addEventListener("click", enableAutoplay, { once: true })
-    }, [])
+    //     }
+    //     document.addEventListener("click", enableAutoplay, { once: true })
+    // }, [])
 
     const toggleAudio = () => {
         setAudioMute((prev) => {
