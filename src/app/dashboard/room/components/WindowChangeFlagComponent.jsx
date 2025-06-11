@@ -19,7 +19,7 @@ const WindowChangeFlagComponent = (flags) => {
 
 
                 <div className="bg-white/10 w-full p-2 rounded-md border border-white/10 max-h-64">
-                    <img className="rounded-md" src={`${process.env.STORAGE_ENDPOINT || 'https://192.168.2.5:5050'}`+ flags?.attachment.file} alt="" />
+                    <img className="rounded-md" src={`${process.env.NEXT_PUBLIC_STORAGE_ENDPOINT || 'https://192.168.2.5:5050'}`+ flags?.attachment.file} alt="" />
                 </div>
                 <div className="flex gap-2">
                     <div onClick={()=> flagState('')} className="w-8 h-8 bg-red-500/80 rounded-md border border-white/10 p-2 fill-white cursor-pointer">

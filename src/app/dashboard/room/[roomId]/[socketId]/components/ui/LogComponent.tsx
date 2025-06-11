@@ -28,7 +28,7 @@ const LogComponent = ({ log }: { log: LogProps }) => {
                     log.attachment?.file && (
                         <div className="flex flex-col gap-4">
                             <div className="bg-white/10 w-full aspect-video max-w-64 p-2 rounded-md border border-white/10 max-h-64">
-                                <img className="rounded-md" src={`${process.env.STORAGE_ENDPOINT || 'https://192.168.2.5:5050'}` + log.attachment?.file} alt="" />
+                                <img className="rounded-md" src={`${process.env.NEXT_PUBLIC_STORAGE_ENDPOINT || 'https://192.168.2.5:5050'}` + log.attachment?.file} alt="" />
                             </div>
                             {
 
