@@ -1,3 +1,5 @@
+"use client"
+
 import { useRouter } from "next/navigation"
 import React, { useEffect, useRef, useState } from "react"
 import { useSideBarLog } from "../../providers/SideBarLogProvider"
@@ -10,6 +12,7 @@ const VideoContainer = ({ consumer }) => {
     const router = useRouter()
     const { data, notificationCount } = useWebRtc()
     const { setData } = useLogBottomSheet()
+
     const videoRef = useRef(null)
     const camRef = useRef(null)
     const audioRef = useRef(null)
@@ -17,166 +20,154 @@ const VideoContainer = ({ consumer }) => {
 
     const [audioMute, setAudioMute] = useState(true)
     const [micMute, setMicMute] = useState(true)
-    const [micTrack, setMicTrack] = useState(null);
+    const [micTrack, setMicTrack] = useState(null)
 
     useEffect(() => {
-        if (consumer && consumer.consumers) {
+        if (consumer?.consumers?.length) {
             prepareConsume(consumer)
         }
-        console.log(consumer)
     }, [consumer])
+
+    const tryPlayMedia = (ref, label) => {
+        if (ref.current && ref.current.srcObject) {
+            ref.current.play().catch(err => {
+                console.warn(`${label} autoplay failed:`, err)
+            })
+        }
+    }
+
+    const setStream = (ref, stream) => {
+        if (ref.current) {
+            if (ref.current.srcObject !== stream) {
+                ref.current.srcObject = null
+                ref.current.srcObject = stream
+            }
+        }
+    }
 
     const prepareConsume = (consumer) => {
         consumer.consumers.forEach(element => {
             const name = element.appData?.name
             const track = element.consumer.track
 
-            if (!track || !(track instanceof MediaStreamTrack)) {
-                console.error(`Invalid MediaStreamTrack for ${name}:`, track)
+            if (!track || !(track instanceof MediaStreamTrack) || track.readyState !== "live") {
+                console.warn(`Skipping invalid track for ${name}`, track)
                 return
             }
-
-            if (track.readyState === "ended") {
-                console.warn(`Track for ${name} has ended`)
-                return
-            }
-
-            //console.log(`Assigning track for ${name}:`, track)
 
             const stream = new MediaStream([track])
 
             switch (name) {
-                case 'video':
-                    if (videoRef.current) {
-                        videoRef.current.srcObject = stream
-                        // videoRef.current.muted = true  
-                        // videoRef.current.play().then(() => {
-                        //     videoRef.current.muted = false  
-                        // }).catch(err => console.error("Autoplay blocked:", err))
-                    }
+                case "video":
+                    setStream(videoRef, stream)
+                    tryPlayMedia(videoRef, "Video")
                     break
 
-                case 'audio':
-                    if (audioRef.current) {
-                        audioRef.current.srcObject = stream
-                        audioRef.current.autoPlay = true
-                        audioRef.current.muted = true
-                        // audioRef.current.play().catch(err => console.error("Autoplay blocked:", err))
-                    }
+                case "cam":
+                    setStream(camRef, stream)
+                    tryPlayMedia(camRef, "Cam")
                     break
 
-                case 'cam':
-                    if (camRef.current) {
-                        camRef.current.srcObject = stream
-                        // camRef.current.muted = true
-                        // camRef.current.play().then(() => {
-                        //     camRef.current.muted = false
-                        // }).catch(err => console.error("Autoplay blocked:", err))
-                    }
+                case "audio":
+                    setStream(audioRef, stream)
+                    audioRef.current.muted = audioMute
+                    tryPlayMedia(audioRef, "Audio")
                     break
 
-                case 'mic':
-                    if (micRef.current) {
-                        setMicTrack(track)
-                        micRef.current.srcObject = stream
-                        micRef.current.autoPlay = true
-                        micRef.current.muted = true
-                        // micRef.current.play().catch(err => console.error("Autoplay blocked:", err))
-                    }
+                case "mic":
+                    setMicTrack(track)
+                    setStream(micRef, stream)
+                    micRef.current.muted = micMute
+                    tryPlayMedia(micRef, "Mic")
                     break
 
                 default:
-                    console.warn(`Unknown media type: ${name}`)
+                    console.warn(`Unknown track name: ${name}`)
             }
         })
     }
 
-    // useEffect(() => {
-    //     const enableAutoplay = () => {
-    //         const track = micRef.current.srcObject.getTracks()[0]
-    //         setMicTrack(track)
-    //         videoRef.current?.play()
-    //         audioRef.current?.play()
-    //         camRef.current?.play()
-    //         micRef.current?.play()
-            
-    //     }
-    //     document.addEventListener("click", enableAutoplay, { once: true })
-    // }, [])
+    useEffect(() => {
+        const enableAutoplay = () => {
+            tryPlayMedia(videoRef, "Video")
+            tryPlayMedia(audioRef, "Audio")
+            tryPlayMedia(camRef, "Cam")
+            tryPlayMedia(micRef, "Mic")
+        }
+        document.addEventListener("click", enableAutoplay, { once: true })
+
+        return () => {
+            [videoRef, camRef, audioRef, micRef].forEach(ref => {
+                if (ref.current?.srcObject) {
+                    const tracks = ref.current.srcObject.getTracks()
+                    tracks.forEach(t => t.stop())
+                    ref.current.srcObject = null
+                }
+            })
+        }
+    }, [])
 
     const toggleAudio = () => {
-        setAudioMute((prev) => {
-            const newMuteState = !prev
+        setAudioMute(prev => {
+            const muted = !prev
             if (audioRef.current) {
-                audioRef.current.muted = newMuteState
-                if (!newMuteState) {
-                    audioRef.current.play().catch(err => console.error("Autoplay blocked:", err))
-                }
+                audioRef.current.muted = muted
+                if (!muted) tryPlayMedia(audioRef, "Audio")
             }
-            console.log('Audio toggled:', newMuteState ? 'Muted' : 'Unmuted')
-            return newMuteState
+            return muted
         })
     }
 
     const toggleMic = () => {
-        setMicMute((prev) => {
-            const newMuteState = !prev
+        setMicMute(prev => {
+            const muted = !prev
             if (micRef.current) {
-                micRef.current.muted = newMuteState
-                if (!newMuteState) {
-                    micRef.current.play().catch(err => console.error("Autoplay blocked:", err))
-                }
+                micRef.current.muted = muted
+                if (!muted) tryPlayMedia(micRef, "Mic")
             }
-            console.log('Mic toggled:', newMuteState ? 'Muted' : 'Unmuted')
-            return newMuteState
+            return muted
         })
     }
 
     const handleFocusMode = () => {
-
         router.push(`/dashboard/room/${data.roomId}/${consumer.socketId}`)
     }
 
     const handleToggleLogBottomSheet = () => {
-        console.log("test", consumer.token)
-        setData((prev) => ({
+        setData(prev => ({
             active: !prev.active,
             token: consumer.token
         }))
     }
-
-
-
 
     return (
         <div className="flex max-h-[30vh]">
             <div className="relative z-10 flex flex-col justify-between bg-black border border-white/10 rounded-xl p-3">
                 <div className="flex justify-between gap-3 w-full">
                     <div className="aspect-video flex items-center justify-center bg-slate-950 rounded-lg border w-3/4 border-white/10 overflow-hidden relative">
-                        <video autoPlay ref={videoRef} playsInline></video>
-                        <div className='absolute mt-1 bottom-2 left-3 text-xs'>
-                            <div className="">
-                                <h1 className='font-medium bg-slate-600/50 px-2 py-0.5 rounded text-slate-100'>#id-{consumer.token}</h1>
+                        <video autoPlay playsInline ref={videoRef}></video>
+                        {!videoRef.current?.srcObject && (
+                            <div className="absolute inset-0 bg-black/90 text-white text-sm flex items-center justify-center">
+                                No video
                             </div>
+                        )}
+                        <div className="absolute mt-1 bottom-2 left-3 text-xs">
+                            <h1 className="font-medium bg-slate-600/50 px-2 py-0.5 rounded text-slate-100">#id-{consumer.token}</h1>
                         </div>
                     </div>
 
                     <div className="flex flex-col w-1/4 gap-4">
                         <div className="group aspect-square flex items-center justify-center bg-slate-950 rounded-lg border border-white/10 overflow-hidden cursor-ne-resize">
-                            <video autoPlay ref={camRef} playsInline onDoubleClick={() => camRef.current.requestFullscreen()}></video>
+                            <video autoPlay ref={camRef} playsInline onDoubleClick={() => camRef.current?.requestFullscreen()}></video>
                             <span className="group-hover:block hidden absolute text-[0.6rem] -top-8 z-100 bg-black/10 p-1 rounded-lg border border-white/10">Double Click to Fullscreen</span>
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            {
-                                micTrack && (<AudioMeter track={micTrack} />)
-                            }
+                            {micTrack && <AudioMeter track={micTrack} />}
                             <div className="flex items-center p-2 border border-white/10 rounded">
                                 <TriangleAlertIcon className="text-red-500" />
                                 <p className="text-xs ml-2 truncate">
-                                    {
-                                        notificationCount.find(n => n.token === consumer.token)?.count || 0
-                                    } New Flags
+                                    {notificationCount.find(n => n.token === consumer.token)?.count || 0} New Flags
                                 </p>
                             </div>
                         </div>
@@ -185,23 +176,19 @@ const VideoContainer = ({ consumer }) => {
                     </div>
                 </div>
             </div>
-            <div className="-ml-3 bg-black/15 p-3 pl-6 w-72 bg-black/1 z-0 border gap-4 border-white/10 border-l-0 rounded-r-xl grid grid-rows-4">
+
+            <div className="-ml-3 bg-black/15 p-3 pl-6 w-72 z-0 border gap-4 border-white/10 border-l-0 rounded-r-xl grid grid-rows-4">
                 <div className="self-center justify-self-center border border-white/10 bg-white/10 aspect-square rounded flex justify-center items-center p-2 max-w-16 cursor-pointer" onClick={toggleMic}>
-
                     {micMute ? <MicOffIcon /> : <MicIcon />}
-
                 </div>
                 <div className="self-center justify-self-center border border-white/10 bg-white/10 aspect-square rounded flex justify-center items-center p-2 max-w-16 cursor-pointer" onClick={toggleAudio}>
                     {audioMute ? <VolumeOffIcon /> : <Volume2Icon />}
-
                 </div>
                 <div className="relative self-center justify-self-center border border-white/10 bg-white/10 aspect-square rounded flex justify-center items-center p-2 max-w-16 cursor-pointer" onClick={handleToggleLogBottomSheet}>
-                    {
-                        notificationCount.find(n => n.token === consumer.token)?.count > 0 && <div className="absolute w-3 h-3 bg-red-500 -top-1 -right-1 rounded-full"></div>
-                    }
+                    {notificationCount.find(n => n.token === consumer.token)?.count > 0 && <div className="absolute w-3 h-3 bg-red-500 -top-1 -right-1 rounded-full"></div>}
                     <FlagIcon />
                 </div>
-                <div className="self-center justify-self-center border border-white/10 bg-white/10 aspect-square rounded flex justify-center items-center p-2 max-w-16 cursor-pointer" onClick={() => handleFocusMode()}>
+                <div className="self-center justify-self-center border border-white/10 bg-white/10 aspect-square rounded flex justify-center items-center p-2 max-w-16 cursor-pointer" onClick={handleFocusMode}>
                     <FullscreenIcon />
                 </div>
             </div>
