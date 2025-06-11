@@ -98,7 +98,6 @@ export const WebRtcProvider = ({ children }) => {
 
     const consumingTransportsRef = useRef([])
     const consumerTransportsRef = useRef([])
-    const consumerBufferRef = useRef<Map<string, Set<string>>>(new Map());
 
     const peersRef = useRef<Array<Peer>>([])
 
@@ -250,36 +249,30 @@ export const WebRtcProvider = ({ children }) => {
             const token = params.appData.token
 
 
-            addConsumerToPeer(token, socketId, {
-                consumerTransport,
-                serverConsumerTransportId: params.id,
-                producerId: remoteProducerId,
-                consumer,
-                appData: params.appData
-            })
+
             // const existingPeerIndex = peersRef.current.findIndex(peer => peer.socketId === socketId);
 
-            // setPeers((prev) => {
-            //     const consumerData: ConsumerData = {
-            //         consumerTransport,
-            //         serverConsumerTransportId: params.id,
-            //         producerId: remoteProducerId,
-            //         consumer,
-            //         appData: params.appData
-            //     }
+            setPeers((prev) => {
+                const consumerData: ConsumerData = {
+                    consumerTransport,
+                    serverConsumerTransportId: params.id,
+                    producerId: remoteProducerId,
+                    consumer,
+                    appData: params.appData
+                }
 
-            //     const existingEntry = prev.find(entry => entry.socketId === socketId)
+                const existingEntry = prev.find(entry => entry.socketId === socketId)
 
-            //     if (existingEntry) {
-            //         return prev.map(entry =>
-            //             entry.socketId === socketId
-            //                 ? { ...entry, consumers: [...entry.consumers, consumerData] }
-            //                 : entry
-            //         )
-            //     } else {
-            //         return [...prev, { token, socketId, consumers: [consumerData] }]
-            //     }
-            // })
+                if (existingEntry) {
+                    return prev.map(entry =>
+                        entry.socketId === socketId
+                            ? { ...entry, consumers: [...entry.consumers, consumerData] }
+                            : entry
+                    )
+                } else {
+                    return [...prev, { token, socketId, consumers: [consumerData] }]
+                }
+            })
 
 
             // if (existingPeerIndex !== -1) {
@@ -322,7 +315,6 @@ export const WebRtcProvider = ({ children }) => {
         //     consumers: entry.consumers.filter((consumer) => consumer.producerId !== remoteProducerId)
         // })).filter(entry => entry.consumers.length > 0)
         eventRef.current.emit('consumer-removed', remoteProducerId)
-
         setPeers((prev) => {
             let changed = false;
 
@@ -350,48 +342,6 @@ export const WebRtcProvider = ({ children }) => {
         });
 
     }
-
-    const addConsumerToPeer = (
-        token: string,
-        socketId: string,
-        consumerData: ConsumerData
-    ) => {
-        setPeers(prev => {
-            const updated = [...prev];
-            const index = updated.findIndex(entry => entry.socketId === socketId);
-
-            const buffer = consumerBufferRef.current;
-            if (!buffer.has(socketId)) {
-                buffer.set(socketId, new Set());
-            }
-
-            const producerSet = buffer.get(socketId)!;
-
-            if (producerSet.has(consumerData.producerId)) {
-                return prev;
-            }
-
-            producerSet.add(consumerData.producerId);
-
-            if (index !== -1) {
-                const peer = updated[index];
-                const updatedConsumers = [...peer.consumers, consumerData];
-
-                updated[index] = {
-                    ...peer,
-                    consumers: updatedConsumers
-                };
-
-                if (updatedConsumers.length >= 4) {
-                    buffer.delete(socketId);
-                }
-            } else {
-                updated.push({ token, socketId, consumers: [consumerData] });
-            }
-
-            return updated;
-        });
-    };
 
 
 
