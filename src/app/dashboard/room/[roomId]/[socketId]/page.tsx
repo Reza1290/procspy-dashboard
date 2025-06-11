@@ -1,299 +1,246 @@
-'use client'
-import ChatBox from "../../../ui/ChatBox";
-import { useEffect, useRef, useState } from "react";
-import { useParams } from "next/navigation";
-import { ConsumerData, useWebRtc } from "../../../../../context/WebRtcProvider";
-import { CheckIcon, LogInIcon, MicIcon, MicOffIcon, Volume2Icon, VolumeIcon, VolumeOffIcon, VolumeX, XIcon } from "lucide-react";
-import LogsWindow from "./components/LogsWindow";
-import AudioMeter from "../components/AudioMeter";
-import UserInfoWindow from "./components/DeviceInfoWindow";
-import DeviceInfoWindow from "./components/DeviceInfoWindow";
-import session from "../../../../../lib/session";
-import { SessionResultProps } from "../users/components/UserSessionTable";
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+import { useParams } from 'next/navigation';
+import ChatBox from '../../../ui/ChatBox';
+import { ConsumerData, useWebRtc } from '../../../../../context/WebRtcProvider';
+import { MicIcon, MicOffIcon, Volume2Icon, VolumeOffIcon } from 'lucide-react';
+import LogsWindow from './components/LogsWindow';
+import AudioMeter from '../components/AudioMeter';
+import DeviceInfoWindow from './components/DeviceInfoWindow';
+import session from '../../../../../lib/session';
+import { SessionResultProps } from '../users/components/UserSessionTable';
+
+type UserInfo = {
+    session_detail: any;
+    [key: string]: any;
+};
 
 export default function Page() {
     const { roomId, socketId } = useParams();
-
     const { peers, setData, socketRef, notificationCount, privateMessages, setPrivateMessages } = useWebRtc();
 
-    const [userInfo, setUserInfo] = useState(null)
-    const [sessionResult, setSessionResult] = useState<SessionResultProps>(null)
+    const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+    const [sessionResult, setSessionResult] = useState<SessionResultProps | null>(null);
+
+    const videoRef = useRef<HTMLVideoElement | null>(null);
+    const camRef = useRef<HTMLVideoElement | null>(null);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const micRef = useRef<HTMLAudioElement | null>(null);
+
+    const [audioMute, setAudioMute] = useState(true);
+    const [micMute, setMicMute] = useState(true);
+    const [micTrack, setMicTrack] = useState<MediaStreamTrack | null>(null);
+
+    const [activeBar, setActiveBar] = useState(0);
+
     useEffect(() => {
-        if (socketId) {
-            setData((prev) => ({
+        if (socketId && roomId) {
+            setData(prev => ({
+                ...prev,
                 roomId: roomId as string,
                 singleConsumerSocketId: socketId as string,
             }));
         }
-    }, [])
+    }, [roomId, socketId, setData]);
 
     useEffect(() => {
-        if (peers && peers[0]) {
+        if (peers?.[0]) {
             prepareConsume(peers[0].consumers);
         }
-    }, [peers])
+    }, [peers]);
 
     useEffect(() => {
-        if (socketId && peers[0]) {
-            fetchUserInfo(peers[0].token)
+        if (socketId && peers?.[0]?.token) {
+            fetchUserInfo(peers[0].token);
         }
-    }, [peers])
+    }, [peers, socketId]);
 
     useEffect(() => {
-        if (!socketId || !peers[0] || !peers[0].token || notificationCount.length === 0) return;
-
-        if (notificationCount.find((e) => e.token === peers[0].token)) {
-            fetchSessionResult(peers[0].token)
+        const token = peers?.[0]?.token;
+        if (!token || notificationCount.length === 0) return;
+        if (notificationCount.some(e => e.token === token)) {
+            fetchSessionResult(token);
         }
-    }, [notificationCount])
+    }, [notificationCount, peers]);
 
     const fetchUserInfo = async (token: string) => {
         try {
-
-            const jwt = await session()
-            const response = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || "https://192.168.2.5:5050"}/api/proctored-user/${token}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${jwt}`,
-                    },
-                }
-            )
-            if (response.ok) {
-                const { data } = await response.json()
-                await fetchSessionResult(token)
-                setUserInfo(data)
-            } else {
-
+            const jwt = await session();
+            const res = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/proctored-user/${token}`, {
+                headers: { Authorization: `Bearer ${jwt}` },
+            });
+            if (res.ok) {
+                const { data } = await res.json();
+                setUserInfo(data);
+                fetchSessionResult(token);
             }
-        } catch (error) {
-
+        } catch (err) {
+            console.error('Fetch user info failed:', err);
         }
-    }
+    };
 
     const fetchSessionResult = async (token: string) => {
         try {
-
-            const jwt = await session()
-            const response = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || "https://192.168.2.5:5050"}/api/session-result-token/${token}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${jwt}`,
-                    },
-                }
-            )
-            if (response.ok) {
-                const data = await response.json()
-                setSessionResult(data)
-            } else {
-
+            const jwt = await session();
+            const res = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/session-result-token/${token}`, {
+                headers: { Authorization: `Bearer ${jwt}` },
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setSessionResult(data);
             }
-        } catch (error) {
-
+        } catch (err) {
+            console.error('Fetch session result failed:', err);
         }
-    }
+    };
 
+    const prepareConsume = (consumers: ConsumerData[]) => {
+        consumers.forEach(({ appData, consumer }) => {
+            const name = appData?.name;
+            const track = consumer.track;
 
-    const videoRef = useRef(null);
-    const camRef = useRef(null);
-    const audioRef = useRef(null);
-    const micRef = useRef(null);
-
-    const [audioMute, setAudioMute] = useState(true);
-    const [micMute, setMicMute] = useState(true);
-    const [micTrack, setMicTrack] = useState(null)
-
-
-    const [activeBar, setActiveBar] = useState(0)
-
-    const prepareConsume = (consumers) => {
-        consumers.forEach((element) => {
-            console.log(element)
-            const name = element.appData?.name;
-            const track = element.consumer.track;
-
-            if (!track || !(track instanceof MediaStreamTrack)) {
-                console.error(`Invalid MediaStreamTrack for ${name}:`, track);
-                return;
-            }
-
-            if (track.readyState === "ended") {
-                console.warn(`Track for ${name} has ended`);
-                return;
-            }
+            if (!track || !(track instanceof MediaStreamTrack)) return;
 
             const stream = new MediaStream([track]);
 
             switch (name) {
-                case "video":
+                case 'video':
                     if (videoRef.current) {
                         videoRef.current.srcObject = stream;
                         videoRef.current.muted = true;
-                        videoRef.current.playsInline = true;
                     }
                     break;
-
-                case "audio":
+                case 'audio':
                     if (audioRef.current) {
                         audioRef.current.srcObject = stream;
                         audioRef.current.muted = audioMute;
                         audioRef.current.autoplay = true;
                     }
                     break;
-
-                case "cam":
+                case 'cam':
                     if (camRef.current) {
                         camRef.current.srcObject = stream;
                         camRef.current.muted = true;
-                        camRef.current.playsInline = true;
                     }
                     break;
-
-                case "mic":
+                case 'mic':
                     if (micRef.current) {
-                        setMicTrack(track)
                         micRef.current.srcObject = stream;
                         micRef.current.muted = micMute;
                         micRef.current.autoplay = true;
+                        setMicTrack(track);
                     }
                     break;
-
                 default:
-                    console.warn(`Unknown media type: ${name}`);
+                    console.warn(`Unknown track name: ${name}`);
             }
         });
     };
 
     const toggleAudio = () => {
-        setAudioMute((prev) => {
-            const newMuteState = !prev;
+        setAudioMute(prev => {
+            const muted = !prev;
             if (audioRef.current) {
-                audioRef.current.muted = newMuteState;
-                if (!newMuteState) {
-                    audioRef.current.play().catch((err) => console.error("Audio play error:", err));
-                }
+                audioRef.current.muted = muted;
+                if (!muted) audioRef.current.play().catch(console.error);
             }
-            return newMuteState;
+            return muted;
         });
     };
 
     const toggleMic = () => {
-        setMicMute((prev) => {
-            const newMuteState = !prev;
+        setMicMute(prev => {
+            const muted = !prev;
             if (micRef.current) {
-                micRef.current.muted = newMuteState;
-                if (!newMuteState) {
-                    micRef.current.play().catch((err) => console.error("Mic play error:", err));
-                }
+                micRef.current.muted = muted;
+                if (!muted) micRef.current.play().catch(console.error);
             }
-            return newMuteState;
+            return muted;
         });
     };
 
-    const handleSendMessage = (text) => {
-        if (!peers[0]) return
+    const handleSendMessage = (text: string) => {
+        const token = peers?.[0]?.token;
+        if (!token) return;
+
         setPrivateMessages(prev => {
-            const existingIndex = prev.findIndex(n => n.token === peers[0].token)
-            if (existingIndex !== -1) {
+            const existing = prev.findIndex(m => m.token === token);
+            if (existing !== -1) {
                 const updated = [...prev];
-                updated[existingIndex] = {
-                    token: peers[0].token,
-                    messages: [...updated[existingIndex].messages, { from : "you", text }]
-                };
+                updated[existing].messages.push({ from: 'you', text });
                 return updated;
-            } else {
-                return [...prev, { token: peers[0].token, messages: [{ from : "you", text }] }];
             }
-        })
-        socketRef.current.emit("DASHBOARD_SERVER_MESSAGE", {
+            return [...prev, { token, messages: [{ from: 'you', text }] }];
+        });
+
+        socketRef.current?.emit('DASHBOARD_SERVER_MESSAGE', {
             data: {
-                action: "SEND_CHAT",
-                token: peers[0].token,
+                action: 'SEND_CHAT',
+                token,
                 roomId,
-                body: text
-            }
-        })
+                body: text,
+            },
+        });
     };
 
+    const peerToken = peers?.[0]?.token;
+
     return (
-        <div className="grid grid-rows-6 grid-cols-12 w-full h-[90vh] overflow-hidden ">
+        <div className="grid grid-rows-6 grid-cols-12 w-full h-[90vh] overflow-hidden">
             <div className="row-span-4 col-span-7 gap-6 flex justify-start items-start p-8">
-                <div className="flex justify-center items-center  border rounded-lg  max-h-[50vh] aspect-video border-white/10 bg-white/10 p-1">
-                    <video className="max-h-[50vh]" autoPlay ref={videoRef} playsInline></video>
+                <div className="border rounded-lg bg-white/10 border-white/10 p-1 max-h-[50vh] aspect-video flex items-center justify-center">
+                    <video ref={videoRef} autoPlay playsInline className="max-h-[50vh]" />
                 </div>
             </div>
 
-            <div className="row-span-6 col-start-11 col-span-2 ">
-                <div className="max-h-[90vh] h-[90vh]">
+            <div className="row-start-1 row-span-3 col-span-3 col-start-8 pt-8 flex items-start justify-start">
+                <div className="border border-white/10 bg-white/10 rounded-lg aspect-square max-h-[35vh] flex justify-center items-center">
+                    <video ref={camRef} autoPlay playsInline className="aspect-square" />
+                </div>
+            </div>
+
+            <div className="row-span-6 col-span-2 col-start-11">
+                <div className="h-[90vh]">
                     <ChatBox
-                        user={{ name: "user#" + peers[0]?.token || "" }}
-                        privateMessages={privateMessages.filter((e) => e.token === peers[0].token)}
+                        user={{ name: `user#${peerToken ?? ''}` }}
+                        privateMessages={privateMessages.filter(m => m.token === peerToken)}
                         onSendMessage={handleSendMessage}
                     />
                 </div>
             </div>
-            <div className="row-start-1 row-span-3 col-span-3 col-start-8 flex justify-start items-start pt-8">
-                <div className=" border border-white/10 bg-white/10 aspect-square rounded-lg flex justify-center items-center max-h-[35vh]">
-                    <video className="aspect-square" autoPlay ref={camRef} playsInline></video>
-                </div>
-            </div>
-            <div className="flex justify-between items-center row-start-4 col-span-3 col-start-8">
 
-            </div>
             <div className="row-span-2 row-start-5 col-span-10 border-t border-white/15">
-                <div className="flex items-center gap-4 p-2">
-                    <button onClick={() => setActiveBar(0)} className={`${activeBar === 0 ? "bg-gray-400/10  border-white/10 " : ""} border border-transparent min-w-16 text-xs px-4 rounded font-light py-1`}>Logs</button>
-                    <button onClick={() => setActiveBar(1)} className={` ${activeBar === 1 ? "bg-gray-400/10  border-white/10 " : ""} border border-transparent min-w-16 text-xs px-4 rounded font-light py-1`}>Device Info</button>
-                    {/* <button className=" min-w-16 text-xs px-4 rounded font-light py-1">Moderation Tools</button> */}
+                <div className="flex gap-4 items-center p-2">
+                    <button onClick={() => setActiveBar(0)} className={`min-w-16 text-xs px-4 py-1 rounded font-light border ${activeBar === 0 ? 'bg-gray-400/10 border-white/10' : 'border-transparent'}`}>Logs</button>
+                    <button onClick={() => setActiveBar(1)} className={`min-w-16 text-xs px-4 py-1 rounded font-light border ${activeBar === 1 ? 'bg-gray-400/10 border-white/10' : 'border-transparent'}`}>Device Info</button>
                 </div>
+
                 <div className="flex justify-between border-t border-white/15 max-h-[20vh] h-[20vh]">
-                    {
-                        (activeBar === 0 && peers[0]) ? (
-                            <LogsWindow token={peers[0].token}></LogsWindow>
-                        ) : <div></div>
-                    }
-                    {
-                        (userInfo && activeBar == 1) && (
-                            <DeviceInfoWindow session={userInfo?.session_detail}></DeviceInfoWindow>
-                        )
-                    }
+                    {activeBar === 0 && peerToken && <LogsWindow token={peerToken} />}
+                    {activeBar === 1 && userInfo && <DeviceInfoWindow session={userInfo.session_detail} />}
                     <div className="border-l border-white/10 p-4 min-w-[24%] min-h-[25vh] max-h-[25vh]">
-                        <div className="flex flex-col gap-3">
-                            <div className="text-xs gap-4 flex items-center">Fraud Level <span className="bg-red-500 rounded p-1">{sessionResult?.fraudLevel ?? "LOW"}</span></div>
-                            <div className="text-xs gap-4 flex items-center">Total Flags <span className="bg-red-500 rounded p-1">{sessionResult?.totalFlags}</span></div>
-                            <div className="text-xs gap-4 flex items-center">Total Fraud Severity <span className="bg-red-500 rounded p-1">{sessionResult?.totalSeverity}</span></div>
+                        <div className="flex flex-col gap-3 text-xs">
+                            <div className="flex items-center gap-4">Fraud Level <span className="bg-red-500 p-1 rounded">{sessionResult?.fraudLevel ?? 'LOW'}</span></div>
+                            <div className="flex items-center gap-4">Total Flags <span className="bg-red-500 p-1 rounded">{sessionResult?.totalFlags}</span></div>
+                            <div className="flex items-center gap-4">Total Fraud Severity <span className="bg-red-500 p-1 rounded">{sessionResult?.totalSeverity}</span></div>
+
                             <div className="flex gap-4">
-                                <div
-                                    onClick={toggleMic}
-                                    className="border border-white/10 bg-white/10 aspect-square rounded-lg cursor-pointer hover:border-transparent flex justify-center items-center p-2 max-w-16"
-                                >
-                                    {micMute ? (
-                                        <MicOffIcon className="text-white" size={24} />
-                                    ) : (
-                                        <MicIcon className="text-white" size={24} />
-                                    )}
-                                </div>
-
-                                <div
-                                    onClick={toggleAudio}
-                                    className="border border-white/10 bg-white/10 aspect-square rounded-lg flex justify-center hover:border-transparent items-center p-2 max-w-16"
-                                >
-                                    {audioMute ? (
-                                        <VolumeOffIcon className="text-white" size={24} />
-                                    ) : (
-                                        <Volume2Icon className="text-white" size={24} />
-                                    )}
-                                </div>
-                                <AudioMeter track={micTrack}></AudioMeter>
-
+                                <button onClick={toggleMic} className="bg-white/10 hover:border-transparent border border-white/10 p-2 rounded-lg max-w-16 flex justify-center items-center">
+                                    {micMute ? <MicOffIcon className="text-white" size={24} /> : <MicIcon className="text-white" size={24} />}
+                                </button>
+                                <button onClick={toggleAudio} className="bg-white/10 hover:border-transparent border border-white/10 p-2 rounded-lg max-w-16 flex justify-center items-center">
+                                    {audioMute ? <VolumeOffIcon className="text-white" size={24} /> : <Volume2Icon className="text-white" size={24} />}
+                                </button>
+                                <AudioMeter track={micTrack} />
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-
-            <audio autoPlay ref={audioRef} />
-            <audio autoPlay ref={micRef} />
+            <audio ref={audioRef} autoPlay />
+            <audio ref={micRef} autoPlay />
         </div>
     );
 }
