@@ -106,6 +106,10 @@ export const WebRtcProvider = ({ children }) => {
 
     const [privateMessages, setPrivateMessages] = useState<Array<MessageData>>([])
 
+
+    const consumerBufferRef = useRef<Map<string, ConsumerData[]>>(new Map());
+
+
     useEffect(() => {
         if (!data.roomId) return
         if (!socketRef.current) {
@@ -252,27 +256,27 @@ export const WebRtcProvider = ({ children }) => {
 
             // const existingPeerIndex = peersRef.current.findIndex(peer => peer.socketId === socketId);
 
-            setPeers((prev) => {
-                const consumerData: ConsumerData = {
-                    consumerTransport,
-                    serverConsumerTransportId: params.id,
-                    producerId: remoteProducerId,
-                    consumer,
-                    appData: params.appData
-                }
+            // setPeers((prev) => {
+            //     const consumerData: ConsumerData = {
+            //         consumerTransport,
+            //         serverConsumerTransportId: params.id,
+            //         producerId: remoteProducerId,
+            //         consumer,
+            //         appData: params.appData
+            //     }
 
-                const existingEntry = prev.find(entry => entry.socketId === socketId)
+            //     const existingEntry = prev.find(entry => entry.socketId === socketId)
 
-                if (existingEntry) {
-                    return prev.map(entry =>
-                        entry.socketId === socketId
-                            ? { ...entry, consumers: [...entry.consumers, consumerData] }
-                            : entry
-                    )
-                } else {
-                    return [...prev, { token, socketId, consumers: [consumerData] }]
-                }
-            })
+            //     if (existingEntry) {
+            //         return prev.map(entry =>
+            //             entry.socketId === socketId
+            //                 ? { ...entry, consumers: [...entry.consumers, consumerData] }
+            //                 : entry
+            //         )
+            //     } else {
+            //         return [...prev, { token, socketId, consumers: [consumerData] }]
+            //     }
+            // })
 
 
             // if (existingPeerIndex !== -1) {
@@ -285,7 +289,13 @@ export const WebRtcProvider = ({ children }) => {
             //     });
             // }
 
-
+            bufferAndCommitConsumer(token, socketId, {
+                consumerTransport,
+                serverConsumerTransportId: params.id,
+                producerId: remoteProducerId,
+                consumer,
+                appData: params.appData
+            });
 
 
             socketRef.current.emit('consumer-resume', { serverConsumerId: params.serverConsumerId })
@@ -343,6 +353,39 @@ export const WebRtcProvider = ({ children }) => {
 
     }
 
+    function bufferAndCommitConsumer(
+        token: string,
+        socketId: string,
+        consumerData: ConsumerData
+    ) {
+        const buffer = consumerBufferRef.current;
+
+        if (!buffer.has(socketId)) {
+            buffer.set(socketId, []);
+        }
+
+        const list = buffer.get(socketId)!;
+
+        if (list.some(c => c.producerId === consumerData.producerId)) {
+            return;
+        }
+
+        list.push(consumerData);
+
+        if (list.length === 4) {
+            const consumers = [...list];
+            buffer.delete(socketId);
+
+            setPeers(prev => {
+                const existing = prev.find(p => p.socketId === socketId);
+                if (existing) {
+                    return prev;
+                }
+
+                return [...prev, { token, socketId, consumers }];
+            });
+        }
+    }
 
 
     const value = { data, setData, eventRef, peers, notificationCount, setNotificationCount, socketRef, connected, privateMessages, setPrivateMessages }
