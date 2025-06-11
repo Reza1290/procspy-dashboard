@@ -22,7 +22,9 @@ const VideoContainer = ({ consumer }) => {
     const [micMute, setMicMute] = useState(true)
     const [micTrack, setMicTrack] = useState(null)
 
-    useEffect(() => {
+    const consumedIds = useRef<Set<string>>(new Set());
+    
+    useEffect(() => {   
         if (consumer?.consumers?.length) {
             prepareConsume(consumer)
         }
@@ -47,6 +49,9 @@ const VideoContainer = ({ consumer }) => {
 
     const prepareConsume = (consumer) => {
         consumer.consumers.forEach(element => {
+            if (consumedIds.current.has(element.consumer.id)) return;
+            consumedIds.current.add(element.consumer.id);
+
             const name = element.appData?.name
             const track = element.consumer.track
 
