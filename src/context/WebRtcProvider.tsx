@@ -45,7 +45,7 @@ const defaultWebRtc: DefaultWebRtc = {
     socketRef: createRef<Socket>(),
     connected: false,
     privateMessages: [],
-    setPrivateMessages: () => {}
+    setPrivateMessages: () => { }
 }
 
 export interface Peer {
@@ -74,7 +74,7 @@ interface NotificationData {
 
 interface MessageData {
     token: string
-    messages : Array<PrivateMessage>
+    messages: Array<PrivateMessage>
 }
 
 interface PrivateMessage {
@@ -98,16 +98,17 @@ export const WebRtcProvider = ({ children }) => {
 
     const consumingTransportsRef = useRef([])
     const consumerTransportsRef = useRef([])
+    const consumerBufferRef = useRef<Map<string, Set<string>>>(new Map());
 
     const peersRef = useRef<Array<Peer>>([])
 
     const [peers, setPeers] = useState<Array<Peer>>([])
     const [notificationCount, setNotificationCount] = useState<Array<NotificationCount>>([])
-    
+
     const [privateMessages, setPrivateMessages] = useState<Array<MessageData>>([])
 
     useEffect(() => {
-        if(!data.roomId) return
+        if (!data.roomId) return
         if (!socketRef.current) {
             socketRef.current = io(process.env.NEXT_PUBLIC_SOCKET_URL + '/mediasoup', {
                 auth: {
@@ -123,25 +124,25 @@ export const WebRtcProvider = ({ children }) => {
                 socketRef.current.on('new-producer', ({ producerId }) => signalNewConsumerTransport(producerId))
             }
             socketRef.current.on('producer-closed', handleProducerClosed)
-            socketRef.current.on('SERVER_DASHBOARD_PRIVATE_MESSAGE', (message :any) => {
+            socketRef.current.on('SERVER_DASHBOARD_PRIVATE_MESSAGE', (message: any) => {
 
-                if(message.action === "PRIVATE_MESSAGE"){
-                    const {body} = message
+                if (message.action === "PRIVATE_MESSAGE") {
+                    const { body } = message
                     setPrivateMessages(prev => {
                         const existingIndex = prev.findIndex(n => n.token === message.token)
                         if (existingIndex !== -1) {
                             const updated = [...prev];
                             updated[existingIndex] = {
                                 token: message.token,
-                                messages: [...updated[existingIndex].messages, {from: message.token, text: body}]
+                                messages: [...updated[existingIndex].messages, { from: message.token, text: body }]
                             };
                             return updated;
                         } else {
-                            return [...prev, { token: message.token, messages: [{from: message.token, text: body}] }];
+                            return [...prev, { token: message.token, messages: [{ from: message.token, text: body }] }];
                         }
                     })
                 }
-                
+
             })
 
             socketRef.current.on('SERVER_DASHBOARD_LOG_MESSAGE', (message: NotificationData) => {
@@ -162,7 +163,7 @@ export const WebRtcProvider = ({ children }) => {
 
         }
 
-        
+
 
         return () => {
             if (socketRef.current) {
@@ -249,30 +250,36 @@ export const WebRtcProvider = ({ children }) => {
             const token = params.appData.token
 
 
-
+            addConsumerToPeer(token, socketId, {
+                consumerTransport,
+                serverConsumerTransportId: params.id,
+                producerId: remoteProducerId,
+                consumer,
+                appData: params.appData
+            })
             // const existingPeerIndex = peersRef.current.findIndex(peer => peer.socketId === socketId);
 
-            setPeers((prev) => {
-                const consumerData: ConsumerData = {
-                    consumerTransport,
-                    serverConsumerTransportId: params.id,
-                    producerId: remoteProducerId,
-                    consumer,
-                    appData: params.appData
-                }
+            // setPeers((prev) => {
+            //     const consumerData: ConsumerData = {
+            //         consumerTransport,
+            //         serverConsumerTransportId: params.id,
+            //         producerId: remoteProducerId,
+            //         consumer,
+            //         appData: params.appData
+            //     }
 
-                const existingEntry = prev.find(entry => entry.socketId === socketId)
+            //     const existingEntry = prev.find(entry => entry.socketId === socketId)
 
-                if (existingEntry) {
-                    return prev.map(entry =>
-                        entry.socketId === socketId
-                            ? { ...entry, consumers: [...entry.consumers, consumerData] }
-                            : entry
-                    )
-                } else {
-                    return [...prev, { token, socketId, consumers: [consumerData] }]
-                }
-            })
+            //     if (existingEntry) {
+            //         return prev.map(entry =>
+            //             entry.socketId === socketId
+            //                 ? { ...entry, consumers: [...entry.consumers, consumerData] }
+            //                 : entry
+            //         )
+            //     } else {
+            //         return [...prev, { token, socketId, consumers: [consumerData] }]
+            //     }
+            // })
 
 
             // if (existingPeerIndex !== -1) {
@@ -315,6 +322,7 @@ export const WebRtcProvider = ({ children }) => {
         //     consumers: entry.consumers.filter((consumer) => consumer.producerId !== remoteProducerId)
         // })).filter(entry => entry.consumers.length > 0)
         eventRef.current.emit('consumer-removed', remoteProducerId)
+
         setPeers((prev) => {
             let changed = false;
 
@@ -343,9 +351,51 @@ export const WebRtcProvider = ({ children }) => {
 
     }
 
+    const addConsumerToPeer = (
+        token: string,
+        socketId: string,
+        consumerData: ConsumerData
+    ) => {
+        setPeers(prev => {
+            const updated = [...prev];
+            const index = updated.findIndex(entry => entry.socketId === socketId);
+
+            const buffer = consumerBufferRef.current;
+            if (!buffer.has(socketId)) {
+                buffer.set(socketId, new Set());
+            }
+
+            const producerSet = buffer.get(socketId)!;
+
+            if (producerSet.has(consumerData.producerId)) {
+                return prev;
+            }
+
+            producerSet.add(consumerData.producerId);
+
+            if (index !== -1) {
+                const peer = updated[index];
+                const updatedConsumers = [...peer.consumers, consumerData];
+
+                updated[index] = {
+                    ...peer,
+                    consumers: updatedConsumers
+                };
+
+                if (updatedConsumers.length >= 4) {
+                    buffer.delete(socketId);
+                }
+            } else {
+                updated.push({ token, socketId, consumers: [consumerData] });
+            }
+
+            return updated;
+        });
+    };
 
 
-    const value = { data, setData, eventRef, peers, notificationCount, setNotificationCount, socketRef, connected, privateMessages, setPrivateMessages}
+
+    const value = { data, setData, eventRef, peers, notificationCount, setNotificationCount, socketRef, connected, privateMessages, setPrivateMessages }
 
     return (
         <WebRtcContext.Provider value={value} >

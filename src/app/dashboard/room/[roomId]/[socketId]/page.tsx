@@ -34,7 +34,6 @@ export default function Page() {
 
     const [activeBar, setActiveBar] = useState(0);
     
-    const consumedIds = useRef<Set<string>>(new Set());
     useEffect(() => {
         if (socketId && roomId) {
             setData(prev => ({
@@ -98,8 +97,6 @@ export default function Page() {
 
     const prepareConsume = (consumers: ConsumerData[]) => {
         consumers.forEach(({ appData, consumer }) => {
-            if (consumedIds.current.has(consumer.id)) return;
-            consumedIds.current.add(consumer.id)
 
             const name = appData?.name;
             const track = consumer.track;
