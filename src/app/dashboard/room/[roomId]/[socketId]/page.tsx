@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'next/navigation';
 import ChatBox from '../../../ui/ChatBox';
-import { ConsumerData, useWebRtc } from '../../../../../context/WebRtcProvider';
+import { ConsumerData, Peer, useWebRtc } from '../../../../../context/WebRtcProvider';
 import { MicIcon, MicOffIcon, Volume2Icon, VolumeOffIcon } from 'lucide-react';
 import LogsWindow from './components/LogsWindow';
 import AudioMeter from '../components/AudioMeter';
@@ -33,7 +33,32 @@ export default function Page() {
     const [micTrack, setMicTrack] = useState<MediaStreamTrack | null>(null);
 
     const [activeBar, setActiveBar] = useState(0);
-    
+
+    const firstPeer = useMemo(() => peers?.[0], [peers]);
+    const firstToken = firstPeer?.token;
+    const peerToken = firstToken;
+
+    const lastProcessedToken = useRef<string | null>(null);
+
+    const [hasUserInteracted, setHasUserInteracted] = useState(false);
+
+    useEffect(() => {
+        const onUserInteraction = () => {
+            setHasUserInteracted(true);
+            document.removeEventListener("click", onUserInteraction);
+            document.removeEventListener("keydown", onUserInteraction);
+        };
+
+        document.addEventListener("click", onUserInteraction);
+        document.addEventListener("keydown", onUserInteraction);
+
+        return () => {
+            document.removeEventListener("click", onUserInteraction);
+            document.removeEventListener("keydown", onUserInteraction);
+        };
+    }, []);
+
+
     useEffect(() => {
         if (socketId && roomId) {
             setData(prev => ({
@@ -45,24 +70,25 @@ export default function Page() {
     }, [roomId, socketId, setData]);
 
     useEffect(() => {
-        if (peers?.[0]) {
-            prepareConsume(peers[0].consumers);
-        }
-    }, [peers]);
+        if (!firstPeer || firstPeer.token === lastProcessedToken.current) return;
+        lastProcessedToken.current = firstPeer.token;
+        
+        prepareConsume(firstPeer);
+    }, [firstPeer]);
 
     useEffect(() => {
-        if (socketId && peers?.[0]?.token) {
-            fetchUserInfo(peers[0].token);
+        if (socketId && firstToken) {
+            fetchUserInfo(firstToken);
         }
-    }, [peers, socketId]);
+    }, [firstToken, socketId]);
 
     useEffect(() => {
-        const token = peers?.[0]?.token;
-        if (!token || notificationCount.length === 0) return;
-        if (notificationCount.some(e => e.token === token)) {
-            fetchSessionResult(token);
+        if (!firstToken || notificationCount.length === 0) return;
+
+        if (notificationCount.some(e => e.token === firstToken)) {
+            fetchSessionResult(firstToken);
         }
-    }, [notificationCount, peers]);
+    }, [notificationCount, firstToken]);
 
     const fetchUserInfo = async (token: string) => {
         try {
@@ -95,49 +121,75 @@ export default function Page() {
         }
     };
 
-    const prepareConsume = (consumers: ConsumerData[]) => {
-        consumers.forEach(({ appData, consumer }) => {
+    const setStreamAndPlay = (ref: React.RefObject<HTMLMediaElement>, stream: MediaStream, label: string, muted: boolean) => {
+        const mediaEl = ref.current;
+        if (!mediaEl) return;
 
-            const name = appData?.name;
-            const track = consumer.track;
+        mediaEl.srcObject = stream;
+        mediaEl.muted = muted;
 
-            if (!track || !(track instanceof MediaStreamTrack)) return;
+        const tryPlay = (attempt = 0) => {
+            if (!mediaEl) return;
+            mediaEl.play().catch((err) => {
+                if (attempt < 5) {
+                    const delay = 500 * Math.pow(2, attempt);
+                    console.warn(`[${label}] play() failed (attempt ${attempt + 1}), retrying in ${delay}ms`, err);
+                    setTimeout(() => tryPlay(attempt + 1), delay);
+                } else {
+                    console.error(`[${label}] play() failed after max attempts`, err);
+                }
+            });
+        };
 
-            const stream = new MediaStream([track]);
+        const onCanPlay = () => {
+            tryPlay();
+            mediaEl.removeEventListener("canplay", onCanPlay);
+        };
 
-            switch (name) {
-                case 'video':
-                    if (videoRef.current) {
-                        videoRef.current.srcObject = stream;
-                        videoRef.current.muted = true;
-                    }
-                    break;
-                case 'audio':
-                    if (audioRef.current) {
-                        audioRef.current.srcObject = stream;
-                        audioRef.current.muted = audioMute;
-                        audioRef.current.autoplay = true;
-                    }
-                    break;
-                case 'cam':
-                    if (camRef.current) {
-                        camRef.current.srcObject = stream;
-                        camRef.current.muted = true;
-                    }
-                    break;
-                case 'mic':
-                    if (micRef.current) {
-                        micRef.current.srcObject = stream;
-                        micRef.current.muted = micMute;
-                        micRef.current.autoplay = true;
-                        setMicTrack(track);
-                    }
-                    break;
-                default:
-                    console.warn(`Unknown track name: ${name}`);
-            }
-        });
+        if (mediaEl.readyState >= 3) {
+            tryPlay();
+        } else {
+            mediaEl.addEventListener("canplay", onCanPlay);
+        }
     };
+
+
+    const prepareConsume = (() => {
+        let timeoutId: NodeJS.Timeout | null = null;
+        return (peer: Peer) => {
+            if (timeoutId) clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                peer.consumers.forEach((element: ConsumerData) => {
+                    const name = element.appData?.name;
+                    const track = element.consumer.track;
+
+                    if (!track || !(track instanceof MediaStreamTrack) || track.readyState !== "live") {
+                        console.warn(`Skipping invalid track for ${name}`, track);
+                        return;
+                    }
+
+                    const stream = new MediaStream([track]);
+
+                    switch (name) {
+                        case "video":
+                            setStreamAndPlay(videoRef, stream, "Video", false)
+                            break;
+                        case "cam":
+                            setStreamAndPlay(camRef, stream, "Cam", false)
+                            break;
+                        case "audio":
+                            setStreamAndPlay(audioRef, stream, "Audio", audioMute);
+                            break;
+                        case "mic":
+                            setStreamAndPlay(micRef, stream, "Mic", micMute);
+                            break;
+                        default:
+                            console.warn(`Unknown track name: ${name}`);
+                    }
+                });
+            }, 100);
+        };
+    })();
 
     const toggleAudio = () => {
         setAudioMute(prev => {
@@ -162,42 +214,39 @@ export default function Page() {
     };
 
     const handleSendMessage = (text: string) => {
-        const token = peers?.[0]?.token;
-        if (!token) return;
+        if (!peerToken) return;
 
         setPrivateMessages(prev => {
-            const existing = prev.findIndex(m => m.token === token);
+            const existing = prev.findIndex(m => m.token === peerToken);
             if (existing !== -1) {
                 const updated = [...prev];
                 updated[existing].messages.push({ from: 'you', text });
                 return updated;
             }
-            return [...prev, { token, messages: [{ from: 'you', text }] }];
+            return [...prev, { token: peerToken, messages: [{ from: 'you', text }] }];
         });
 
         socketRef.current?.emit('DASHBOARD_SERVER_MESSAGE', {
             data: {
                 action: 'SEND_CHAT',
-                token,
+                token: peerToken,
                 roomId,
                 body: text,
             },
         });
     };
 
-    const peerToken = peers?.[0]?.token;
-
     return (
         <div className="grid grid-rows-6 grid-cols-12 w-full h-[90vh] overflow-hidden">
             <div className="row-span-4 col-span-7 gap-6 flex justify-start items-start p-8">
                 <div className="border rounded-lg bg-white/10 border-white/10 p-1 max-h-[50vh] aspect-video flex items-center justify-center">
-                    <video ref={videoRef} autoPlay playsInline className="max-h-[50vh]" />
+                    <video ref={videoRef} autoPlay playsInline muted className="max-h-[50vh]" />
                 </div>
             </div>
 
             <div className="row-start-1 row-span-3 col-span-3 col-start-8 pt-8 flex items-start justify-start">
                 <div className="border border-white/10 bg-white/10 rounded-lg aspect-square max-h-[35vh] flex justify-center items-center">
-                    <video ref={camRef} autoPlay playsInline className="aspect-square" />
+                    <video ref={camRef} autoPlay playsInline muted className="aspect-square" />
                 </div>
             </div>
 
@@ -233,15 +282,15 @@ export default function Page() {
                                 <button onClick={toggleAudio} className="bg-white/10 hover:border-transparent border border-white/10 p-2 rounded-lg max-w-16 flex justify-center items-center">
                                     {audioMute ? <VolumeOffIcon className="text-white" size={24} /> : <Volume2Icon className="text-white" size={24} />}
                                 </button>
-                                <AudioMeter track={micTrack} />
+                                {micTrack && <AudioMeter track={micTrack} />}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <audio ref={audioRef} autoPlay />
-            <audio ref={micRef} autoPlay />
+            <audio ref={audioRef} autoPlay muted />
+            <audio ref={micRef} autoPlay muted />
         </div>
     );
 }

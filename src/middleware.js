@@ -9,7 +9,7 @@ export default async function middleware(req) {
   const isProtectedRoute = protectedRoutes.includes(path)
   const isPublicRoute = publicRoutes.includes(path)
  
-  const cookie = cookies().get('access_token')?.value
+  const cookie = (await cookies()).get('access_token')?.value
 
   if ((isProtectedRoute || path.startsWith(protectedRoutes[0])) && !cookie) {
     return NextResponse.redirect(new URL('/login', req.nextUrl))

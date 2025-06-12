@@ -18,7 +18,7 @@ const LogComponent = ({ log }: { log: LogProps }) => {
 
                     )}
                     {
-                        log.flag.severity > 0 && (
+                        log.flag?.severity > 0 && (
 
                             <span className="bg-red-500 rounded text-xs py-1 px-2">{log.flag?.severity}</span>
                         )

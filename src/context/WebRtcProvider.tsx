@@ -6,6 +6,7 @@ import * as mediasoupClient from 'mediasoup-client'
 import { RtpCapabilities } from 'mediasoup-client/lib/RtpParameters'
 import { AppData, Consumer, Transport } from 'mediasoup-client/lib/types'
 import { EventEmitter } from 'events'
+import { usePathname, useRouter } from 'next/navigation'
 
 
 export interface WebRtcData {
@@ -204,7 +205,7 @@ export const WebRtcProvider = ({ children }) => {
     const signalNewConsumerTransport = async (remoteProducerId: string) => {
         console.log("Someone Joined", consumingTransportsRef.current)
         if (consumingTransportsRef.current.includes(remoteProducerId)) return
-
+        console.log("Pass")
         consumingTransportsRef.current.push(remoteProducerId)
         socketRef.current.emit('createWebRtcTransport', { consumer: true }, ({ params }) => {
             if (params.error) {
@@ -324,7 +325,12 @@ export const WebRtcProvider = ({ children }) => {
         //     ...entry,
         //     consumers: entry.consumers.filter((consumer) => consumer.producerId !== remoteProducerId)
         // })).filter(entry => entry.consumers.length > 0)
-        eventRef.current.emit('consumer-removed', remoteProducerId)
+        if (data.singleConsumerSocketId !== null) {
+            setData((prev) => ({
+                roomId: prev.roomId,
+                singleConsumerSocketId: null
+            }))
+        }
         setPeers((prev) => {
             let changed = false;
 

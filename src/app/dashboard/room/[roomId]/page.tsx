@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import VideoContainer from '../ui/VideoContainer'
-import { useWebRtc } from '../../../../context/WebRtcProvider'
+import { Peer, useWebRtc } from '../../../../context/WebRtcProvider'
 import Header from '../../../../components/ui/Header'
 import HeaderTitle from '../../../../components/ui/HeaderTitle'
 import { LogBottomSheetProvider, useLogBottomSheet } from '../../../../context/LogBottomSheetProvider'
@@ -20,8 +20,6 @@ const Page = () => {
       setData({ roomId: roomId as string, singleConsumerSocketId: null })
     }
   }, [roomId])
-
-
 
 
   return (
@@ -46,16 +44,9 @@ const Page = () => {
           dark:[&::-webkit-scrollbar-thumb]:bg-gray-600      
       ">
         <div className="m-4 grid sm:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4 ">
-          {peers.length > 0  && peers.map((consumer: any) => (
-            <VideoContainer key={consumer.token} consumer={consumer} />
+          {peers.length > 0 && peers.map((peer: Peer) => (
+            <VideoContainer key={peer.token} peer={peer} />
           ))}
-          {/* {
-            data.map((e) => (
-              <div className='relative z-10 flex flex-col justify-between bg-black border border-white/10 rounded-xl p-3 h-[30vh]'>
-
-              </div>
-            ))
-          } */}
         </div>
 
       </div>

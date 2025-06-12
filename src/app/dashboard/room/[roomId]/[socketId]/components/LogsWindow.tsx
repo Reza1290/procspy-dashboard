@@ -27,7 +27,7 @@ export type LogProps = {
 };
 const LogsWindow = ({ token, canDrag = false }: { token: string, canDrag?: boolean }) => {
 
-    const [logs, setlogs] = useState<LogProps[]>([]);
+    const [logs, setLogs] = useState<LogProps[]>([]);
     const scrollRef = useRef<HTMLDivElement>(null);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
@@ -37,8 +37,9 @@ const LogsWindow = ({ token, canDrag = false }: { token: string, canDrag?: boole
     const { peers, notificationCount, setNotificationCount } = useWebRtc()
 
     useEffect(() => {
+
         if (!token) return;
-        setlogs([]);
+        setLogs([]);
         setPage(1);
         setHasMore(true);
         fetchlogs(1);
@@ -48,7 +49,7 @@ const LogsWindow = ({ token, canDrag = false }: { token: string, canDrag?: boole
     useEffect(() => {
         if (!token || notificationCount.length === 0) return;
 
-        if(notificationCount.find((e)=> e.token === token)){
+        if (notificationCount.find((e) => e.token === token)) {
             insertNewLogsFromSocket(1)
             setNotificationCount((prev) => {
                 return prev.filter(e => e.token !== token)
@@ -73,10 +74,9 @@ const LogsWindow = ({ token, canDrag = false }: { token: string, canDrag?: boole
 
 
                 const el = scrollRef.current;
-
                 const prevScrollHeight = el ? el.scrollHeight : 0;
 
-                setlogs(prev => {
+                setLogs(prev => {
                     const uniqueNewLogs = data.data.filter(
                         (d: LogProps) => !prev.some((p) => p.id === d.id)
                     );
@@ -88,17 +88,18 @@ const LogsWindow = ({ token, canDrag = false }: { token: string, canDrag?: boole
 
                 setHasMore(nextPage < data.totalPages);
                 setPage(nextPage);
-                if(!scrollRef.current){
 
-                    requestAnimationFrame(() => {
-                        if (scrollRef.current && el && nextPage > 1) {
-                            const newScrollHeight = el.scrollHeight;
-                            el.scrollTop = newScrollHeight - prevScrollHeight;
+                requestAnimationFrame(() => {
+                    const newEl = scrollRef.current;
+                    if (newEl && el) {
+                        if (nextPage > 1) {
+                            const newScrollHeight = newEl.scrollHeight;
+                            newEl.scrollTop = newScrollHeight - prevScrollHeight;
                         } else {
-                            el.scrollTop = el.scrollHeight
+                            newEl.scrollTop = newEl.scrollHeight;
                         }
-                    });
-                }
+                    }
+                });
             }
         } catch (err) {
             console.error("Failed to fetch logs history", err);
@@ -147,12 +148,12 @@ const LogsWindow = ({ token, canDrag = false }: { token: string, canDrag?: boole
             );
             const data = await res.json();
             if (res.ok) {
-                setlogs(prev => {
+                setLogs(prev => {
                     const uniqueNewLogs = data.data.filter(
                         (d: LogProps) => !prev.some((p) => p.id === d.id)
                     );
                     if (uniqueNewLogs.length === 0) return prev;
-                    return [ ...uniqueNewLogs, ...prev];
+                    return [...uniqueNewLogs, ...prev];
                 });
 
                 requestAnimationFrame(() => {
@@ -194,7 +195,7 @@ const LogsWindow = ({ token, canDrag = false }: { token: string, canDrag?: boole
                     </div>
                 )
             }
-            <div className={`relative flex flex-col w-full gap-3 p-4 overflow-y-scroll ${ canDrag ? "" : "max-h-[25vh]"}  [&::-webkit-scrollbar]:w-2
+            <div className={`relative flex flex-col w-full gap-3 p-4 overflow-y-scroll ${canDrag ? "" : "max-h-[25vh]"}  [&::-webkit-scrollbar]:w-2
                             [&::-webkit-scrollbar-track]:rounded-full
                             [&::-webkit-scrollbar-track]:bg-gray-100
                             [&::-webkit-scrollbar-thumb]:rounded-full
