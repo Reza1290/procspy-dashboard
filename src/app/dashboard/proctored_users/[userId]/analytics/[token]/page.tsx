@@ -216,16 +216,16 @@ export default function AnalyticsPage() {
             <div className="max-h-[30vh] h-full w-full ">
                 <table className="min-w-full table-fixed h-full">
 
-                    <thead className=" bg-black border-t border-white/15">
+                    <thead className=" dark:bg-black border-t border-white/15">
                         <tr>
-                            <th className="pl-8 pr-4 py-2 text-right font-normal text-slate-100/75 text-sm">Timestamp</th>
-                            <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Severity</th>
-                            <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm"></th>
-                            <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Flag Key</th>
-                            <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Flag Detail</th>
-                            <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Detect As</th>
-                            <th className="pr-8 pl-4 text-left font-normal text-slate-100/75 text-sm">Action</th>
-                            <th className="pr-8 pl-4 text-left font-normal text-slate-100/75 text-sm">Navigation</th>
+                            <th className="pl-8 pr-4 py-2 text-right font-normal dark:text-slate-100/75 text-sm">Timestamp</th>
+                            <th className="px-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">Severity</th>
+                            <th className="px-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm"></th>
+                            <th className="px-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">Flag Key</th>
+                            <th className="px-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">Flag Detail</th>
+                            <th className="px-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">Detect As</th>
+                            <th className="pr-8 pl-4 text-left font-normal dark:text-slate-100/75 text-sm">Action</th>
+                            <th className="pr-8 pl-4 text-left font-normal dark:text-slate-100/75 text-sm">Navigation</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -233,15 +233,15 @@ export default function AnalyticsPage() {
                             e != null ? (
                                 <tr
                                     key={e?.id}
-                                    className="border-t border-white/10 hover:bg-gray-600/30 h-[33%]"
+                                    className="border-t dark:border-white/10 hover:bg-gray-600/30 h-[33%]"
 
                                 >
 
-                                    <td className="pl-8 pr-4 py-3 text-xs capitalize text-right text-slate-100/75">
+                                    <td className="pl-8 pr-4 py-3 text-xs capitalize text-right dark:text-slate-100/75">
                                         {formattedTimestamp(e.timestamp)}
                                     </td>
                                     <td className="px-4 py-3 text-xs capitalize">
-                                        <div className="bg-red-500 w-min rounded p-1 px-2">
+                                        <div className="bg-red-500 text-white w-min rounded p-1 px-2">
                                             {e.flag.severity}
                                         </div>
                                     </td>
@@ -280,7 +280,7 @@ export default function AnalyticsPage() {
                                         )}
                                     </td>
                                     <td>
-                                        <button className="bg-blue-500 rounded-md text-sm p-1 px-2 w-max"
+                                        <button className="bg-blue-500 text-white rounded-md text-sm p-1 px-2 w-max"
                                             onClick={
                                                 () => {
                                                     return idx === 0 ? handlePrevItem() : idx === 1 ? "Current" : handleNextItem()
@@ -294,7 +294,7 @@ export default function AnalyticsPage() {
                                 </tr>
                             ) : (<tr key={idx}>
                                 <td colSpan={7} className="text-xs text-center text-gray-300">No Data</td>
-                                <td><button className="bg-blue-500 rounded-md text-sm p-1 px-2 w-max cursor-not-allowed" disabled>
+                                <td><button className="bg-blue-500 text-white rounded-md text-sm p-1 px-2 w-max cursor-not-allowed" disabled>
                                     {idx === 0 ? "Previous" : idx === 1 ? "Current" : "Next"}
                                 </button></td>
                             </tr>)

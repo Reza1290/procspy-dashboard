@@ -42,7 +42,7 @@ export const SideSheetProvider = ({ children }: { children: ReactNode }) => {
                     <div
                         className={`
             fixed top-0 bottom-0 right-0 min-w-[30rem]
-            bg-black border-l border-white/15 shadow-xl
+            dark:bg-black bg-white border-l border-r dark:border-white/15 shadow-xl
             transition-transform duration-300 ease-in-out
             ${isOpen ? "translate-x-0" : "translate-x-full"}
             pointer-events-auto

@@ -5,7 +5,7 @@ import { SideBarLogProvider } from "./providers/SideBarLogProvider";
 export default function DashboardLayout({ children }) {
     return (
         <section>
-            <section className={`w-full flex  bg-gradient-to-r from-black to-slate-900/70 `}>
+            <section className={`w-full flex  dark:bg-gradient-to-r dark:from-black dark:to-slate-900/70 `}>
                 <SideBar />
                 <div className="w-full">
 

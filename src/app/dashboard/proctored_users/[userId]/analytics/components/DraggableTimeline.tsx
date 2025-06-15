@@ -51,7 +51,7 @@ function DraggableTimeline({ timeline, n = 4, handleRenderImage, currentId }) {
         openSheet(
             <div className="w-96 flex flex-col gap-4 h-full">
                 <SheetHeader>Select Flag</SheetHeader>
-                <p className="text-sm text-slate-500 mb-20">Click to show the flag or log.</p>
+                <p className="text-sm dark:text-slate-500 mb-20">Click to show the flag or log.</p>
 
                 {
                     logs.map((e) => (
@@ -59,12 +59,12 @@ function DraggableTimeline({ timeline, n = 4, handleRenderImage, currentId }) {
                             handleRenderImage(e.id)
                             closeSheet()
                         }}>
-                            <label htmlFor="identifier" className="text-sm text-slate-100 font-medium">{e.flagKey}</label>
+                            <label htmlFor="identifier" className="text-sm dark:text-slate-100 font-medium">{e.flagKey}</label>
                             <div className="flex gap-2 w-full">
-                                <div className="p-2 text-sm px-2 bg-white/5 border border-white/15 rounded-md w-full">
+                                <div className="p-2 text-sm px-2 bg-white/5 border dark:border-white/15 rounded-md w-full">
                                     {formattedTimestamp(e.timestamp)}
                                 </div>
-                                <div className="bg-blue-500 p-2 px-2 rounded-md text-xs flex justify-center items-center w-16">
+                                <div className="bg-blue-500 text-white p-2 px-2 rounded-md text-xs flex justify-center items-center w-16">
                                     <PanelLeftOpenIcon className="w-4" />
                                 </div>
                             </div>
@@ -113,13 +113,13 @@ function DraggableTimeline({ timeline, n = 4, handleRenderImage, currentId }) {
                         <div className="absolute -top-7 left-1/2 -translate-x-1/2">
                             {
                                 slot.logs.length > 1 ? (
-                                    <div onClick={() => handleMultipleFlag(slot.logs)} className="relative w-12 h-12 flex justify-center rounded-t hover:bg-white/20 bg-white/10 border-b-4 border-white/10 hover:border-white/20 transition-all" >
+                                    <div onClick={() => handleMultipleFlag(slot.logs)} className="relative w-12 h-12 flex justify-center rounded-t hover:bg-white/20 bg-white/10 border-b-4 dark:border-white/10 hover:dark:border-white/20 transition-all" >
                                         {slot.logs.map((e) => (<div key={e.id} className="invisible" id={"flag-" + e.id}></div>))}
                                         <FlagIcon className="w-4 left-1 relative"></FlagIcon>
                                         <FlagIcon className="w-4 right-1 relative"></FlagIcon>
                                     </div>
                                 ) : (
-                                    <div onClick={() => handleRenderImage(slot.logs[0].id)} className="cursor flex justify-center cursor-pointer w-12 h-12 rounded-t hover:bg-white/20 bg-white/10 border-b-4 border-white/10 hover:border-white/20 transition-all" >
+                                    <div onClick={() => handleRenderImage(slot.logs[0].id)} className="cursor flex justify-center cursor-pointer w-12 h-12 rounded-t hover:bg-white/20 bg-white/10 border-b-4 dark:border-white/10 hover:dark:border-white/20 transition-all" >
                                         <div className="invisible" id={"flag-" + slot.logs[0].id}></div>
                                         <FlagIcon className="w-4"></FlagIcon>
                                     </div>
@@ -132,13 +132,13 @@ function DraggableTimeline({ timeline, n = 4, handleRenderImage, currentId }) {
 
                     {/* Timeline tick */}
                     {idx % n === 0 ? (
-                        <div className="bg-white border border-white h-4 w-1 rounded-t mx-auto relative" >
-                            <div className="absolute top-6 -left-2 text-[8px]  text-slate-100/50">
+                        <div className="bg-white border dark:border-white h-4 w-1 rounded-t mx-auto relative" >
+                            <div className="absolute top-6 -left-2 text-[8px]  dark:text-slate-100/50">
                                 {idx / 4} m
                             </div>
                         </div>
                     ) : (
-                        <div className="bg-white/50 border border-white h-2 mt-2 w-1 rounded-t mx-auto" />
+                        <div className="bg-white/50 border dark:border-white h-2 mt-2 w-1 rounded-t mx-auto" />
                     )}
 
 

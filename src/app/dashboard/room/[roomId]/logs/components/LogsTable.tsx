@@ -165,7 +165,7 @@ const LogsTable = () => {
 
     return (
         <div className="">
-            <div className=" overflow-x-auto border-b border-t border-white/15 ">
+            <div className=" overflow-x-auto border-b border-t dark:border-white/15 ">
 
                 <div
                     className="relative overflow-y-scroll max-h-[90vh]"
@@ -176,16 +176,16 @@ const LogsTable = () => {
                         <tbody>
                             {[...logs].reverse().map((log) => <BodyTable key={log._id} log={log} />)}
                         </tbody>
-                        <tfoot className="sticky bottom-[-2px] z-40 bg-black border-t border-white/15">
+                        <tfoot className="sticky bottom-[-2px] z-40 dark:bg-black bg-white border-t dark:border-white/15">
                             <tr>
-                                <th className="pl-8 pr-4 py-2 text-left font-normal text-slate-100/75 text-sm">Timestamp</th>
-                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Severity</th>
-                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm"></th>
-                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Proctored User Id</th>
-                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Session Token</th>
-                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Flag Key</th>
-                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Flag Detail</th>
-                                <th className="pr-8 pl-4 text-left font-normal text-slate-100/75 text-sm">Action</th>
+                                <th className="pl-8 pr-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">Timestamp</th>
+                                <th className="px-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">Severity</th>
+                                <th className="px-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm"></th>
+                                <th className="px-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">Proctored User Id</th>
+                                <th className="px-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">Session Token</th>
+                                <th className="px-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">Flag Key</th>
+                                <th className="px-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">Flag Detail</th>
+                                <th className="pr-8 pl-4 text-left font-normal dark:text-slate-100/75 text-sm">Action</th>
                             </tr>
                         </tfoot>
                     </table>
@@ -202,13 +202,13 @@ export const BodyTable = memo(function BodyTable({ log }: { log: LogProps }) {
 
     return <tr
         key={log._id}
-        className="border-t border-white/10 hover:bg-gray-600/30"
+        className="border-t dark:border-white/10 hover:bg-gray-600/30"
     >
-        <td className="pl-8 pr-4 py-3 text-xs capitalize text-right text-slate-100/75">
+        <td className="pl-8 pr-4 py-3 text-xs capitalize text-right dark:text-slate-100/75">
             {formattedTimestamp(log.timestamp)}
         </td>
         <td className="px-4 py-3 text-xs capitalize">
-            <div className="bg-red-500 w-min rounded p-1 px-2">
+            <div className="bg-red-500 text-white w-min rounded p-1 px-2">
                 {log.flag.severity}
             </div>
         </td>
@@ -226,11 +226,11 @@ export const BodyTable = memo(function BodyTable({ log }: { log: LogProps }) {
         </td>
         <td className="px-4 py-3 text-xs ">
             <div className="flex flex-col gap-2">
-                <div className="font-medium">{log.flag.label || "-"} {log.attachment.title && <span className="font-normal bg-white/10 border-white/15 rounded px-1 border"> {log.attachment?.title ?? "Unknown"}</span>} {log.attachment.url && <span className="font-light rounded px-1 italic text-sky-500"> {log.attachment?.url ?? "Unknown"}</span>}</div>
+                <div className="font-medium">{log.flag.label || "-"} {log.attachment.title && <span className="font-normal bg-white/10 dark:border-white/15 rounded px-1 border"> {log.attachment?.title ?? "Unknown"}</span>} {log.attachment.url && <span className="font-light rounded px-1 italic text-sky-500 "> {log.attachment?.url ?? "Unknown"}</span>}</div>
                 {
                     (log.attachment.file) && (
                         <>
-                            <div className="flex justify-center items-center rounded-md font-normal bg-white/10 border-white/15 p-2 border max-w-64 aspect-video">
+                            <div className="flex justify-center items-center rounded-md font-normal bg-white/10 dark:border-white/15 p-2 border max-w-64 aspect-video overflow-hidden">
                                 <img className="rounded-md" src={`${process.env.NEXT_PUBLIC_STORAGE_ENDPOINT || 'https://192.168.2.5:5050'}` + log.attachment.file} alt="" />
                             </div>
                         </>
