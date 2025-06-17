@@ -3,7 +3,7 @@ import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useParams, usePathname } from "next/navigation";
 import session from "../../../../../../lib/session";
 import { CheckIcon, EllipsisVertical, Eye, InfoIcon, Unplug, XIcon } from "lucide-react";
-import { formattedTimestamp } from "../../../../../utils/timestamp";
+import { formattedTimestamp, formattedTimestampTerminal } from "../../../../../utils/timestamp";
 import { Peer, useWebRtc } from "../../../../../../context/WebRtcProvider";
 import ConfirmLogButton from "./ui/ConfirmLogButton";
 
@@ -205,7 +205,7 @@ export const BodyTable = memo(function BodyTable({ log }: { log: LogProps }) {
         className="border-t dark:border-white/10 dark:dark:hover:bg-gray-600/30 hover:bg-black/5"
     >
         <td className="pl-8 pr-4 py-3 text-xs capitalize text-right dark:text-slate-100/75">
-            {formattedTimestamp(log.timestamp)}
+            {formattedTimestampTerminal(log.timestamp)}
         </td>
         <td className="px-4 py-3 text-xs capitalize">
             <div className="bg-red-500 text-white w-min rounded p-1 px-2">
