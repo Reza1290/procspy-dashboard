@@ -170,7 +170,7 @@ export default function AnalyticsPage() {
     return (
         <div className="flex flex-col h-full max-h-[90vh] oveflow-hidden">
             <div className="max-h-[60vh] h-full w-full flex">
-                <div className="h-full min-w-[20%] border-r border-white/15 p-8">
+                <div className="h-full min-w-[20%] border-r dark:border-white/15 p-8">
                     {sessionResult && (
                         <table className="w-full text-sm ">
                             <tbody>
@@ -216,7 +216,7 @@ export default function AnalyticsPage() {
             <div className="max-h-[30vh] h-full w-full ">
                 <table className="min-w-full table-fixed h-full">
 
-                    <thead className=" dark:bg-black border-t border-white/15">
+                    <thead className=" dark:bg-black border-t dark:border-white/15">
                         <tr>
                             <th className="pl-8 pr-4 py-2 text-right font-normal dark:text-slate-100/75 text-sm">Timestamp</th>
                             <th className="px-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">Severity</th>
@@ -256,7 +256,7 @@ export default function AnalyticsPage() {
                                             <div className="font-medium">
                                                 {e.flag.label || "-"}{" "}
                                                 {e.attachment.title && (
-                                                    <span className="font-normal bg-white/10 border-white/15 rounded px-1 border">
+                                                    <span className="font-normal bg-white/10 dark:border-white/15 rounded px-1 border">
                                                         {" "}
                                                         {e.attachment?.title ?? "Unknown"}
                                                     </span>

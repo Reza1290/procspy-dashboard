@@ -202,7 +202,7 @@ export const BodyTable = memo(function BodyTable({ log }: { log: LogProps }) {
 
     return <tr
         key={log._id}
-        className="border-t dark:border-white/10 dark:dark:hover:bg-gray-600/30 hover:bg-black/5 hover:bg-black/5"
+        className="border-t dark:border-white/10 dark:dark:hover:bg-gray-600/30 hover:bg-black/5"
     >
         <td className="pl-8 pr-4 py-3 text-xs capitalize text-right dark:text-slate-100/75">
             {formattedTimestamp(log.timestamp)}
