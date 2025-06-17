@@ -64,7 +64,7 @@ function DraggableTimeline({ timeline, n = 4, handleRenderImage, currentId }) {
                                 <div className="p-2 text-sm px-2 bg-white/5 border dark:border-white/15 rounded-md w-full">
                                     {formattedTimestamp(e.timestamp)}
                                 </div>
-                                <div className="bg-blue-500 text-white p-2 px-2 rounded-md text-xs flex justify-center items-center w-16">
+                                <div className="bg-blue-500 text-white p-2 px-2 rounded-md text-xs flex justify-center items-center w-16 cursor-pointer">
                                     <PanelLeftOpenIcon className="w-4" />
                                 </div>
                             </div>
@@ -119,7 +119,7 @@ function DraggableTimeline({ timeline, n = 4, handleRenderImage, currentId }) {
                                         <FlagIcon className="w-4 right-1 relative"></FlagIcon>
                                     </div>
                                 ) : (
-                                    <div onClick={() => handleRenderImage(slot.logs[0].id)} className="cursor flex justify-center cursor-pointer w-12 h-12 rounded-t hover:bg-white/20 bg-white/10 border-b-4 dark:border-white/10 hover:dark:border-white/20 transition-all" >
+                                    <div onClick={() => handleRenderImage(slot.logs[0].id)} className="flex justify-center cursor-pointer w-12 h-12 rounded-t hover:bg-white/20 bg-white/10 border-b-4 dark:border-white/10 hover:dark:border-white/20 transition-all" >
                                         <div className="invisible" id={"flag-" + slot.logs[0].id}></div>
                                         <FlagIcon className="w-4"></FlagIcon>
                                     </div>

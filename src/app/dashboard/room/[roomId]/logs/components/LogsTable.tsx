@@ -226,7 +226,7 @@ export const BodyTable = memo(function BodyTable({ log }: { log: LogProps }) {
         </td>
         <td className="px-4 py-3 text-xs ">
             <div className="flex flex-col gap-2">
-                <div className="font-medium">{log.flag.label || "-"} {(log.attachment.title || log.attachment?.shortcut) && <span className="font-normal bg-white/10 dark:border-white/15 rounded px-1 border"> {log.attachment?.title ? log.attachment.title : log.attachment.shortcut ? log.attachment.shortcut :"Unknown"}</span>} {(log.attachment.url || log.attachment?.desc) && <span className="font-light rounded px-1 italic text-sky-500 "> {log.attachment?.url ? log.attachment.url : log.attachment?.desc? log.attachment.desc: "Unknown"}</span>}</div>
+                <div className="font-medium">{log.flag.label || "-"} {(log.attachment.title || log.attachment?.shortcut) && <span className="font-normal bg-white/10 dark:border-white/15 rounded px-1 border"> {log.attachment?.title ? log.attachment.title : log.attachment.shortcut ? log.attachment.shortcut : "Unknown"}</span>} {(log.attachment.url || log.attachment?.desc) && <span className="font-light rounded px-1 italic text-sky-500 "> {log.attachment?.url ? log.attachment.url : log.attachment?.desc ? log.attachment.desc : "Unknown"}</span>}</div>
                 {
                     (log.attachment.file) && (
                         <>

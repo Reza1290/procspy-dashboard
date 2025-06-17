@@ -26,6 +26,8 @@ export default function AnalyticsPage() {
     const [currentIndex, setCurrentIndex] = useState(0)
     const [currentId, setCurrentId] = useState("")
 
+    const [dataCounter, setDataCounter] = useState([])
+
     const [sessionResult, setSessionResult] = useState<SessionResultProps>(null)
     const [updateLog, setUpdateLog] = useState(0)
     const fetchlogs = async (nextPage: number, limit: number) => {
@@ -64,7 +66,7 @@ export default function AnalyticsPage() {
             );
             if (res.ok) {
                 const data = await res.json()
-                if(data.name){
+                if (data.name) {
                     router.back()
                     return null
                 }
@@ -83,6 +85,16 @@ export default function AnalyticsPage() {
 
                 const { data } = await fetchlogs(1, total);
                 setDataPoints(data.reverse());
+                setDataCounter(() => {
+                    const result = Object.entries(
+                        data.reduce((acc, item) => {
+                            acc[item.flagKey] = (acc[item.flagKey] || 0) + 1;
+                            return acc;
+                        }, {})
+                    ).map(([flagKey, count]) => ({ flagKey, count }))
+
+                    return result
+                })
             } catch (e) {
                 console.error("Error loading data", e);
             }
@@ -197,6 +209,18 @@ export default function AnalyticsPage() {
                             </tbody>
                         </table>
                     )}
+                    {
+                        dataCounter && (
+                            <div className="flex gap-1 flex-wrap mt-2">
+                                {dataCounter.map((e) => (
+                                    <div className="text-xs bg-red-500 text-white rounded p-1 px-2">
+                                        <span className="bg-white text-black rounded px-1 mr-2">{e.count}</span>
+                                        {e.flagKey} 
+                                    </div>
+                                ))}
+                            </div>
+                        )
+                    }
                 </div>
                 <div className="h-full w-full max-w-[72vw] overflow-hidden ">
                     <div className="h-full flex flex-col justify-between">
@@ -255,18 +279,13 @@ export default function AnalyticsPage() {
                                         <div className="flex flex-col gap-2">
                                             <div className="font-medium">
                                                 {e.flag.label || "-"}{" "}
-                                                {e.attachment.title && (
-                                                    <span className="font-normal bg-white/10 dark:border-white/15 rounded px-1 border">
-                                                        {" "}
-                                                        {e.attachment?.title ?? "Unknown"}
-                                                    </span>
-                                                )}{" "}
-                                                {e.attachment.url && (
+                                                {(e.attachment.title || e.attachment?.shortcut) && <span className="font-normal bg-white/10 dark:border-white/15 rounded px-1 border"> {e.attachment?.title ? e.attachment.title : e.attachment.shortcut ? e.attachment.shortcut :"Unknown"}</span>} {(e.attachment.url || e.attachment?.desc) && <span className="font-light rounded px-1 italic text-sky-500 "> {e.attachment?.url ? e.attachment.url : e.attachment?.desc? e.attachment.desc: "Unknown"}</span>}
+                                                {/* {e.attachment.url && (
                                                     <span className="font-light rounded px-1 italic text-sky-500">
                                                         {" "}
                                                         {e.attachment?.url ?? "Unknown"}
                                                     </span>
-                                                )}
+                                                )} */}
                                             </div>
 
                                         </div>

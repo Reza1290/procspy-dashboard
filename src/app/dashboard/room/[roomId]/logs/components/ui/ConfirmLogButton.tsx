@@ -67,7 +67,7 @@ const ConfirmLogButton = ({ id, currentLogType, callback}: { id: string, current
                     )
 
                 ) : (
-                    <div className="bg-red-500 rounded p-1 text-xs">
+                    <div className="bg-red-500 text-white rounded p-1 text-xs">
                         Confirmed {savedLogType}
                     </div>
                 )
