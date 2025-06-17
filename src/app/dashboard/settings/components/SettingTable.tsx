@@ -134,39 +134,33 @@ const SettingTable = () => {
     <div>
       <div className="overflow-x-auto border-b border-white/15">
         <div className="mx-8 my-4 flex justify-between">
-          <div />
-          {/* <button
-            onClick={() => setAddVariableComponentActive(true)}
-            className="bg-blue-500 p-2 px-4 text-sm rounded-md min-w-32 hover:bg-blue-600"
-          >
-            Add Variable
-          </button> */}
+          <div className="p-2" >&nbsp;</div>
         </div>
         <div className="relative max-h-[76vh] overflow-y-auto" onScroll={handleScroll} ref={scrollRef}>
           <table className="min-w-full table-fixed">
             <thead className="sticky top-0 z-10 backdrop-blur-[2px]">
               <tr>
-                <th className="pl-8 pr-4 py-2 text-left font-normal text-slate-100/75 text-sm">Id</th>
-                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Variable Name</th>
-                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Value</th>
-                <th className="pr-8 pl-4 text-left font-normal text-slate-100/75 text-sm">Action</th>
+                <th className="pl-8 pr-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">Id</th>
+                <th className="px-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">Variable Name</th>
+                <th className="px-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">Value</th>
+                <th className="pr-8 pl-4 text-left font-normal dark:text-slate-100/75 text-sm">Action</th>
               </tr>
             </thead>
             <tbody>
               {addVariableComponentActive && (
-                <tr key="new" className="border-t border-white/10 hover:bg-gray-600/30">
+                <tr key="new" className="border-t dark:border-white/10 dark:hover:bg-gray-600/30 hover:bg-black/5">
                   <td className="pl-8 pr-4 py-4 text-sm text-white/70">-</td>
                   <td className="px-4 py-2 text-sm font-light">
-                    <input ref={keyRef} className="p-1 bg-gray-400/10 rounded-md border border-white/10" />
+                    <input ref={keyRef} className="p-1 bg-gray-400/10 rounded-md border dark:border-white/10" />
                   </td>
                   <td className="px-4 py-2 text-sm font-light">
-                    <input ref={valRef} className="p-1 bg-gray-400/10 rounded-md border border-white/10" />
+                    <input ref={valRef} className="p-1 bg-gray-400/10 rounded-md border dark:border-white/10" />
                   </td>
                   <td className="pr-8 pl-4 py-4 text-xs flex gap-4">
-                    <div className="bg-blue-500 rounded p-1 px-2 cursor-pointer flex items-center gap-1" onClick={handleSubmit}>
+                    <div className="bg-blue-500 text-white rounded p-1 px-2 cursor-pointer flex items-center gap-1" onClick={handleSubmit}>
                       <CheckIcon className="w-4" />
                     </div>
-                    <div className="bg-red-500 rounded p-1 px-2 cursor-pointer flex items-center gap-1" onClick={closeAddVariableComponent}>
+                    <div className="bg-red-500 text-white rounded p-1 px-2 cursor-pointer flex items-center gap-1" onClick={closeAddVariableComponent}>
                       <XIcon className="w-4" />
                     </div>
                   </td>
@@ -174,8 +168,8 @@ const SettingTable = () => {
               )}
 
               {settings.map((setting) => (
-                <tr key={setting.id} className="border-t border-white/10 hover:bg-gray-600/30">
-                  <td className="pl-8 pr-4 py-4 text-sm text-white/70">{setting.id}</td>
+                <tr key={setting.id} className="border-t dark:border-white/10 dark:hover:bg-gray-600/30 hover:bg-black/5">
+                  <td className="pl-8 pr-4 py-4 text-sm dark:text-white/70">{setting.id}</td>
                   <td className="px-4 py-4 text-sm font-semibold">{setting.key}</td>
                   <td className="px-4 py-4 text-sm text-sky-500/75 font-medium">
                     {editingSettingId === setting.id ? (
@@ -183,7 +177,7 @@ const SettingTable = () => {
                         type="text"
                         value={editValue}
                         onChange={(e) => setEditValue(e.target.value)}
-                        className="p-1 bg-gray-400/10 rounded-md border border-white/10 text-white"
+                        className="p-1 bg-gray-400/10 rounded-md border dark:border-white/10 dark:text-white"
                       />
                     ) : (
                       setting.value
@@ -192,10 +186,10 @@ const SettingTable = () => {
                   <td className="pr-8 pl-4 py-4 text-xs flex gap-4 items-center">
                     {editingSettingId === setting.id ? (
                       <>
-                        <div className="bg-blue-500 rounded p-1 px-2 cursor-pointer flex items-center gap-1" onClick={() => handleSaveEdit(setting)}>
+                        <div className="bg-blue-500 text-white rounded p-1 px-2 cursor-pointer flex items-center gap-1" onClick={() => handleSaveEdit(setting)}>
                           <CheckIcon className="w-4" />
                         </div>
-                        <div className="bg-red-500 rounded p-1 px-2 cursor-pointer flex items-center gap-1" onClick={handleCancelEdit}>
+                        <div className="bg-red-500 text-white rounded p-1 px-2 cursor-pointer flex items-center gap-1" onClick={handleCancelEdit}>
                           <XIcon className="w-4" />
                         </div>
                       </>

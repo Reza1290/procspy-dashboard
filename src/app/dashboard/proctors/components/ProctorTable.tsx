@@ -104,7 +104,7 @@ const ProctorTable = () => {
                 openModal(
                     <AlertModal>
                         <TitleModal>Success</TitleModal>
-                        <BodyModal><p className="text-sm text-slate-300">Data saved</p>
+                        <BodyModal><p className="text-sm dark:text-slate-300">Data saved</p>
                         </BodyModal>
                     </AlertModal>
                 )
@@ -115,7 +115,7 @@ const ProctorTable = () => {
                 openModal(
                     <AlertModal>
                         <TitleModal>Failed</TitleModal>
-                        <BodyModal><p className="text-sm text-slate-300">Data not saved</p>
+                        <BodyModal><p className="text-sm dark:text-slate-300">Data not saved</p>
                         </BodyModal>
                     </AlertModal>
                 )
@@ -127,7 +127,7 @@ const ProctorTable = () => {
             openModal(
                 <AlertModal>
                     <TitleModal>Sorry</TitleModal>
-                    <BodyModal><p className="text-sm text-slate-300">Something went wrong</p>
+                    <BodyModal><p className="text-sm dark:text-slate-300">Something went wrong</p>
                     </BodyModal>
                 </AlertModal>
             )
@@ -149,25 +149,25 @@ const ProctorTable = () => {
         openSheet(
             <div className="w-96 flex flex-col gap-4 h-full">
                 <SheetHeader>Edit Proctored User</SheetHeader>
-                <p className="text-sm text-slate-500">Make change for Proctored User, click Save when done.</p>
+                <p className="text-sm dark:text-slate-500">Make change for Proctored User, click Save when done.</p>
 
                 <div className="flex flex-col gap-2 mt-20">
-                    <label htmlFor="username" className="text-sm text-slate-100 font-medium">Username</label>
-                    <input ref={usernameRef} type="text" id="username" className="p-2 text-sm px-2 bg-white/5 border border-white/15 rounded-md" defaultValue={proctor ? proctor.username : ""} />
+                    <label htmlFor="username" className="text-sm dark:text-slate-100 font-medium">Username</label>
+                    <input ref={usernameRef} type="text" id="username" className="p-2 text-sm px-2 bg-white/5 border dark:border-white/15 rounded-md" defaultValue={proctor ? proctor.username : ""} />
                 </div>
                 <div className="flex flex-col gap-2">
-                    <label htmlFor="name" className="text-sm text-slate-100 font-medium">Name</label>
-                    <input ref={nameRef} type="text" id="name" className="p-2 text-sm px-2 bg-white/5 border border-white/15 rounded-md" defaultValue={proctor ? proctor.name : ""} />
+                    <label htmlFor="name" className="text-sm dark:text-slate-100 font-medium">Name</label>
+                    <input ref={nameRef} type="text" id="name" className="p-2 text-sm px-2 bg-white/5 border dark:border-white/15 rounded-md" defaultValue={proctor ? proctor.name : ""} />
                 </div>
                 <div className="flex flex-col gap-2">
-                    <label htmlFor="email" className="text-sm text-slate-100 font-medium">Email</label>
-                    <input ref={emailRef} type="text" id="email" className="p-2 text-sm px-2 bg-white/5 border border-white/15 rounded-md" defaultValue={proctor ? proctor.email : ""} />
+                    <label htmlFor="email" className="text-sm dark:text-slate-100 font-medium">Email</label>
+                    <input ref={emailRef} type="text" id="email" className="p-2 text-sm px-2 bg-white/5 border dark:border-white/15 rounded-md" defaultValue={proctor ? proctor.email : ""} />
                 </div>
                 {
                     register && (
                         <div className="flex flex-col gap-2">
-                            <label htmlFor="password" className="text-sm text-slate-100 font-medium">Password</label>
-                            <input ref={passwordRef} type="text" id="password" className="p-2 text-sm px-2 bg-white/5 border border-white/15 rounded-md" />
+                            <label htmlFor="password" className="text-sm dark:text-slate-100 font-medium">Password</label>
+                            <input ref={passwordRef} type="text" id="password" className="p-2 text-sm px-2 bg-white/5 border dark:border-white/15 rounded-md" />
                         </div>
                     )
                 }
@@ -213,7 +213,7 @@ const ProctorTable = () => {
                 openModal(
                     <AlertModal>
                         <TitleModal>Success</TitleModal>
-                        <BodyModal><p className="text-sm text-slate-300">Data saved</p>
+                        <BodyModal><p className="text-sm dark:text-slate-300">Data saved</p>
                         </BodyModal>
                     </AlertModal>
                 )
@@ -225,7 +225,7 @@ const ProctorTable = () => {
                 openModal(
                     <AlertModal>
                         <TitleModal>Failed</TitleModal>
-                        <BodyModal><p className="text-sm text-slate-300">Data not saved {data.error}</p>
+                        <BodyModal><p className="text-sm dark:text-slate-300">Data not saved {data.error}</p>
                         </BodyModal>
                     </AlertModal>
                 )
@@ -237,7 +237,7 @@ const ProctorTable = () => {
             openModal(
                 <AlertModal>
                     <TitleModal>Sorry</TitleModal>
-                    <BodyModal><p className="text-sm text-slate-300">Something went wrong</p>
+                    <BodyModal><p className="text-sm dark:text-slate-300">Something went wrong</p>
                     </BodyModal>
                 </AlertModal>
             )
@@ -269,7 +269,7 @@ const ProctorTable = () => {
                 openModal(
                     <AlertModal>
                         <TitleModal>Success</TitleModal>
-                        <BodyModal><p className="text-sm text-slate-300">Data saved</p>
+                        <BodyModal><p className="text-sm dark:text-slate-300">Data saved</p>
                         </BodyModal>
                     </AlertModal>
                 )
@@ -282,7 +282,7 @@ const ProctorTable = () => {
                 openModal(
                     <AlertModal>
                         <TitleModal>Failed</TitleModal>
-                        <BodyModal><p className="text-sm text-slate-300">Data not saved</p>
+                        <BodyModal><p className="text-sm dark:text-slate-300">Data not saved</p>
                         </BodyModal>
                     </AlertModal>
                 )
@@ -294,7 +294,7 @@ const ProctorTable = () => {
             openModal(
                 <AlertModal>
                     <TitleModal>Sorry</TitleModal>
-                    <BodyModal><p className="text-sm text-slate-300">Something went wrong</p>
+                    <BodyModal><p className="text-sm dark:text-slate-300">Something went wrong</p>
                     </BodyModal>
                 </AlertModal>
             )
@@ -325,7 +325,7 @@ const ProctorTable = () => {
                 openModal(
                     <AlertModal>
                         <TitleModal>Success</TitleModal>
-                        <BodyModal><p className="text-sm text-slate-300">Account Activated!</p>
+                        <BodyModal><p className="text-sm dark:text-slate-300">Account Activated!</p>
                         </BodyModal>
                     </AlertModal>
                 )
@@ -336,7 +336,7 @@ const ProctorTable = () => {
                 openModal(
                     <AlertModal>
                         <TitleModal>Failed</TitleModal>
-                        <BodyModal><p className="text-sm text-slate-300">Data not created {data.error}</p>
+                        <BodyModal><p className="text-sm dark:text-slate-300">Data not created {data.error}</p>
                         </BodyModal>
                     </AlertModal>
                 )
@@ -348,7 +348,7 @@ const ProctorTable = () => {
             openModal(
                 <AlertModal>
                     <TitleModal>Sorry</TitleModal>
-                    <BodyModal><p className="text-sm text-slate-300">Something went wrong</p>
+                    <BodyModal><p className="text-sm dark:text-slate-300">Something went wrong</p>
                     </BodyModal>
                 </AlertModal>
             )
@@ -362,14 +362,14 @@ const ProctorTable = () => {
 
     return (
         <div className="">
-            <div className="overflow-x-auto border-b border-white/15">
+            <div className="overflow-x-auto border-b dark:border-white/15">
                 <div className="flex justify-between mx-8 my-4">
                     <div>
 
                     </div>
                     <button
             onClick={() => handleAddProctor()}
-            className="bg-blue-500 p-2 px-4 text-sm rounded-md min-w-32 hover:bg-blue-600"
+            className="bg-blue-500 text-white p-2 px-4 text-sm rounded-md min-w-32 hover:bg-blue-600"
           >
             Add Proctored User
           </button>
@@ -378,18 +378,18 @@ const ProctorTable = () => {
                     <table className="min-w-full table-fixed">
                         <thead className="sticky top-0  z-10 backdrop-blur-[2px]">
                             <tr className="">
-                                <th className="pl-8 pr-4 py-2 text-left font-normal text-slate-100/75 text-sm">Id</th>
-                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Email</th>
-                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Name</th>
-                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Username</th>
-                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Activate</th>
-                                <th className="pr-8 pl-4 text-left font-normal text-slate-100/75 text-sm">Action</th>
+                                <th className="pl-8 pr-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">Id</th>
+                                <th className="px-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">Email</th>
+                                <th className="px-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">Name</th>
+                                <th className="px-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">Username</th>
+                                <th className="px-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">Activate</th>
+                                <th className="pr-8 pl-4 text-left font-normal dark:text-slate-100/75 text-sm">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {proctor.map((user: Proctor) => (
-                                <tr key={user.id} className="border-t border-white/10 hover:bg-gray-600/30">
-                                    <td className="pl-8 pr-4 py-4 text-sm text-white/70">{user.id}</td>
+                                <tr key={user.id} className="border-t dark:border-white/10 dark:hover:bg-gray-600/30 hover:bg-black/5">
+                                    <td className="pl-8 pr-4 py-4 text-sm dark:text-white/70">{user.id}</td>
                                     <td className="px-4 py-4 text-sm font-semibold">{user.email}</td>
                                     <td className="px-4 py-4 text-sm text-sky-500/75 font-medium">{user.name}</td>
                                     <td className="px-4 py-4 text-sm text-sky-500/75 font-medium">{user.username}</td>

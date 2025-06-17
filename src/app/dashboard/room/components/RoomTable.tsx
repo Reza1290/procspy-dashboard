@@ -231,7 +231,7 @@ const RoomTable = () => {
                     </div>
                     <button
                         onClick={() => handleAddRoom()}
-                        className="bg-blue-500 p-2 px-4 text-sm rounded-md min-w-32 hover:bg-blue-600 dark:text-black text-white"
+                        className="bg-blue-500 p-2 px-4 text-sm rounded-md min-w-32 hover:bg-blue-600 text-white"
                     >
                         Add Variable
                     </button>
@@ -248,11 +248,11 @@ const RoomTable = () => {
                         </thead>
                         <tbody>
                             {rooms.map((room) => (
-                                <tr key={room.id} className="border-t border-white/10 hover:bg-gray-600/30">
+                                <tr key={room.id} className="border-t dark:border-white/10 dark:hover:bg-gray-600/30 hover:bg-black/5">
                                     <td className="pl-8 pr-4 py-4 text-sm font-medium">{room.roomId}</td>
                                     <td className="px-4 py-4 text-sm text-sky-500/75 font-medium">{room.title || "No Name"}</td>
                                     <td className="px-4 py-4 text-xs capitalize">
-                                        <div onClick={() => router.push(pathname + '/' + room.roomId)} className="bg-blue-500 dark:text-black text-white w-max rounded p-1 px-2 cursor-pointer flex gap-1 items-center">
+                                        <div onClick={() => router.push(pathname + '/' + room.roomId)} className="bg-blue-500 text-white w-max rounded p-1 px-2 cursor-pointer flex gap-1 items-center">
                                             <ScreenShareIcon className="w-4" /> Join</div>
                                     </td>
                                     <td className="pr-8 pl-4 py-4 text-xs capitalize flex justify-start items-center gap-4">

@@ -35,7 +35,7 @@ const SideBarItem = ({ onClick, active, icon: Icon, label }: SideBarItemProps) =
                     </div>
                     <div
                         onClick={onClick}
-                        className="transition-all duration-500 text-sm dark:text-slate-100/70 line-clamp-1 text-ellipsis text-nowrap group-hover:text-slate-100/90 group-hover:bg-gray-400/15 p-2.5 rounded-md grow cursor-pointer border border-transparent"
+                        className="transition-all duration-500 text-sm dark:text-slate-100/70 line-clamp-1 text-ellipsis text-nowrap  group-hover:bg-gray-400/15 p-2.5 rounded-md grow cursor-pointer border border-transparent"
                     >
                         {label}
                     </div>

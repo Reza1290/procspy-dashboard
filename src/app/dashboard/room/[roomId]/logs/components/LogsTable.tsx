@@ -99,7 +99,7 @@ const LogsTable = () => {
                         const newScrollHeight = el.scrollHeight;
                         el.scrollTop = newScrollHeight - prevScrollHeight;
                     } else {
-                        el.scrollTop = el.scrollHeight
+                        el.scrollTop = el.scrollHeight ?? 0
                     }
                 });
             }
@@ -202,7 +202,7 @@ export const BodyTable = memo(function BodyTable({ log }: { log: LogProps }) {
 
     return <tr
         key={log._id}
-        className="border-t dark:border-white/10 hover:bg-gray-600/30"
+        className="border-t dark:border-white/10 dark:dark:hover:bg-gray-600/30 hover:bg-black/5 hover:bg-black/5"
     >
         <td className="pl-8 pr-4 py-3 text-xs capitalize text-right dark:text-slate-100/75">
             {formattedTimestamp(log.timestamp)}
@@ -226,7 +226,7 @@ export const BodyTable = memo(function BodyTable({ log }: { log: LogProps }) {
         </td>
         <td className="px-4 py-3 text-xs ">
             <div className="flex flex-col gap-2">
-                <div className="font-medium">{log.flag.label || "-"} {log.attachment.title && <span className="font-normal bg-white/10 dark:border-white/15 rounded px-1 border"> {log.attachment?.title ?? "Unknown"}</span>} {log.attachment.url && <span className="font-light rounded px-1 italic text-sky-500 "> {log.attachment?.url ?? "Unknown"}</span>}</div>
+                <div className="font-medium">{log.flag.label || "-"} {log.attachment.title || log.attachment?.shortcut && <span className="font-normal bg-white/10 dark:border-white/15 rounded px-1 border"> {log.attachment?.title ? log.attachment.title : log.attachment.shortcut ? log.attachment.shortcut :"Unknown"}</span>} {log.attachment.url || log.attachment?.desc && <span className="font-light rounded px-1 italic text-sky-500 "> {log.attachment?.url ? log.attachment.url : log.attachment?.desc? log.attachment.desc: "Unknown"}</span>}</div>
                 {
                     (log.attachment.file) && (
                         <>

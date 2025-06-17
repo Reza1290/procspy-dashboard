@@ -190,13 +190,13 @@ export default function Page() {
     return (
         <div className="grid grid-rows-6 grid-cols-12 w-full h-[90vh] overflow-hidden">
             <div className="row-span-4 col-span-7 gap-6 flex justify-start items-start p-8">
-                <div className="border rounded-lg bg-white/10 border-white/10 p-1 max-h-[50vh] aspect-video flex items-center justify-center">
+                <div className="border rounded-lg dark:bg-white/10 dark:border-white/10 p-1 max-h-[50vh] aspect-video flex items-center justify-center">
                     <video ref={videoRef} autoPlay playsInline className="max-h-[50vh]" />
                 </div>
             </div>
 
             <div className="row-start-1 row-span-3 col-span-3 col-start-8 pt-8 flex items-start justify-start">
-                <div className="border border-white/10 bg-white/10 rounded-lg aspect-square max-h-[35vh] flex justify-center items-center">
+                <div className="border dark:border-white/10 dark:bg-white/10 rounded-lg aspect-square max-h-[35vh] flex justify-center items-center">
                     <video ref={camRef} autoPlay playsInline className="aspect-square" />
                 </div>
             </div>
@@ -211,27 +211,27 @@ export default function Page() {
                 </div>
             </div>
 
-            <div className="row-span-2 row-start-5 col-span-10 border-t border-white/15">
+            <div className="row-span-2 row-start-5 col-span-10 border-t dark:border-white/15">
                 <div className="flex gap-4 items-center p-2">
-                    <button onClick={() => setActiveBar(0)} className={`min-w-16 text-xs px-4 py-1 rounded font-light border ${activeBar === 0 ? 'bg-gray-400/10 border-white/10' : 'border-transparent'}`}>Logs</button>
-                    <button onClick={() => setActiveBar(1)} className={`min-w-16 text-xs px-4 py-1 rounded font-light border ${activeBar === 1 ? 'bg-gray-400/10 border-white/10' : 'border-transparent'}`}>Device Info</button>
+                    <button onClick={() => setActiveBar(0)} className={`min-w-16 text-xs px-4 py-1 rounded font-light border ${activeBar === 0 ? 'bg-gray-400/10 dark:border-white/10' : 'border-transparent'}`}>Logs</button>
+                    <button onClick={() => setActiveBar(1)} className={`min-w-16 text-xs px-4 py-1 rounded font-light border ${activeBar === 1 ? 'bg-gray-400/10 dark:border-white/10' : 'border-transparent'}`}>Device Info</button>
                 </div>
 
-                <div className="flex justify-between border-t border-white/15 max-h-[20vh] h-[20vh]">
+                <div className="flex justify-between border-t  dark:border-white/15 max-h-[20vh] h-[20vh]">
                     {activeBar === 0 && peerToken && <LogsWindow token={peerToken} />}
                     {activeBar === 1 && userInfo && <DeviceInfoWindow session={userInfo.session_detail} />}
-                    <div className="border-l border-white/10 p-4 min-w-[24%] min-h-[25vh] max-h-[25vh]">
+                    <div className="border-l dark:border-white/10 p-4 min-w-[24%] min-h-[25vh] max-h-[25vh]">
                         <div className="flex flex-col gap-3 text-xs">
-                            <div className="flex items-center gap-4">Fraud Level <span className="bg-red-500 p-1 rounded">{sessionResult?.fraudLevel ?? 'LOW'}</span></div>
-                            <div className="flex items-center gap-4">Total Flags <span className="bg-red-500 p-1 rounded">{sessionResult?.totalFlags}</span></div>
-                            <div className="flex items-center gap-4">Total Fraud Severity <span className="bg-red-500 p-1 rounded">{sessionResult?.totalSeverity}</span></div>
+                            <div className="flex items-center gap-4">Fraud Level <span className="bg-red-500 text-white p-1 rounded">{sessionResult?.fraudLevel ?? 'LOW'}</span></div>
+                            <div className="flex items-center gap-4">Total Flags <span className="bg-red-500 text-white p-1 rounded">{sessionResult?.totalFlags ?? 0}</span></div>
+                            <div className="flex items-center gap-4">Total Fraud Severity <span className="bg-red-500 text-white p-1 rounded">{sessionResult?.totalSeverity ?? 0}</span></div>
 
                             <div className="flex gap-4">
-                                <button onClick={toggleMic} className="bg-white/10 hover:border-transparent border border-white/10 p-2 rounded-lg max-w-16 flex justify-center items-center">
-                                    {micMute ? <MicOffIcon className="text-white" size={24} /> : <MicIcon className="text-white" size={24} />}
+                                <button onClick={toggleMic} className="dark:bg-white/10 hover:border-transparent border dark:border-white/10 p-2 rounded-lg max-w-16 flex justify-center items-center">
+                                    {micMute ? <MicOffIcon className="dark:text-white" size={24} /> : <MicIcon className="dark:text-white" size={24} />}
                                 </button>
-                                <button onClick={toggleAudio} className="bg-white/10 hover:border-transparent border border-white/10 p-2 rounded-lg max-w-16 flex justify-center items-center">
-                                    {audioMute ? <VolumeOffIcon className="text-white" size={24} /> : <Volume2Icon className="text-white" size={24} />}
+                                <button onClick={toggleAudio} className="dark:bg-white/10 hover:border-transparent border dark:border-white/10 p-2 rounded-lg max-w-16 flex justify-center items-center">
+                                    {audioMute ? <VolumeOffIcon className="dark:text-white" size={24} /> : <Volume2Icon className="dark:text-white" size={24} />}
                                 </button>
                                 <AudioMeter track={micTrack} />
                             </div>

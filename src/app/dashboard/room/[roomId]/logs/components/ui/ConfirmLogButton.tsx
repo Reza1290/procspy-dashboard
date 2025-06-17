@@ -60,7 +60,7 @@ const ConfirmLogButton = ({ id, currentLogType, callback}: { id: string, current
                             <button className="bg-red-500 text-white rounded p-1" onClick={(e) => { handleState("True") }} >
                                 <CheckIcon></CheckIcon>
                             </button>
-                            <button className="bg-white/10 border border-white/10 rounded p-1" onClick={() => { handleState("False") }}>
+                            <button className="bg-white/10 border dark:border-white/10 rounded p-1" onClick={() => { handleState("False") }}>
                                 <XIcon></XIcon>
                             </button>
                         </>

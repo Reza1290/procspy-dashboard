@@ -233,7 +233,7 @@ export default function AnalyticsPage() {
                             e != null ? (
                                 <tr
                                     key={e?.id}
-                                    className="border-t dark:border-white/10 hover:bg-gray-600/30 h-[33%]"
+                                    className="border-t dark:border-white/10 dark:hover:bg-gray-600/30 hover:bg-black/5 h-[33%]"
 
                                 >
 

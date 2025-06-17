@@ -222,7 +222,7 @@ const UserSessionTable = () => {
                         </thead>
                         <tbody>
                             {sessions.map((session) => (
-                                <tr key={session.token} className="border-t dark:border-white/10 hover:bg-gray-600/30">
+                                <tr key={session.token} className="border-t dark:border-white/10 dark:hover:bg-gray-600/30 hover:bg-black/5">
                                     <td className="pl-8 pr-4 py-4 text-xs capitalize">
                                         {
                                             session.isOnline ? (

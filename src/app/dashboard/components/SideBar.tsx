@@ -35,7 +35,7 @@ export default function SideBar() {
                 }}
             >
                 <TitleModal>Are you sure want to delete this?</TitleModal>
-                <BodyModal><p className="text-sm text-slate-300">Are you sure you want to leave proctoring mode?</p></BodyModal>
+                <BodyModal><p className="text-sm dark:text-slate-300">Are you sure you want to leave proctoring mode?</p></BodyModal>
             </ConfirmModal>
         )
     }

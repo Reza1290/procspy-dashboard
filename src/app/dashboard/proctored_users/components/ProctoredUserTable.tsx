@@ -431,7 +431,7 @@ const ProctoredUserTable = () => {
                         </thead>
                         <tbody>
                             {proctoredUsers.map((user: ProctoredUser) => (
-                                <tr key={user.id} className="border-t dark:border-white/10 hover:bg-gray-600/30">
+                                <tr key={user.id} className="border-t dark:border-white/10 dark:hover:bg-gray-600/30 hover:bg-black/5">
                                     <td className="pl-8 pr-4 py-4 text-sm dark:text-white/70">{user.id}</td>
                                     <td className="px-4 py-4 text-sm font-semibold">{user.identifier}</td>
                                     <td className="px-4 py-4 text-sm text-sky-500/75 font-medium">{user.name}</td>
