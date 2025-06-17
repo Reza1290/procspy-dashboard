@@ -2,7 +2,7 @@
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useParams, usePathname } from "next/navigation";
 import session from "../../../../../../lib/session";
-import { CheckIcon, EllipsisVertical, Eye, InfoIcon, Unplug, XIcon } from "lucide-react";
+import { CheckIcon, EllipsisVertical, Eye, FlagIcon, InfoIcon, Unplug, XIcon } from "lucide-react";
 import { formattedTimestamp, formattedTimestampTerminal } from "../../../../../utils/timestamp";
 import { Peer, useWebRtc } from "../../../../../../context/WebRtcProvider";
 import ConfirmLogButton from "./ui/ConfirmLogButton";
@@ -213,7 +213,7 @@ export const BodyTable = memo(function BodyTable({ log }: { log: LogProps }) {
             </div>
         </td>
         <td className="px-4 py-3 min-w-min">
-            <InfoIcon />
+            <FlagIcon />
         </td>
         <td className="px-4 py-3 text-xs font-normal text-sky-300">
             {log.session.proctoredUserId || "-"}
@@ -226,7 +226,7 @@ export const BodyTable = memo(function BodyTable({ log }: { log: LogProps }) {
         </td>
         <td className="px-4 py-3 text-xs ">
             <div className="flex flex-col gap-2">
-                <div className="font-medium">{log.flag.label || "-"} {log.attachment.title || log.attachment?.shortcut && <span className="font-normal bg-white/10 dark:border-white/15 rounded px-1 border"> {log.attachment?.title ? log.attachment.title : log.attachment.shortcut ? log.attachment.shortcut :"Unknown"}</span>} {log.attachment.url || log.attachment?.desc && <span className="font-light rounded px-1 italic text-sky-500 "> {log.attachment?.url ? log.attachment.url : log.attachment?.desc? log.attachment.desc: "Unknown"}</span>}</div>
+                <div className="font-medium">{log.flag.label || "-"} {(log.attachment.title || log.attachment?.shortcut) && <span className="font-normal bg-white/10 dark:border-white/15 rounded px-1 border"> {log.attachment?.title ? log.attachment.title : log.attachment.shortcut ? log.attachment.shortcut :"Unknown"}</span>} {(log.attachment.url || log.attachment?.desc) && <span className="font-light rounded px-1 italic text-sky-500 "> {log.attachment?.url ? log.attachment.url : log.attachment?.desc? log.attachment.desc: "Unknown"}</span>}</div>
                 {
                     (log.attachment.file) && (
                         <>
