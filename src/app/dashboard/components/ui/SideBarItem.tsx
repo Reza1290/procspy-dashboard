@@ -14,13 +14,13 @@ const SideBarItem = ({ onClick, active, icon: Icon, label }: SideBarItemProps) =
                 <>
                     <div
                         onClick={onClick}
-                        className="transition-all duration-500 flex w-full aspect-square bg-gray-400/15 p-2.5 rounded-md max-w-10 max-h-10 h-10 cursor-pointer border border-white/10"
+                        className="transition-all duration-500 flex w-full aspect-square bg-gray-400/15 p-2.5 rounded-md max-w-10 max-h-10 h-10 cursor-pointer border dark:border-white/10"
                     >
-                        <Icon className="transition-all duration-500 text-gray-400 text-slate-100/90" />
+                        <Icon className="transition-all duration-500 dark:text-gray-400 dark:text-slate-100/90" />
                     </div>
                     <div
                         onClick={onClick}
-                        className="transition-all duration-500 text-sm text-slate-100/90 line-clamp-1 text-ellipsis text-nowrap bg-gray-400/15 p-2.5 rounded-md grow cursor-pointer border border-white/10"
+                        className="transition-all duration-500 text-sm dark:text-slate-100/90 line-clamp-1 text-ellipsis text-nowrap bg-gray-400/15 p-2.5 rounded-md grow cursor-pointer border dark:border-white/10"
                     >
                         {label}
                     </div>
@@ -31,11 +31,11 @@ const SideBarItem = ({ onClick, active, icon: Icon, label }: SideBarItemProps) =
                         onClick={onClick}
                         className="transition-all duration-500 flex w-full group-hover:bg-gray-400/15 p-2.5 rounded-md max-w-10 max-h-10 h-10 cursor-pointer border border-transparent"
                     >
-                        <Icon className="transition-all duration-500 text-gray-400 group-hover:text-slate-100/90" />
+                        <Icon className="transition-all duration-500 dark:text-gray-400 dark:group-hover:text-slate-100/90" />
                     </div>
                     <div
                         onClick={onClick}
-                        className="transition-all duration-500 text-sm text-slate-100/70 line-clamp-1 text-ellipsis text-nowrap group-hover:text-slate-100/90 group-hover:bg-gray-400/15 p-2.5 rounded-md grow cursor-pointer border border-transparent"
+                        className="transition-all duration-500 text-sm dark:text-slate-100/70 line-clamp-1 text-ellipsis text-nowrap  group-hover:bg-gray-400/15 p-2.5 rounded-md grow cursor-pointer border border-transparent"
                     >
                         {label}
                     </div>

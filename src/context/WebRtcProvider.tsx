@@ -70,6 +70,7 @@ interface NotificationCount {
 interface NotificationData {
     roomId: string
     token: string
+    attachment: any
 }
 
 interface MessageData {
@@ -109,7 +110,7 @@ export const WebRtcProvider = ({ children }) => {
 
     const consumerBufferRef = useRef<Map<string, ConsumerData[]>>(new Map());
 
-
+    const tempRef = useRef([])
     useEffect(() => {
         if (!data.roomId) return
         if (!socketRef.current) {
@@ -149,6 +150,8 @@ export const WebRtcProvider = ({ children }) => {
             })
 
             socketRef.current.on('SERVER_DASHBOARD_LOG_MESSAGE', (message: NotificationData) => {
+                tempRef.current.push({...message, ...message?.attachment, recieveTimestamp: Date.now()})
+                console.table(tempRef.current)
                 setNotificationCount(prev => {
                     const existingIndex = prev.findIndex(n => n.token === message.token);
                     if (existingIndex !== -1) {

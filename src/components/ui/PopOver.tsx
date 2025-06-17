@@ -38,7 +38,7 @@ const PopOver = ({ children, icon, whereShow = "" }: { children: React.ReactNode
             </button>
             {
                 isVisible && (
-                    <div className={`fixed z-[30] rounded-md border border-white/15  min-w-32 min-h-10 p-1 bg-gray-800 ${whereShow}`} ref={popoverRef}>
+                    <div className={`fixed z-[30] rounded-md border dark:border-white/15  min-w-32 min-h-10 p-1 dark:bg-gray-800 bg-white ${whereShow}`} ref={popoverRef}>
                         <div className="flex flex-col gap-1">{children}</div>
                     </div>
                 )

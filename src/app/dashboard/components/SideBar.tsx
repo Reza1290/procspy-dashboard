@@ -35,7 +35,7 @@ export default function SideBar() {
                 }}
             >
                 <TitleModal>Are you sure want to delete this?</TitleModal>
-                <BodyModal><p className="text-sm text-slate-300">Are you sure you want to leave proctoring mode?</p></BodyModal>
+                <BodyModal><p className="text-sm dark:text-slate-300">Are you sure you want to leave proctoring mode?</p></BodyModal>
             </ConfirmModal>
         )
     }
@@ -71,10 +71,10 @@ export default function SideBar() {
     }
 
     return (
-        <div className={`${active ? 'w-full' : 'w-[3.7rem] '} max-w-56 transition-all duration-500 overflow-hidden delay-100 ease-in-out flex flex-col p-auto h-screen border-r border-white/15  bg-gradient-to-b from-black to-slate-950 `}>
-            <div className="flex justify-between items-center min-h-[10vh] w-full border-b border-white/15 px-2">
+        <div className={`${active ? 'w-full' : 'w-[3.7rem] '} max-w-56 transition-all duration-500 overflow-hidden delay-100 ease-in-out flex flex-col p-auto h-screen border-r dark:border-white/15  dark:bg-gradient-to-b dark:from-black dark:to-slate-950 `}>
+            <div className="flex justify-between items-center min-h-[10vh] w-full border-b dark:border-white/15 px-2">
                 <div className={`flex gap-4 items-center`}>
-                    <div className="min-w-10 max-w-10 h-10 bg-white rounded p-1">
+                    <div className="min-w-10 max-w-10 h-10 dark:bg-white rounded p-1">
                         <img className="" src="/image/logo.png" alt="" />
                     </div>
                     <div className="font-semibold">

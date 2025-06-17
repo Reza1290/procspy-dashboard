@@ -177,7 +177,7 @@ const UserSessionTable = () => {
                 openModal(
                     <AlertModal>
                         <TitleModal>Success</TitleModal>
-                        <BodyModal><p className="text-sm text-slate-300">State Updated</p>
+                        <BodyModal><p className="text-sm dark:text-slate-300">State Updated</p>
                         </BodyModal>
                     </AlertModal>
                 )
@@ -188,7 +188,7 @@ const UserSessionTable = () => {
                 openModal(
                     <AlertModal>
                         <TitleModal>Failed</TitleModal>
-                        <BodyModal><p className="text-sm text-slate-300">Cant abort or complete session that not started yet and cancel session that already started</p>
+                        <BodyModal><p className="text-sm dark:text-slate-300">Cant abort or complete session that not started yet and cancel session that already started</p>
                         </BodyModal>
                     </AlertModal>
                 )
@@ -209,26 +209,26 @@ const UserSessionTable = () => {
                     <table className="min-w-full table-fixed">
                         <thead className="sticky top-0  z-10">
                             <tr className="">
-                                <th className="pl-8 pr-4 py-2 text-left font-normal text-slate-100/75 text-sm">Connection Status</th>
-                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Session Token</th>
-                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Name</th>
-                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Start Time</th>
-                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">End Time</th>
-                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Session Status</th>
-                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Fraud Status</th>
-                                <th className="px-4 py-2 text-left font-normal text-slate-100/75 text-sm">Analytics</th>
-                                <th className="pr-8 pl-4 text-left font-normal text-slate-100/75 text-sm">Action</th>
+                                <th className="pl-8 pr-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">Connection Status</th>
+                                <th className="px-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">Session Token</th>
+                                <th className="px-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">Name</th>
+                                <th className="px-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">Start Time</th>
+                                <th className="px-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">End Time</th>
+                                <th className="px-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">Session Status</th>
+                                <th className="px-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">Fraud Status</th>
+                                <th className="px-4 py-2 text-left font-normal dark:text-slate-100/75 text-sm">Analytics</th>
+                                <th className="pr-8 pl-4 text-left font-normal dark:text-slate-100/75 text-sm">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {sessions.map((session) => (
-                                <tr key={session.token} className="border-t border-white/10 hover:bg-gray-600/30">
+                                <tr key={session.token} className="border-t dark:border-white/10 dark:hover:bg-gray-600/30 hover:bg-black/5">
                                     <td className="pl-8 pr-4 py-4 text-xs capitalize">
                                         {
                                             session.isOnline ? (
-                                                <div className="w-min rounded flex justifyt-center items-center gap-2"> <div className="w-2 h-2 rounded-full bg-green-500 "></div>Connected</div>
+                                                <div className="w-min rounded flex justifyt-center items-center gap-2"> <div className="w-2 h-2 rounded-full bg-green-500"></div>Connected</div>
                                             ) : (
-                                                <div className="w-min rounded flex justifyt-center items-center gap-2"> <div className="w-2 h-2 rounded-full bg-red-500 "></div>Disconnected</div>
+                                                <div className="w-min rounded flex justifyt-center items-center gap-2"> <div className="w-2 h-2 rounded-full text-white bg-red-500 "></div>Disconnected</div>
 
                                             )
                                         }
@@ -238,23 +238,23 @@ const UserSessionTable = () => {
                                     <td className="px-4 py-4 text-sm">{session.startTime || "-"}</td>
                                     <td className="px-4 py-4 text-sm">{session.endTime || "-"}</td>
                                     <td className="px-4 py-4 text-xs capitalize">
-                                        <div className="bg-red-500 w-min rounded p-1 px-2">{session.status}</div>
+                                        <div className="text-white bg-red-500 w-min rounded p-1 px-2">{session.status}</div>
                                     </td>
                                     <td className="px-4 py-4 text-xs capitalize">
-                                        <div className="bg-red-500 w-min rounded p-1 px-2 capitalize">{session.session_result != null && calcFraudLevel(session.session_result.totalSeverity) || "LOW"}</div>
+                                        <div className="text-white bg-red-500 w-min rounded p-1 px-2 capitalize">{session.session_result != null && calcFraudLevel(session.session_result.totalSeverity) || "LOW"}</div>
                                     </td>
                                     <td className="px-4 py-4 text-xs capitalize gap-4">
-                                        <div onClick={() => router.push(pathname + "/analytics/" + session.token)} className="bg-blue-500 w-max rounded p-1 px-2 cursor-pointer flex gap-1 items-center ">
+                                        <div onClick={() => router.push(pathname + "/analytics/" + session.token)} className="bg-blue-500 text-white w-max rounded p-1 px-2 cursor-pointer flex gap-1 items-center ">
                                             <ChartLineIcon className="w-4" /> Session Result
                                         </div>
                                     </td>
                                     <td className="pr-8 pl-4 py-4 text-xs capitalize flex justify-start items-center gap-4">
                                         <PopOver icon={<EllipsisVertical className="max-w-4 aspect-square" />}>
                                             <div className="flex flex-col gap-1">
-                                                <div onClick={() => handleAbortSession(session.token, "aborted")} className="hover:bg-gray-700 cursor-pointer rounded text-sm p-1 px-2">
+                                                <div onClick={() => handleAbortSession(session.token, "aborted")} className="dark:hover:bg-gray-700 hover:bg-slate-100 cursor-pointer rounded text-sm p-1 px-2">
                                                     Abort
                                                 </div>
-                                                <div onClick={() => handleAbortSession(session.token, "completed")} className="hover:bg-gray-700 cursor-pointer rounded text-sm p-1 px-2">
+                                                <div onClick={() => handleAbortSession(session.token, "completed")} className="dark:hover:bg-gray-700 hover:bg-slate-100 cursor-pointer rounded text-sm p-1 px-2">
                                                     End (Complete)
                                                 </div>
                                             </div>

@@ -1,6 +1,6 @@
 const AlertModal = ({children}) => {
     return (
-        <div className="p-6 bg-black rounded-md shadow-lg max-w-md min-w-96 mx-auto border border-white/15 backdrop-blur-sm flex flex-col gap-4">
+        <div className="p-6 dark:bg-black bg-white rounded-md shadow-sm max-w-md min-w-96 mx-auto border dark:border-white/15 backdrop-blur flex flex-col gap-4">
             {children}
         </div>
     );

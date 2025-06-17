@@ -144,12 +144,12 @@ const VideoContainer = ({ consumer }) => {
 
     return (
         <div className="flex max-h-[30vh]">
-            <div className="relative z-10 flex flex-col justify-between bg-black border border-white/10 rounded-xl p-3">
+            <div className="relative z-10 flex flex-col justify-between dark:bg-black border dark:border-white/10 rounded-xl p-3">
                 <div className="flex justify-between gap-3 w-full">
-                    <div className="aspect-video flex items-center justify-center bg-slate-950 rounded-lg border w-3/4 border-white/10 overflow-hidden relative">
+                    <div className="aspect-video flex items-center justify-center bg-slate-950 rounded-lg border w-3/4 dark:border-white/10 overflow-hidden relative">
                         <video autoPlay playsInline ref={videoRef}></video>
                         {!videoRef.current?.srcObject && (
-                            <div className="absolute inset-0 bg-black/90 text-white text-sm flex items-center justify-center">
+                            <div className="absolute inset-0 dark:bg-black/90 text-white text-sm flex items-center justify-center">
                                 No video
                             </div>
                         )}
@@ -159,14 +159,14 @@ const VideoContainer = ({ consumer }) => {
                     </div>
 
                     <div className="flex flex-col w-1/4 gap-4">
-                        <div className="group aspect-square flex items-center justify-center bg-slate-950 rounded-lg border border-white/10 overflow-hidden cursor-ne-resize">
+                        <div className="group aspect-square flex items-center justify-center bg-slate-950 rounded-lg border dark:border-white/10 overflow-hidden cursor-ne-resize">
                             <video autoPlay ref={camRef} playsInline onDoubleClick={() => camRef.current?.requestFullscreen()}></video>
-                            <span className="group-hover:block hidden absolute text-[0.6rem] -top-8 z-100 bg-black/10 p-1 rounded-lg border border-white/10">Double Click to Fullscreen</span>
+                            <span className="group-hover:block hidden absolute text-[0.6rem] -top-8 z-100 bg-white dark:bg-black/10 p-1 rounded-lg border dark:border-white/10">Double Click to Fullscreen</span>
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            {micTrack && <AudioMeter track={micTrack} />}
-                            <div className="flex items-center p-2 border border-white/10 rounded">
+                            <AudioMeter track={micTrack} />
+                            <div className="flex items-center p-2 border dark:border-white/10 rounded">
                                 <TriangleAlertIcon className="text-red-500" />
                                 <p className="text-xs ml-2 truncate">
                                     {notificationCount.find(n => n.token === consumer.token)?.count || 0} New Flags
@@ -179,18 +179,18 @@ const VideoContainer = ({ consumer }) => {
                 </div>
             </div>
 
-            <div className="-ml-3 bg-black/15 p-3 pl-6 w-72 z-0 border gap-4 border-white/10 border-l-0 rounded-r-xl grid grid-rows-4">
-                <div className="self-center justify-self-center border border-white/10 bg-white/10 aspect-square rounded flex justify-center items-center p-2 max-w-16 cursor-pointer" onClick={toggleMic}>
+            <div className="-ml-3 bg-white dark:bg-black/15 p-3 pl-6 w-72 z-0 border gap-4 dark:border-white/10 border-l-0 rounded-r-xl grid grid-rows-4">
+                <div className="self-center justify-self-center border dark:border-white/10 bg-white/10 aspect-square rounded flex justify-center items-center p-2 max-w-16 cursor-pointer" onClick={toggleMic}>
                     {micMute ? <MicOffIcon /> : <MicIcon />}
                 </div>
-                <div className="self-center justify-self-center border border-white/10 bg-white/10 aspect-square rounded flex justify-center items-center p-2 max-w-16 cursor-pointer" onClick={toggleAudio}>
+                <div className="self-center justify-self-center border dark:border-white/10 bg-white/10 aspect-square rounded flex justify-center items-center p-2 max-w-16 cursor-pointer" onClick={toggleAudio}>
                     {audioMute ? <VolumeOffIcon /> : <Volume2Icon />}
                 </div>
-                <div className="relative self-center justify-self-center border border-white/10 bg-white/10 aspect-square rounded flex justify-center items-center p-2 max-w-16 cursor-pointer" onClick={handleToggleLogBottomSheet}>
+                <div className="relative self-center justify-self-center border dark:border-white/10 bg-white/10 aspect-square rounded flex justify-center items-center p-2 max-w-16 cursor-pointer" onClick={handleToggleLogBottomSheet}>
                     {notificationCount.find(n => n.token === consumer.token)?.count > 0 && <div className="absolute w-3 h-3 bg-red-500 -top-1 -right-1 rounded-full"></div>}
                     <FlagIcon />
                 </div>
-                <div className="self-center justify-self-center border border-white/10 bg-white/10 aspect-square rounded flex justify-center items-center p-2 max-w-16 cursor-pointer" onClick={handleFocusMode}>
+                <div className="self-center justify-self-center border dark:border-white/10 bg-white/10 aspect-square rounded flex justify-center items-center p-2 max-w-16 cursor-pointer" onClick={handleFocusMode}>
                     <FullscreenIcon />
                 </div>
             </div>

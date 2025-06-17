@@ -50,8 +50,8 @@ export default function AudioMeter({ track }: AudioMeterProps) {
   const level3 = Math.min(volume * 5, 1);
 
   return (
-    <div className="flex items-center space-x-2 p-2 border border-white/10 rounded text-white">
-      <Volume2 className="w-6 h-6 text-white" />
+    <div className="flex items-center space-x-2 p-2 border border-white/10 rounded dark:text-white">
+      <Volume2 className="min-w-6 h-6 dark:text-white" />
       <div className="flex space-x-1 items-end h-6">
         <div
           className="w-1 bg-green-400 rounded transition-all duration-100"

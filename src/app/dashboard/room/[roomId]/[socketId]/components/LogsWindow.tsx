@@ -189,7 +189,7 @@ const LogsWindow = ({ token, canDrag = false }: { token: string, canDrag?: boole
         <div className="w-full">
             {
                 canDrag && (
-                    <div className="cursor-row-resize border-t border-white/10" onMouseDown={onMouseDown}>
+                    <div className="cursor-row-resize border-t dark:border-white/10" onMouseDown={onMouseDown}>
 
                     </div>
                 )

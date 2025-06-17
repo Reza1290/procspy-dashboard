@@ -18,7 +18,7 @@ const ChatBox = ({ user, privateMessages, onSendMessage }) => {
     }, [privateMessages])
 
     return (
-        <div className="flex flex-col w-full justify-between gap-4 h-full max-h-[90vh] border-l border-white/10 ">
+        <div className="flex flex-col w-full justify-between gap-4 h-full max-h-[90vh] border-l dark:border-white/10 ">
             <div className="flex grow w-full justify-end flex-col ">
                 <div className="flex flex-col gap-3 p-6 pb-3 w-full max-h-[80vh] overflow-y-scroll 
                 [&::-webkit-scrollbar]:w-2
@@ -57,14 +57,14 @@ const ChatBox = ({ user, privateMessages, onSendMessage }) => {
 
 
             {/* Input */}
-            <div className=" border-white/10 flex gap-2 border-t">
+            <div className=" dark:border-white/10 flex gap-2 border-t">
                 <input
                     type="text"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder="Type and press Enter"
-                    className="w-full rounded bg-black px-2 py-2 text-xs text-white outline-none border border-white/10 bg-gray-400/10 m-4"
+                    className="w-full rounded bg-black px-2 py-2 text-xs text-white outline-none border dark:border-white/10 bg-gray-400/10 m-4"
                 />
             </div>
         </div>
