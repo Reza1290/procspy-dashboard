@@ -28,7 +28,7 @@ const SessionTable = () => {
     const [hasMore, setHasMore] = useState(true);
 
     const [threshold, setThreshold] = useState(100)
-    const {openModal, closeModal} = useModal()
+    const { openModal, closeModal } = useModal()
 
     const { openSheet, closeSheet } = useSideSheet()
 
@@ -40,6 +40,7 @@ const SessionTable = () => {
 
         fetchSessions(1);
         fetchRooms()
+        fetchGlobalSetting()
     }, [userId]);
 
     const fetchSessions = async (nextPage: number) => {
@@ -75,6 +76,24 @@ const SessionTable = () => {
         }
     };
 
+    const fetchGlobalSetting = async () => {
+        try {
+            const token = await session();
+            const response = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/global-settings?page=1&paginationLimit=1`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                const { data } = await response.json()
+                setThreshold(parseInt(data[0].value))
+            }
+        } catch (error) {
+
+        }
+    }
+
 
     const calcFraudLevel = (totalSeverity: number) => {
         const percentOfThreshold = (totalSeverity / threshold) * 100;
@@ -108,22 +127,22 @@ const SessionTable = () => {
     const roomRef = useRef<HTMLSelectElement>(null)
 
     const fetchRooms = async () => {
-            try {
-                const token = await session();
-                const res = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/rooms`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-    
-                if (res.ok) {
-                    const { data } = await res.json();
-                    setRooms(data);
-                }
-            } catch (err) {
-                console.error("Failed to fetch rooms", err);
+        try {
+            const token = await session();
+            const res = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/rooms`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (res.ok) {
+                const { data } = await res.json();
+                setRooms(data);
             }
+        } catch (err) {
+            console.error("Failed to fetch rooms", err);
         }
+    }
 
     const handleAddSession = async () => {
 

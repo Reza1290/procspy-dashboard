@@ -11,7 +11,7 @@ import DraggableTimeline from "../components/DraggableTimeline";
 import ConfirmLogButton from "../../../../room/[roomId]/logs/components/ui/ConfirmLogButton";
 import { FlagIcon, InfoIcon } from "lucide-react";
 import { formattedTimestamp } from "../../../../../utils/timestamp";
-import { SessionResultProps } from "../../../../room/[roomId]/users/components/UserSessionTable";
+import { FraudLevel, SessionResultProps } from "../../../../room/[roomId]/users/components/UserSessionTable";
 
 
 
@@ -29,6 +29,8 @@ export default function AnalyticsPage() {
     const [dataCounter, setDataCounter] = useState([])
 
     const [sessionResult, setSessionResult] = useState<SessionResultProps>(null)
+    const [threshold, setThreshold] = useState(1)
+
     const [updateLog, setUpdateLog] = useState(0)
     const fetchlogs = async (nextPage: number, limit: number) => {
         try {
@@ -100,6 +102,7 @@ export default function AnalyticsPage() {
             }
         };
         fetchSessionResult()
+        fetchGlobalSetting()
         setCurrentId(null)
         setCurrentIndex(0)
         loadAllData();
@@ -178,6 +181,33 @@ export default function AnalyticsPage() {
         }
     }
 
+    const fetchGlobalSetting = async () => {
+            try {
+                const token = await session();
+                const response = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINT || 'https://192.168.2.5:5050'}/api/global-settings?page=1&paginationLimit=1`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+    
+                if (response.ok) {
+                    const { data } = await response.json()
+                    setThreshold(parseInt(data[0].value))
+                }
+            } catch (error) {
+    
+            }
+        }
+
+    const calcFraudLevel = (totalSeverity: number) => {
+        const percentOfThreshold = (totalSeverity / threshold) * 100;
+
+        return percentOfThreshold >= 90 ? FraudLevel.CRITICAL :
+            percentOfThreshold >= 65 ? FraudLevel.HIGH :
+                percentOfThreshold >= 25 ? FraudLevel.MEDIUM :
+                    FraudLevel.LOW;
+    }
+
 
     return (
         <div className="flex flex-col h-full max-h-[90vh] oveflow-hidden">
@@ -215,7 +245,7 @@ export default function AnalyticsPage() {
                                 {dataCounter.map((e) => (
                                     <div className="text-xs bg-red-500 text-white rounded p-1 px-2">
                                         <span className="bg-white text-black rounded px-1 mr-2">{e.count}</span>
-                                        {e.flagKey} 
+                                        {e.flagKey}
                                     </div>
                                 ))}
                             </div>
@@ -279,7 +309,7 @@ export default function AnalyticsPage() {
                                         <div className="flex flex-col gap-2">
                                             <div className="font-medium">
                                                 {e.flag.label || "-"}{" "}
-                                                {(e.attachment.title || e.attachment?.shortcut) && <span className="font-normal bg-white/10 dark:border-white/15 rounded px-1 border"> {e.attachment?.title ? e.attachment.title : e.attachment.shortcut ? e.attachment.shortcut :"Unknown"}</span>} {(e.attachment.url || e.attachment?.desc) && <span className="font-light rounded px-1 italic text-sky-500 "> {e.attachment?.url ? e.attachment.url : e.attachment?.desc? e.attachment.desc: "Unknown"}</span>}
+                                                {(e.attachment.title || e.attachment?.shortcut) && <span className="font-normal bg-white/10 dark:border-white/15 rounded px-1 border"> {e.attachment?.title ? e.attachment.title : e.attachment.shortcut ? e.attachment.shortcut : "Unknown"}</span>} {(e.attachment.url || e.attachment?.desc) && <span className="font-light rounded px-1 italic text-sky-500 "> {e.attachment?.url ? e.attachment.url : e.attachment?.desc ? e.attachment.desc : "Unknown"}</span>}
                                                 {/* {e.attachment.url && (
                                                     <span className="font-light rounded px-1 italic text-sky-500">
                                                         {" "}

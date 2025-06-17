@@ -233,7 +233,7 @@ const RoomTable = () => {
                         onClick={() => handleAddRoom()}
                         className="bg-blue-500 p-2 px-4 text-sm rounded-md min-w-32 hover:bg-blue-600 text-white"
                     >
-                        Add Variable
+                        Add Room
                     </button>
                 </div>
                 <div className="relative max-h-[90vh] overflow-y-auto" onScroll={handleScroll} ref={scrollRef}>

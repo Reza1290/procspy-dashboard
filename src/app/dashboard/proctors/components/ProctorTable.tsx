@@ -371,7 +371,7 @@ const ProctorTable = () => {
             onClick={() => handleAddProctor()}
             className="bg-blue-500 text-white p-2 px-4 text-sm rounded-md min-w-32 hover:bg-blue-600"
           >
-            Add Proctored User
+            Add Proctor
           </button>
                 </div>
                 <div className="relative max-h-[90vh] overflow-y-auto" onScroll={handleScroll} ref={scrollRef}>
